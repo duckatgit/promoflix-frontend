@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from 'react'
 import { Button } from "@/components/ui/button"
+import { useToast } from "@/hooks/use-toast"
+
 import {
   Card,
   CardContent,
@@ -12,6 +14,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 const login = () => {
+  const { toast } = useToast()
+
   const [form, setForm] = useState({
     email: "",
     password: ""
@@ -39,10 +43,19 @@ const login = () => {
         throw new Error('Login failed');
       }
       const data = await response.json();
-      console.log(data); // handle response data
-      alert('Login successful');
-      setEmail("")
-      setPassword("")
+      console.log(data)
+      if (data.code != 200) {
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: data.result,
+        })
+      }
+      else {
+        toast({
+          description: data.result.message,
+        }) // Redirect to the success page
+      }
     } catch (error) {
       alert(error.message)
     }
