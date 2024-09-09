@@ -56,6 +56,7 @@ const sign_up = () => {
         })
       }
       else {
+        localStorage.setItem("email", form.email)
         toast({
           description: data.result,
         })
