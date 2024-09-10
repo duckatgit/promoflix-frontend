@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from 'next/navigation'; // Import useRouter from next/navigation
-
+import Image from 'next/image'
 import {
   Card,
   CardContent,
@@ -68,40 +68,56 @@ const sign_up = () => {
     }
   }
   return (
-    <div className='h-screen w-screen flex justify-center items-center'>
-      <Card className="w-[350px]">
-        <CardHeader>
-          <CardTitle>Sign Up</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form>
-            <div className="grid w-full items-center gap-4">
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="name">Name</Label>
-                <Input id="name" placeholder="Enter your name" value={form.name}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" placeholder="Enter your email" value={form.email}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="password">Password</Label>
-                <Input id="password" placeholder="Enter your password" value={form.password}
-                  onChange={handleInputChange}  // Handle input change
-                />
-              </div>
-            </div>
-          </form>
-        </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button className="w-full" onClick={sign_up_api}>Submit</Button>
-        </CardFooter>
-      </Card>
-    </div>
+    <div className='flex w-full'>
+      <div className='w-1/2 '>
+        <img src="/assets/Frame 16.png" alt="" className='w-full h-[100vh] ' />
+      </div>
+      <div className='w-1/2 flex'>
+        <div className='flex w-full h-screen justify-center items-center border-none'>
+          <Card >
+            <CardHeader className="justify-center items-center px-14 py-6">
+              <img src="/assets/semi-final 2 (1).png" alt="" />
+              <CardTitle >Welcome</CardTitle>
+              <p className='text-xs'>Enter your details to create your account</p>
+            </CardHeader>
+            <CardContent className="">
+              <form>
+                <div className="grid w-full items-center gap-4">
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="name">Name</Label>
+                    <Input id="name" placeholder="Enter your name" value={form.name}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="email">Email</Label>
+                    <Input id="email" placeholder="Enter your email" value={form.email}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="password">Password</Label>
+                    <Input id="password" placeholder="Enter your password" value={form.password}
+                      onChange={handleInputChange}  // Handle input change
+                    />
+                  </div>
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="confirm_password">Confirm Password</Label>
+                    <Input id="confirm_password" placeholder="Re-Enter your password" value={form.password}
+                      onChange={handleInputChange}  // Handle input change
+                    />
+                  </div>
+                </div>
+              </form>
+            </CardContent>
+            <CardFooter className="flex justify-between">
+              <Button className="w-full text-black" style={{ backgroundColor: "#FFC000" }} onClick={sign_up_api}>Submit</Button>
+            </CardFooter>
+            <p className="text-center text-sm my-2">Already Have an Account?<a className="text-[#FFC000]" href='/auth/login'> Sign In</a></p>
+          </Card>
+        </div>
+      </div>
+    </div >
 
   )
 }
