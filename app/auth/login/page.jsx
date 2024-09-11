@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
+import { useRouter } from 'next/navigation'; // Import useRouter from next/navigation
 
 import {
   Card,
@@ -14,8 +15,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 const login = () => {
+  const router = useRouter(); // Initialize useRouter
   const { toast } = useToast()
-
   const [form, setForm] = useState({
     email: "",
     password: ""
@@ -54,7 +55,9 @@ const login = () => {
       else {
         toast({
           description: data.result.message,
-        }) // Redirect to the success page
+        })
+        router.push('/auth/login'); // Redirect to the dashboard page
+
       }
     } catch (error) {
       alert(error.message)
