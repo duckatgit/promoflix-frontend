@@ -12,23 +12,19 @@ import {
 import {
   ArrowUpDown,
   ChevronDown,
-  Edit,
-  MoreHorizontal,
   Trash,
   Upload,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { NameLogo } from "@/components/ui/name-logo";
-
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from 'next/navigation';
 import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -50,6 +46,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import Header from "../header/page";
 
 // Mock Data
 const data = [
@@ -143,7 +141,6 @@ const columns = [
     cell: ({ row }) => {
       const handleDelete = () => {
         alert("hi");
-
         // Your delete logic here, e.g., remove the row from data.
       };
       const handleEdit = () => { };
@@ -155,15 +152,14 @@ const columns = [
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogTitle>Delete</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  your account and remove your data from our servers.
+                  Do you really want to delete this item?
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction>Continue</AlertDialogAction>
+                <AlertDialogAction className="bg-[#FF2E00]">Continue</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
@@ -174,39 +170,67 @@ const columns = [
 ];
 
 const DataTableDemo = () => {
-  const [sorting, setSorting] = React.useState([]);
-  const [columnFilters, setColumnFilters] = React.useState([]);
-  const [columnVisibility, setColumnVisibility] = React.useState({});
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [selectedFile, setSelectedFile] = useState(null); // State to store the selected file
+  const { toast } = useToast();
+  const router = useRouter();
+  const [sorting, setSorting] = useState([]);
+  const [columnFilters, setColumnFilters] = useState([]);
+  const [columnVisibility, setColumnVisibility] = useState({});
+  const [rowSelection, setRowSelection] = useState({});
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [fileModal, setFileModal] = useState(false);
   const fileInputRef = useRef(null);
 
   const handleUploadClick = () => {
-    fileInputRef.current.click(); // Trigger the file input click
+    setFileModal(true);
   };
 
   const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setSelectedFile(file); // Store the selected file in state
+    const fileInput = event.target;
+    if (fileInput.files.length > 0) {
+      const selectedFile = fileInput.files[0];
+      fileInput.value = null; // Reset the input if the same file is selected again
+      setSelectedFile(selectedFile);
     }
   };
 
-  const handleSendFile = () => {
-    if (selectedFile) {
-      // API call logic here, for example using fetch:
-      fetch("/api/upload", {
-        method: "POST",
-        body: selectedFile, // Pass the file to the API
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("File uploaded successfully", data);
-          setSelectedFile(null); // Reset file selection after upload
-        })
-        .catch((error) => {
-          console.error("Error uploading file:", error);
+  const token = localStorage.getItem("token");
+  const handleSendFile = async () => {
+    try {
+      if (selectedFile) {
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        const response = await fetch('http://localhost:3004/api/upload_video', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          body: formData,
         });
+        if (!response.ok) {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+          });
+        }
+        const data = await response.json();
+        if (data.code !== 200) {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+          });
+        } else {
+          toast({
+            description: data.message,
+          });
+          router.push('/auth/dashboard'); // Redirect to the dashboard page
+        }
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error.message,
+      });
     }
   };
 
@@ -231,24 +255,9 @@ const DataTableDemo = () => {
 
   return (
     <div className="mx-8">
-      <div className="flex justify-between mt-2">
-        <div>
-          <img src="/assets/semi-final 2 (1).png" alt="" />
-        </div>
-        <div style={{ width: "500px" }}>
-          <Input
-            placeholder="Filter emails..."
-            value={table.getColumn("title")?.getFilterValue() || ""}
-            onChange={(event) =>
-              table.getColumn("title")?.setFilterValue(event.target.value)
-            }
-            className="w-full"
-          />
-        </div>
-        <div>
-          <NameLogo name="John Doe" />
-        </div>
-      </div>
+
+      <Header />
+
 
       <div className="w-full">
         <Button
@@ -257,133 +266,102 @@ const DataTableDemo = () => {
           onClick={handleUploadClick}
         >
           <Upload className="h-4 w-4" />
-          Upload Video
+          Upload Videos
         </Button>
 
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          style={{ display: "none" }} // Hide the input
-        />
+        <Dialog open={fileModal} onOpenChange={setFileModal}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Upload Video</DialogTitle>
+            </DialogHeader>
 
-        <AlertDialog open={!!selectedFile} onOpenChange={setSelectedFile}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Confirm Upload</AlertDialogTitle>
-              <AlertDialogDescription>
-                You have selected: {selectedFile?.name}. Would you like to send this file?
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setSelectedFile(null)}>
+            {/* Custom Upload Button */}
+            <div className="border-2 p-12  gap-4 border-dashed justify-center flex flex-col m-4 items-center">
+              <div>
+                <Upload className="h-4 w-4" />
+              </div>
+              <div className="mt-2">Drag and drop file here</div>
+              <div className="mt-8">
+                <Button
+                  className="bg-[#FFC000] text-black"
+                  onClick={() => fileInputRef.current.click()} // Trigger the file input on click
+                >
+                  Upload Video
+                </Button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept="video/*" // Accept video files
+                  style={{ display: 'none' }} // Hide the default file input
+                />
+              </div>
+            </div>
+            {selectedFile && <p>Selected file: {selectedFile.name}</p>}
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setFileModal(false)}>
                 Cancel
-              </AlertDialogCancel>
-              <AlertDialogAction onClick={handleSendFile}>
-                Send
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-
-        <div className="flex items-center py-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                Columns <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+              <Button
+                className="bg-[#FFC000] text-black"
+                onClick={() => {
+                  handleSendFile();
+                  setFileModal(false);
+                }}
+              >
+                Upload
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    No results.
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map(headerGroup => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map(header => (
+                  <TableHead key={header.id}>
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows.map(row => (
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map(cell => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="flex-1 text-sm text-muted-foreground">
+          {table.getFilteredSelectedRowModel().rows.length} of{" "}
+          {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        <div className="flex items-center justify-end space-x-2 py-4">
-          <div className="flex-1 text-sm text-muted-foreground">
-            {table.getFilteredSelectedRowModel().rows.length} of{" "}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
-          </div>
-          <div className="space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              Next
-            </Button>
-          </div>
+        <div className="space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
         </div>
       </div>
     </div>

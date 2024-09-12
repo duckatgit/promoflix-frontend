@@ -56,8 +56,8 @@ const login = () => {
         toast({
           description: data.result.message,
         })
-        router.push('/auth/login'); // Redirect to the dashboard page
-
+        localStorage.setItem("token", data.result.token)
+        router.push('/auth/dashboard'); // Redirect to the dashboard page
       }
     } catch (error) {
       alert(error.message)
@@ -82,14 +82,13 @@ const login = () => {
                 <div className="grid w-full items-center gap-4">
                   <div className="flex flex-col space-y-1.5">
                     <Label htmlFor="email">Email</Label>
-                    <Input id="email" placeholder="Enter your email" value={form.email}
+                    <Input id="email" type="email" placeholder="Enter your email" value={form.email}
                       onChange={handleInput}
                     />
-
                   </div>
                   <div className="flex flex-col space-y-1.5">
                     <Label htmlFor="password">Password</Label>
-                    <Input id="password" value={form.password} placeholder="Enter your password"
+                    <Input id="password" type="password" value={form.password} placeholder="Enter your password"
                       onChange={handleInput}
                     />
                   </div>
