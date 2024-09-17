@@ -7,15 +7,14 @@ import {
 } from "@/components/ui/input-otp"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
-import { useRouter } from 'next/navigation'; // Import useRouter from next/navigation
+import { useRouter } from 'next/navigation';
 
 const OtpComponent = () => {
-  const router = useRouter(); // Initialize useRouter
+  const router = useRouter();
   const [value, setValue] = React.useState("")
   const [email, setEmail] = useState('');
   const { toast } = useToast()
 
-  // Timer state and button disable state
   const [resendTimer, setResendTimer] = useState(0); // Start with no timer (0 means button enabled)
   const [canResend, setCanResend] = useState(true); // Button starts enabled
 
@@ -31,7 +30,7 @@ const OtpComponent = () => {
     setCanResend(false);  // Disable the button
     setResendTimer(25);   // Start the 25-second timer
 
-    const response = await fetch('http://localhost:3004/api/send_otp', {
+    const response = await fetch('http://54.225.255.162/api/auth/send_otp', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -71,7 +70,7 @@ const OtpComponent = () => {
   const handle_otp_api = async () => {
     try {
       let otpVal = Number(value)
-      const response = await fetch('http://localhost:3004/api/verification', {
+      const response = await fetch('http://54.225.255.162/api/auth/verify', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -81,11 +80,6 @@ const OtpComponent = () => {
           email: email,
         }),
       });
-
-      if (!response.ok) {
-        throw new Error('Login failed');
-      }
-
       const data = await response.json();
       if (data.code !== 200) {
         toast({
@@ -95,7 +89,7 @@ const OtpComponent = () => {
         });
       } else {
         toast({
-          description: data.result,
+          description: "Otp Matched Successfully",
         });
         router.push('/auth/login'); // Redirect to the success page
       }
@@ -105,38 +99,52 @@ const OtpComponent = () => {
   };
 
   return (
-    <div className='h-screen w-screen flex justify-center items-center'>
-      <div className="space-y-2">
-        <h1>Please check your email</h1>
-        <div className="text-center text-sm">
-          {value == "" ? (
-            <>Enter your one-time password.</>
-          ) : (
-            <>You entered: {value}</>
-          )}
+    <div className='grid w-full grid-cols-1 md:grid-cols-2'>
+      <div className='relative'>
+        <div className='font-[Kalnia] absolute top-6 left-6 text-white text-3xl underline underline-offset-8'>
+          Promoflix
         </div>
-        <InputOTP
-          maxLength={4}
-          value={value}
-          onChange={(value) => setValue(value)}
-        >
-          <InputOTPGroup>
-            <InputOTPSlot index={0} />
-            <InputOTPSlot index={1} />
-            <InputOTPSlot index={2} />
-            <InputOTPSlot index={3} />
-          </InputOTPGroup>
-        </InputOTP>
-
-        {/* Resend OTP button with timer */}
-        <Button
-          onClick={handle_resend_otp_api}
-          disabled={!canResend}  // Disable when canResend is false
-        >
-          {canResend ? "Resend OTP" : `Resend OTP in ${resendTimer}s`}  {/* Show countdown when disabled */}
-        </Button>
-
-        <Button className="w-full" onClick={handle_otp_api}>Submit</Button>
+        <div className='font-[Kalnia] absolute bottom-10 left-6 text-white text-5xl'>
+          <div>Get Your</div>
+          <div>Personalized</div>
+          <div>Intro</div>
+        </div>
+        <img src="/assets/sign-in image.png" alt="" className='w-full p-1 h-[100vh] rounded-3xl' />
+      </div>
+      <div className=''>
+        <div className='mb-4 items-center justify-center flex mt-24'>
+          <img src="/assets/semi-final 2 (1).png" alt="" />
+        </div>
+        <div className='mt-24 flex items-center justify-center'>
+          <div className="text-center items-center justify-center text-sm">
+            <div className='mb-4'>
+              <p className='font-bold text-3xl'>Enter OTP</p>
+              <p className='text-sm'>Please enter your one time password that is sent to your email</p>
+            </div>
+            <div className='my-4'>
+              <div className='flex gap-4 justify-center'>
+                <InputOTP
+                  maxLength={4}
+                  value={value}
+                  onChange={(value) => setValue(value)}>
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                    <InputOTPSlot index={3} />
+                  </InputOTPGroup>
+                </InputOTP>
+              </div>
+              <div
+                className={`text-blue-600 underline my-2 cursor-pointer ${!canResend ? 'opacity-50' : ''}`}
+                onClick={canResend ? handle_resend_otp_api : undefined} // Disable if resend is not allowed
+              >
+                {canResend ? 'Resend OTP' : `Resend OTP in ${resendTimer}s`}
+              </div>
+            </div>
+            <Button className="text-black w-full mt-8 bg-yellow-400" onClick={handle_otp_api}>Submit</Button>
+          </div>
+        </div>
       </div>
     </div>
   )

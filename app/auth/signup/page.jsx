@@ -4,7 +4,6 @@ import React, { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from 'next/navigation'; // Import useRouter from next/navigation
-import Image from 'next/image'
 import {
   Card,
   CardContent,
@@ -33,7 +32,7 @@ const sign_up = () => {
 
   let sign_up_api = async () => {
     try {
-      const response = await fetch('http://localhost:3004/api/signup', {
+      const response = await fetch('http://54.225.255.162/api/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -58,7 +57,7 @@ const sign_up = () => {
       else {
         localStorage.setItem("email", form.email)
         toast({
-          description: data.result,
+          description: "OTP sent to your email successfully.",
         })
         router.push('/auth/otp'); // Redirect to the success page
       } // handle response data

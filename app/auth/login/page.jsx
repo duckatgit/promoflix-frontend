@@ -32,7 +32,7 @@ const login = () => {
   }
   let login_api = async () => {
     try {
-      const response = await fetch('http://localhost:3004/api/login', {
+      const response = await fetch('http://54.225.255.162/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -85,9 +85,7 @@ const login = () => {
         <img src="/assets/sign-in image.png" alt="" className='w-full p-1 h-[100vh] rounded-3xl' />
       </div>
 
-      <div className=' flex ' style={{
-        width: '600px'
-      }}>
+      <div className='flex mx-4 md:mx-2'>
         <div className='h-screen w-screen flex justify-center items-center'>
           <Card >
             <div className="ml-32 mb-6 justify-center items-center">
