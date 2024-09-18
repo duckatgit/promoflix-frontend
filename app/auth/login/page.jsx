@@ -46,7 +46,7 @@ const login = () => {
         throw new Error('Login failed');
       }
       const data = await response.json();
-      console.log(data)
+      console.log(data, "login")
       if (data.code != 200) {
         toast({
           variant: "destructive",
@@ -56,9 +56,9 @@ const login = () => {
       }
       else {
         toast({
-          description: data.result.message,
+          description: "Login SuccessfullY"
         })
-        localStorage.setItem("token", data.result.token)
+        localStorage.setItem("token", data.result.token.access_token)
         router.push('/home/dashboard'); // Redirect to the dashboard page
       }
     } catch (error) {

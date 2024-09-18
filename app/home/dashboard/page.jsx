@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -12,6 +12,7 @@ import {
 import {
   ArrowUpDown,
   ChevronDown,
+  Edit,
   Trash,
   Upload,
 } from "lucide-react";
@@ -21,6 +22,7 @@ import { NameLogo } from "@/components/ui/name-logo";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from 'next/navigation';
 import { Input } from "@/components/ui/input";
+import axios from "axios";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -50,161 +52,156 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import Header from "@/app/auth/header/page";
 
 // Mock Data
-const data = [
-  {
-    id: "m5gr84i9",
-    status: "success",
-    title: "ken99@yahoo.com",
-    variable_selected: 2,
-    number_of_reciepient: 15,
-  },
-  {
-    id: "3u1reuv4",
-    status: "success",
-    title: "Abe45@gmail.com",
-    variable_selected: 3,
-    number_of_reciepient: 20,
-  },
-  {
-    id: "derv1ws0",
-    status: "processing",
-    title: "Monserrat44@gmail.com",
-    variable_selected: 5,
-    number_of_reciepient: 17,
-  },
-  {
-    id: "5kma53ae",
-    status: "success",
-    title: "Silas22@gmail.com",
-    variable_selected: 8,
-    number_of_reciepient: 14,
-  },
-  {
-    id: "bhqecj4p",
-    status: "failed",
-    title: "carmella@hotmail.com",
-    variable_selected: 4,
-    number_of_reciepient: 11,
-  },
-];
-
-const columns = [
-  {
-    id: "serial",
-    header: "S.No",
-    cell: ({ row }) => row.index + 1, // Displaying row index + 1
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "title",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Video Title
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => <div className="lowercase">{row.getValue("title")}</div>,
-  },
-  {
-    accessorKey: "variable_selected",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Variable Selected
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => <div>{row.getValue("variable_selected")}</div>,
-  },
-  {
-    accessorKey: "number_of_reciepient",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Number of Recipients
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => <div>{row.getValue("number_of_reciepient")}</div>,
-  },
-  {
-    accessorKey: "action",
-    header: () => <div className="text-right">Action</div>,
-    cell: ({ row }) => {
-      const handleDelete = () => {
-        alert("hi");
-        // Your delete logic here, e.g., remove the row from data.
-      };
-      const handleEdit = () => { };
-      return (
-        <div className="flex justify-end space-x-2">
-          <AlertDialog>
-            <AlertDialogTrigger>
-              <Trash className="h-4 w-4 text-red-500" />
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Delete</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Do you really want to delete this item?
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction className="bg-[#FF2E00]">Continue</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
-      );
-    },
-  },
-];
-
+const token = localStorage.getItem("token");
 const DataTableDemo = () => {
   const { toast } = useToast();
   const router = useRouter();
   const [sorting, setSorting] = useState([]);
+  const [allInstances, setAllInstances] = useState([]);
+  const [instance, setInstance] = useState();
+  const [instanceId, setInstanceId] = useState("");
+
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
-  const [selectedFile, setSelectedFile] = useState(null);
   const [fileModal, setFileModal] = useState(false);
-  const fileInputRef = useRef(null);
+  const [updateInstanceModal, setupdateInstanceModal] = useState(false);
 
+  const fileInputRef = useRef(null);
   const handleUploadClick = () => {
     setFileModal(true);
   };
+  let openUpdateInstanceModal = (name, id) => {
+    setInstance(name);
+    setInstanceId(id)
+    setupdateInstanceModal(true);
+  }
 
-  const handleFileChange = (event) => {
-    const fileInput = event.target;
-    if (fileInput.files.length > 0) {
-      const selectedFile = fileInput.files[0];
-      fileInput.value = null; // Reset the input if the same file is selected again
-      setSelectedFile(selectedFile);
-    }
-  };
+  const columns = [
+    {
+      id: "serial",
+      header: "S.No",
+      cell: ({ row }) => row.index + 1, // Displaying row index + 1
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "name",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Video Title
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
+    },
+    {
+      accessorKey: "action",
+      header: () => <div className="text-right">Action</div>,
+      cell: ({ row }) => {
+        let instance_id = row.original.id
+        let instance_name = row.getValue("name"); // Assuming "name" is the key for the instance name
 
-  const token = localStorage.getItem("token");
-  const handleSendFile = async () => {
+        const deleteInstance = async () => {
+          try {
+            const response = await axios.delete('http://54.225.255.162/api/v1/instance', {
+              headers: {
+                'Authorization': `Bearer ${token}`,
+              },
+              params: {
+                id: instance_id
+              },
+            });
+            if (response.data.code != 200) {
+              toast({
+                variant: "destructive",
+                title: "Uh oh! Something went wrong.",
+                description: data.result,
+              })
+            }
+            else {
+              toast({
+                description: "Instance deleted sucessfully",
+              })
+              getAllInstance()
+            }
+          } catch (error) {
+            console.log(error)
+          }
+        };
+
+        return (
+          <div className="flex justify-end space-x-2">
+            <Edit className="h-4 w-4 text-grey" onClick={() => openUpdateInstanceModal(instance_name, instance_id)} ></Edit>
+            <AlertDialog>
+              <AlertDialogTrigger>
+                <Trash className="h-4 w-4 text-red-500" />
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Do you really want to delete this item?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction className="bg-[#FF2E00]" onClick={deleteInstance}>Continue</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        );
+      },
+    },
+  ];
+  let getAllInstance = async () => {
     try {
-      if (selectedFile) {
-        const formData = new FormData();
-        formData.append('file', selectedFile);
-        const response = await fetch('http://localhost:3004/api/upload_video', {
+      const response = await axios.get('http://54.225.255.162/api/v1/instance', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        params: {
+          page: 0,
+          limit: 100
+        },
+      });
+      if (response.data.code != 200) {
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: data.result,
+        })
+      }
+      else {
+        const data = response.data.result.instances
+        setAllInstances(data)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  useEffect(
+    () => {
+      getAllInstance()
+    }, []
+  )
+  console.log(allInstances, 'allInstances')
+  const createInstance = async () => {
+    try {
+      if (instance) {
+        const response = await fetch('http://54.225.255.162/api/v1/instance', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
           },
-          body: formData,
+          body: JSON.stringify({
+            name: instance,
+          }),
         });
         if (!response.ok) {
           toast({
@@ -220,9 +217,10 @@ const DataTableDemo = () => {
           });
         } else {
           toast({
-            description: data.message,
+            description: "Instence Added successfully",
           });
-          router.push('/auth/dashboard'); // Redirect to the dashboard page
+          setInstance("")
+          router.push('/home/dashboard'); // Redirect to the dashboard page
         }
       }
     } catch (error) {
@@ -233,9 +231,41 @@ const DataTableDemo = () => {
       });
     }
   };
+  const updateInstance = async () => {
+    try {
+      const response = await fetch('http://54.225.255.162/api/v1/instance', {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: instanceId,
+          name: instance,
+          "data_id": null,
+          "video_id": null
+        }),
+      });
+      const data = await response.json();
+      if (data.code != 200) {
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+        });
+      } else {
+        toast({
+          description: "Instence Updated successfully",
+        });
+        setInstance("")
+
+      }
+    } catch (error) {
+      console.log(error, '===========error')
+    }
+  }
 
   const table = useReactTable({
-    data,
+    data: allInstances,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -255,10 +285,7 @@ const DataTableDemo = () => {
 
   return (
     <div className="mx-8">
-
       <Header />
-
-
       <div className="w-full">
         <Button
           className="flex justify-end ml-auto text-black"
@@ -266,38 +293,20 @@ const DataTableDemo = () => {
           onClick={handleUploadClick}
         >
           <Upload className="h-4 w-4" />
-          Upload Videos
+          Create Instance
         </Button>
 
         <Dialog open={fileModal} onOpenChange={setFileModal}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Upload Video</DialogTitle>
+              <DialogTitle>Create Instance
+              </DialogTitle>
             </DialogHeader>
-
-            {/* Custom Upload Button */}
-            <div className="border-2 p-12  gap-4 border-dashed justify-center flex flex-col m-4 items-center">
-              <div>
-                <Upload className="h-4 w-4" />
-              </div>
-              <div className="mt-2">Drag and drop file here</div>
-              <div className="mt-8">
-                <Button
-                  className="bg-[#FFC000] text-black"
-                  onClick={() => fileInputRef.current.click()} // Trigger the file input on click
-                >
-                  Upload Video
-                </Button>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  accept="video/*" // Accept video files
-                  style={{ display: 'none' }} // Hide the default file input
-                />
+            <div className="gap-4 border-dashed justify-center flex flex-col m-4 items-center">
+              <div className="flex flex-col space-y-1.5 w-[400px]">
+                <input className="h-10 rounded-md" type="text" value={instance} onChange={(e) => { setInstance(e.target.value) }} />
               </div>
             </div>
-            {selectedFile && <p>Selected file: {selectedFile.name}</p>}
             <DialogFooter>
               <Button variant="outline" onClick={() => setFileModal(false)}>
                 Cancel
@@ -305,11 +314,40 @@ const DataTableDemo = () => {
               <Button
                 className="bg-[#FFC000] text-black"
                 onClick={() => {
-                  handleSendFile();
+                  createInstance();
                   setFileModal(false);
+                  getAllInstance()
                 }}
               >
-                Upload
+                Submit
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+        <Dialog open={updateInstanceModal} onOpenChange={setupdateInstanceModal}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Update Instance
+              </DialogTitle>
+            </DialogHeader>
+            <div className="gap-4 border-dashed justify-center flex flex-col m-4 items-center">
+              <div className="flex flex-col space-y-1.5 w-[400px]">
+                <input className="h-10 rounded-md" type="text" value={instance} onChange={(e) => { setInstance(e.target.value) }} />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setupdateInstanceModal(false)}>
+                Cancel
+              </Button>
+              <Button
+                className="bg-[#FFC000] text-black"
+                onClick={() => {
+                  updateInstance();
+                  setupdateInstanceModal(false);
+                  getAllInstance()
+                }}
+              >
+                Update
               </Button>
             </DialogFooter>
           </DialogContent>
