@@ -52,22 +52,28 @@ import { Button } from "./ui/button";
 
 const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAllInstance }) => {
   console.log(allInstances, "parshant")
-  const token = localStorage.getItem("token");
+  const token = localStorage?.getItem("token");
 
   const { toast } = useToast();
   const router = useRouter();
   const [sorting, setSorting] = useState([]);
   const [instanceId, setInstanceId] = useState("");
-
+  const [id, setId] = useState('')
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
   const [fileModal, setFileModal] = useState(false);
-  const [updateInstanceModal, setupdateInstanceModal] = useState(false);
+  const [uploadFileModal, setUploadFileModal] = useState(false);
 
+  const [updateInstanceModal, setupdateInstanceModal] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null); // State to store the selected file
+  console.log(selectedFile, "lllllll")
   const fileInputRef = useRef(null);
   const handleUploadClick = () => {
     setFileModal(true);
+  };
+  const handleUploadvideo = () => {
+    setUploadFileModal(true);
   };
   let openUpdateInstanceModal = (name, id, e) => {
     e.stopPropagation()
@@ -222,11 +228,9 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
       if (response.data.code == 200) {
         router.push(`/video/preview?id=${row.original.id}`)
       }
-      else {
-        alert('k')
-      }
     } catch (error) {
       console.log(error, '=========error')
+      handleUploadvideo()
     }
 
   }
@@ -235,6 +239,43 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
       getAllInstance()
     }, []
   )
+  const handleSendFile = async () => {
+    try {
+      if (selectedFile) {
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        const response = await fetch(`http://54.225.255.162/api/v1/file/${id}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          body: formData,
+        });
+        const data = await response.json();
+        console.log(data, 'data')
+        if (data.code == 200) {
+          setUploadFileModal(false);
+          setId("")
+          router.push(`/video/preview?id=${id}`)
+        }
+
+      }
+    } catch (error) {
+      console.log(error, '==========error')
+    }
+  }
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedFile(file); // Store the selected file in state
+      const fileInput = event.target;
+      if (fileInput.files.length > 0) {
+        const selectedFile = fileInput.files[0];
+        fileInput.value = null; // Reset the input if the same file is selected again
+        setSelectedFile(selectedFile);
+      }
+    };
+  }
   return (
     <><div className="w-full">
       <Button
@@ -245,6 +286,52 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
         <Upload className="h-4 w-4" />
         Create Instance
       </Button>
+
+      <Dialog open={uploadFileModal} onOpenChange={setUploadFileModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Upload Video</DialogTitle>
+          </DialogHeader>
+          <div className="gap-4 border-dashed justify-center flex flex-col m-4 items-center">
+            <div>
+              {/* Hidden file input */}
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                style={{ display: 'none' }} // Hide the input
+                id="file-upload" // Add an ID to associate with the label
+              />
+              {/* Label styled as a button */}
+              <label htmlFor="file-upload" className="bg-gray-200 p-2 border-dashed border-2 rounded cursor-pointer">
+                Choose a file
+              </label>
+            </div>
+            {/* Show the selected file name */}
+            {selectedFile?.name && <p>{selectedFile.name}</p>}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setUploadFileModal(false);
+                setSelectedFile(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="bg-[#FFC000] text-black"
+              onClick={() => {
+                handleSendFile();
+              }}
+            >
+              Submit
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
 
       <Dialog open={fileModal} onOpenChange={setFileModal}>
         <DialogContent>
@@ -317,7 +404,12 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows.map(row => (
-            <TableRow className="cursor-pointer" key={row.id} onClick={(e) => getVideo(e, row)}>
+            <TableRow className="cursor-pointer" key={row.id} onClick={
+              (e) => {
+                setId(row?.original?.id),
+                  getVideo(e, row)
+              }
+            }>
               {row.getVisibleCells().map(cell => (
                 <TableCell key={cell.id}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
