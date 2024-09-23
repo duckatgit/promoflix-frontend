@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   ArrowUpDown,
   Check,
@@ -24,7 +25,20 @@ import {
   Cross,
   Trash,
   Upload,
+  Delete,
+  File,
+  EyeIcon,
 } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,6 +50,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+
 import Image from 'next/image';
 import { Textarea } from '@/components/ui/textarea';
 const preview_video = () => {
@@ -51,6 +66,14 @@ const preview_video = () => {
   const [textDialog, setTextDialog] = useState(false);
   const [inputVisible, setInputVisible] = useState(false);
   const [deletePopUp, setDeletePopUp] = useState(false);
+  const [uploadDocPopup, setUploadDocPopup] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null); // State to store the selected file
+  const [hasFile, setHasFile] = useState(false)
+  const [deleteFilePopUp, setDeleteFilePopUp] = useState(false);
+  const [filePreviewPopUp, setFilePreviewPopUp] = useState(false);
+  const [fileData, setFileData] = useState({});
+
+
 
 
   const [startTime, setStartTime] = useState('')
@@ -61,12 +84,48 @@ const preview_video = () => {
   const textareaRef = useRef(null);
   const [data, setData] = useState([])
   const [segmentData, setSegmentData] = useState([])
+  const fileInputRef = useRef(null);
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedFile(file); // Store the selected file in state
+      const fileInput = event.target;
+      if (fileInput.files.length > 0) {
+        const selectedFile = fileInput.files[0];
+        fileInput.value = null; // Reset the input if the same file is selected again
+        setSelectedFile(selectedFile);
+      }
+    };
+  }
+  const handleSendFile = async () => {
+    try {
+      if (selectedFile) {
+        const formData = new FormData();
+        formData.append('csv', selectedFile);
+        const response = await fetch(`http://54.225.255.162/api/csv/${id}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          body: formData,
+        });
+        const data = await response.json();
+        console.log(data, 'data')
+        if (data.code == 200) {
+          toast({
+            description: "Csv file uploaded sucessfully",
+          })
+          getFile()
+          setUploadDocPopup(false);
+          setId("")
+          setSelectedFile(null)
+        }
 
-
-  const handleChange = (e) => {
-    setText(e.target.value);
-  };
-
+      }
+    } catch (error) {
+      console.log(error, '==========error')
+    }
+  }
   const getAllSegment = async () => {
     try {
       const response = await axios.get('http://54.225.255.162/api/v1/segment', {
@@ -87,7 +146,41 @@ const preview_video = () => {
     }
 
   }
-
+  const getFile = async () => {
+    try {
+      const response = await fetch(`http://54.225.255.162/api/csv/${id}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      console.log(data.result, 'data.result')
+      if (data.code == 200) {
+        setHasFile(true)
+        setFileData(data.result)
+      }
+    } catch (error) {
+      console.log(error, '=========error')
+    }
+  }
+  const deleteFile = async () => {
+    try {
+      const response = await fetch(`http://54.225.255.162/api/csv/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      if (data.code == 200) {
+        setHasFile(false)
+        setDeleteFilePopUp(false)
+      }
+    } catch (error) {
+      console.log(error, '========error')
+    }
+  }
 
   const handleDoubleClick = (word, start, end, index) => {
     console.log(start, end, "eeeeeeeeee")
@@ -201,11 +294,28 @@ const preview_video = () => {
       console.log(error, '==========error')
     }
   }
+  const deleteCsvFile = async (id) => {
+    try {
+      const response = await fetch(`http://54.225.255.162/api/csv/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      if (data.code == 200) {
+        setHasFile(false)
+      }
+    } catch (error) {
+      console.log(error, '=========error')
+    }
+  }
   useEffect(
     () => {
       if (id) {
         myfunction(id)
         getAllSegment()
+        getFile()
       }
     }, []
   )
@@ -217,7 +327,7 @@ const preview_video = () => {
   }
   console.log(arr, 'arr')
   return (
-    <div className='m-8'>
+    <div className='m-8 '>
       <Header />
       <div>
         <div className='flex justify-between'>
@@ -286,22 +396,39 @@ const preview_video = () => {
           </div>
         </div>
         <h1 className='m-4'>Upload Data From Document</h1>
-        <div className='m-4 border-2 rounded-md	'>
-          <div className='m-4 flex b'>
-            <div className='my-4 '>
-              <Button className="bg-[#28434B]"> Upload Data</Button>
+        {!hasFile ?
+          <div className=' border-2 rounded-md	'>
+            <div className='m-4 flex b'>
+              <div className='my-4 '>
+                <Button className="bg-[#28434B]" onClick={(e) => { setUploadDocPopup(true) }}> Upload Data</Button>
+              </div>
+              <div className='my-6 mx-4'>
+                <p>or </p>
+              </div>
+              <div className="flex-col space-y-1.5 my-4">
+                <Input id="email" type="text" placeholder="Paste Spreadsheet URL" />
+              </div>
             </div>
-            <div className='my-6 mx-4'>
-              <p>or </p>
+            <div className='m-4 text-gray-500'>
+              File Must be .xls, .xlsx, .xlsm, .xlt, .xltx, . (Excel or google a sheet).
             </div>
-            <div className="flex-col space-y-1.5 my-4">
-              <Input id="email" type="text" placeholder="Paste Spreadsheet URL" />
+          </div> :
+          <div className='flex-col border-2 md-2 w-1/2 mt-2 p-2 rounded-r-xl  '>
+            <div className='flex justify-between'>
+              <div className='flex'>
+                <File className='mt-2' />
+                <p className='p-2'> File.csv</p>
+              </div>
+              <div className='flex'>
+                <EyeIcon onClick={() => {
+                  setFilePreviewPopUp(true)
+                }} className='text-neutral-400 border-2 rounded-3xl size-10 border-neutral-400 p-2 mr-2 cursor-pointer' />
+                <Trash onClick={() => {
+                  setDeleteFilePopUp(true)
+                }} className='text-red-600 border-2 rounded-3xl size-10 border-red-600 p-2 cursor-pointer' />
+              </div>
             </div>
-          </div>
-          <div className='m-4 text-gray-500'>
-            File Must be .xls, .xlsx, .xlsm, .xlt, .xltx, . (Excel or google a sheet).
-          </div>
-        </div>
+          </div>}
         <h1 className='mx-4 mt-2 mb-2'>Video Thumbnail</h1>
         <div className='flex justify-between border-2 rounded-lg'>
           <div className='w-1/2 m-4 relative h-[500px]'>
@@ -443,17 +570,34 @@ const preview_video = () => {
       </div>
 
 
+      <AlertDialog open={deleteFilePopUp} >
+        <AlertDialogTrigger >
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete File</AlertDialogTitle>
+            <AlertDialogDescription>
+              Do you really want to delete this item?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => {
+              setDeleteFilePopUp(false)
+            }}>Cancel</AlertDialogCancel>
+            <AlertDialogAction className="bg-[#FF2E00]" onClick={() => deleteFile()} >Continue</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
 
 
 
       <AlertDialog open={deletePopUp} >
         <AlertDialogTrigger >
-          <Trash className="h-4 w-4 text-red-500" />
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete</AlertDialogTitle>
+            <AlertDialogTitle>Delete Segment</AlertDialogTitle>
             <AlertDialogDescription>
               Do you really want to delete this item?
             </AlertDialogDescription>
@@ -468,9 +612,87 @@ const preview_video = () => {
       </AlertDialog>
 
 
+      {/* Upload doc */}
+      <Dialog open={uploadDocPopup} onOpenChange={setUploadDocPopup}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Upload Video</DialogTitle>
+          </DialogHeader>
+          <div className="gap-4 border-dashed justify-center flex flex-col m-4 items-center">
+            <div>
+              {/* Hidden file input */}
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                style={{ display: 'none' }} // Hide the input
+                id="file-upload" // Add an ID to associate with the label
+              />
+              {/* Label styled as a button */}
+              <label htmlFor="file-upload" className="bg-gray-200 p-2 border-dashed border-2 rounded cursor-pointer">
+                Choose a file
+              </label>
+            </div>
+            {/* Show the selected file name */}
+            {selectedFile?.name && <p>{selectedFile.name}</p>}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setUploadDocPopup(false);
+                setSelectedFile(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="bg-[#FFC000] text-black"
+              onClick={() => {
+                handleSendFile();
+              }}
+            >
+              Submit
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* file Popup */}
 
 
 
+
+      <Dialog open={filePreviewPopUp} onOpenChange={setFilePreviewPopUp}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Csv Preview</DialogTitle>
+          </DialogHeader>
+          <div className="gap-4 border-dashed justify-center  flex flex-col m-4 items-center">
+            <Table>
+              <TableHeader className="bg-blue-50">
+                <TableRow>
+                  {fileData?.headers?.map((header, index) => (
+                    <TableHead key={index}>{header}</TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {fileData?.records && fileData.records.map((record, index) => (
+                  <TableRow key={index}>
+                    {record.map((data, i) => (
+                      <TableCell key={i}>{data}</TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+
+          </div>
+          <DialogFooter>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
     </div >
   )
