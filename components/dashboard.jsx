@@ -96,7 +96,7 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Video Title
+          Title
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -279,7 +279,7 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
   return (
     <><div className="w-full">
       <Button
-        className="flex justify-end ml-auto text-black"
+        className="flex justify-end ml-auto text-black mb-2"
         style={{ backgroundColor: "#FFC000" }}
         onClick={handleUploadClick}
       >
@@ -287,7 +287,7 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
         Create Instance
       </Button>
 
-      <Dialog open={uploadFileModal} onOpenChange={setUploadFileModal}>
+      <Dialog open={uploadFileModal} onOpenChange={setUploadFileModal} >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Upload Video</DialogTitle>

@@ -72,15 +72,10 @@ const preview_video = () => {
   const [deleteFilePopUp, setDeleteFilePopUp] = useState(false);
   const [filePreviewPopUp, setFilePreviewPopUp] = useState(false);
   const [fileData, setFileData] = useState({});
-
-
-
-
   const [startTime, setStartTime] = useState('')
   const [endTime, setEndTime] = useState('')
   const [inputValue, setInputValue] = useState('');
   const [inputPosition, setInputPosition] = useState({ top: 0, left: 0 });
-  console.log(inputPosition, "inputPosition")
   const textareaRef = useRef(null);
   const [data, setData] = useState([])
   const [segmentData, setSegmentData] = useState([])
@@ -137,6 +132,7 @@ const preview_video = () => {
         },
       });
       let segment_data = response.data
+      console.log(segment_data, "manisj")
       if (segment_data.code == 200) {
         setSegmentData(segment_data.result)
       }
@@ -189,6 +185,7 @@ const preview_video = () => {
     setStartTime(start)
     setEndTime(end)
     setInputValue(word)
+    myfunction(id)
   };
   const handleTickClick = async () => {
     try {
@@ -222,7 +219,6 @@ const preview_video = () => {
   const handleCrossClick = () => {
     setEditingWordIndex(null); // Close the input without saving
   };
-
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
   };
@@ -268,10 +264,8 @@ const preview_video = () => {
           'Authorization': `Bearer ${token}`,
         },
       });
-      const video_data = await response.json();
       const transcript_data = await get_transcript.json();
-      console.log(transcript_data, "transcript_data")
-
+      const video_data = await response.json();
       setData(transcript_data?.result?.words)
       console.log(transcript_data?.result?.words?.map(
         (data) => {
@@ -294,22 +288,25 @@ const preview_video = () => {
       console.log(error, '==========error')
     }
   }
-  const deleteCsvFile = async (id) => {
+  const generateVideo = async () => {
     try {
-      const response = await fetch(`http://54.225.255.162/api/csv/${id}`, {
-        method: 'DELETE',
+      const generate_video = await fetch(`http://54.225.255.162/api/v1/generate/${id}`, {
+        method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
         },
       });
-      const data = await response.json();
-      if (data.code == 200) {
-        setHasFile(false)
+      const generatedVideoData = await generate_video.json();
+      if (generatedVideoData.code == 200) {
+        toast({
+          description: "Video generated sucessfully",
+        })
       }
     } catch (error) {
-      console.log(error, '=========error')
+      console.log(error, '========error')
     }
   }
+
   useEffect(
     () => {
       if (id) {
@@ -356,15 +353,24 @@ const preview_video = () => {
             </div>
             <div className=' m-4 '>
               <p>
-                {data?.map(
-                  (i, index) => {
-                    return (
-                      <span className="p-2 " onClick={() => handleDoubleClick(i.punctuated_word, i.start, i.end, index)}> {i.punctuated_word}</span>
-
-                    )
-                  }
-                )}
+                {data?.map((i, index) => {
+                  // Find the matched segment
+                  const matchedSegment = segmentData?.find(
+                    (segment) => segment.start_time == i.start && segment.end_time == i.end
+                  );
+                  return (
+                    <span
+                      className="p-2 break-all"
+                      onClick={() => handleDoubleClick(i.punctuated_word, i.start, i.end, index)}
+                      key={index} // Added key for list items
+                    >
+                      {matchedSegment ? `{{${matchedSegment.segment}}}` : i.punctuated_word}
+                    </span>
+                  );
+                })}
               </p>
+
+
               {editingWordIndex !== null && (
                 <div
                   className='w-1/2'
@@ -441,20 +447,22 @@ const preview_video = () => {
             </div>
             <div className=' m-4 '>
               <p>
-                {data?.map(
-                  (i, index) => {
-                    return (
-                      <span className="p-2 " onClick={() => handleDoubleClick(i.punctuated_word, i.start, i.end, index)}> {i.punctuated_word}</span>
-
-                    )
-                  }
-                )}
+                {data?.map((i, index) => {
+                  // Find the matched segment
+                  const matchedSegment = segmentData?.find(
+                    (segment) => segment.start_time == i.start && segment.end_time == i.end
+                  );
+                  return (
+                    <span
+                      className="p-2 break-all"
+                      onClick={() => handleDoubleClick(i.punctuated_word, i.start, i.end, index)}
+                      key={index} // Added key for list items
+                    >
+                      {matchedSegment ? `{{${matchedSegment.segment}}}` : i.punctuated_word}
+                    </span>
+                  );
+                })}
               </p>
-
-
-
-
-
             </div>
             <div className='flex flex-wrap justify-between bg-gray-300  border-r '>
               <div className='flex gap-4 m-4'>
@@ -471,10 +479,10 @@ const preview_video = () => {
               </div>
             </div>
             <div className='my-2'>
-              <Button className="bg-[#FFC000] text-black">Upload
-              </Button>
-              <Button className="bg-[#FFC000] text-black ml-3">Reset all
-              </Button>
+              <Button className="bg-[#FFC000] text-black" onClick={() => {
+                generateVideo()
+              }}>Merge Video</Button>
+              <Button className="bg-[#FFC000] text-black ml-3">Reset all</Button>
             </div>
           </div>
         </div>
@@ -515,14 +523,21 @@ const preview_video = () => {
             <Label htmlFor="email">Email Body (Must Include “Video” Tag)</Label>
             <div className=' m-4 '>
               <p>
-                {data?.map(
-                  (i, index) => {
-                    return (
-                      <span className="p-2 " onClick={() => handleDoubleClick(i.punctuated_word, i.start, i.end, index)}> {i.punctuated_word}</span>
-
-                    )
-                  }
-                )}
+                {data?.map((i, index) => {
+                  // Find the matched segment
+                  const matchedSegment = segmentData?.find(
+                    (segment) => segment.start_time == i.start && segment.end_time == i.end
+                  );
+                  return (
+                    <span
+                      className="p-2 break-all"
+                      onClick={() => handleDoubleClick(i.punctuated_word, i.start, i.end, index)}
+                      key={index} // Added key for list items
+                    >
+                      {matchedSegment ? `{{${matchedSegment.segment}}}` : i.punctuated_word}
+                    </span>
+                  );
+                })}
               </p>
 
 
@@ -663,7 +678,7 @@ const preview_video = () => {
 
 
 
-      <Dialog open={filePreviewPopUp} onOpenChange={setFilePreviewPopUp}>
+      {/* <Dialog open={filePreviewPopUp} onOpenChange={setFilePreviewPopUp}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Csv Preview</DialogTitle>
@@ -692,7 +707,48 @@ const preview_video = () => {
           <DialogFooter>
           </DialogFooter>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
+      {filePreviewPopUp && (
+        <>
+          {/* Overlay */}
+          <div className="fixed inset-0 bg-black bg-opacity-80 z-40"></div>
+
+          {/* Popup Content */}
+          <div className="fixed left-[5%] top-[20%] right-[5%] z-50 grid sm:rounded-lg dark:border-neutral-800 gap-4 border border-neutral-200 bg-white p-6 shadow-lg duration-200">
+            {/* Close button */}
+            <span
+              onClick={() => setFilePreviewPopUp(false)}
+              className="absolute right-4 w-12 top-4 rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-neutral-950 focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-neutral-100 data-[state=open]:text-neutral-500 dark:ring-offset-neutral-950 dark:focus:ring-neutral-300 dark:data-[state=open]:bg-neutral-800 dark:data-[state=open]:text-neutral-400">
+              <X className="h-8 w-8" />
+            </span>
+
+            {/* CSV Preview */}
+            <div>CSV Preview</div>
+            <div className="gap-4 border-dashed justify-center flex flex-col m-4 items-center">
+              <Table>
+                <TableHeader className="bg-blue-50">
+                  <TableRow>
+                    {fileData?.headers?.map((header, index) => (
+                      <TableHead key={index}>{header}</TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {fileData?.records &&
+                    fileData.records.map((record, index) => (
+                      <TableRow key={index}>
+                        {record.map((data, i) => (
+                          <TableCell key={i}>{data}</TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        </>
+      )}
+
 
     </div >
   )
