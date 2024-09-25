@@ -58,7 +58,8 @@ const preview_video = () => {
   const id = window.location.href.split("id=")[1]
   const token = localStorage.getItem("token");
   const [videoUrl, setVideoUrl] = useState();
-  const [videoThumb, setVideoThumb] = useState("");
+  const [videoThumb, setVideoThumb] = useState();
+  console.log(videoThumb, "videoThumb")
   const [transcript, setTranscript] = useState("");
   const [selectedWord, setSelectedWord] = useState('');
   const [segmentID, setSegmentID] = useState('');
@@ -67,6 +68,7 @@ const preview_video = () => {
   const [inputVisible, setInputVisible] = useState(false);
   const [deletePopUp, setDeletePopUp] = useState(false);
   const [uploadDocPopup, setUploadDocPopup] = useState(false);
+  const [uploadThumbPopup, setUploadThumbPopup] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null); // State to store the selected file
   const [hasFile, setHasFile] = useState(false)
   const [deleteFilePopUp, setDeleteFilePopUp] = useState(false);
@@ -306,7 +308,36 @@ const preview_video = () => {
       console.log(error, '========error')
     }
   }
+  //upload thum
 
+  const uploadNewThumb = async () => {
+    try {
+      if (selectedFile) {
+        const formData = new FormData();
+        formData.append('thumb', selectedFile);
+        const response = await fetch(`http://54.225.255.162/api/v1/thumb/${id}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          body: formData,
+        });
+        const data = await response.json();
+        console.log(data, 'thumbdata')
+        if (data.code == 200) {
+          toast({
+            description: "Thumbnail uploaded sucessfully",
+          })
+          setVideoThumb(data?.result)
+          setUploadThumbPopup(false);
+          setSelectedFile(null)
+          setId("")
+        }
+      }
+    } catch (error) {
+      console.log(error, '========error')
+    }
+  }
   useEffect(
     () => {
       if (id) {
@@ -441,9 +472,11 @@ const preview_video = () => {
             <Image layout='fill' className='rounded-2xl   object-cover' src={videoThumb} alt="" />
           </div>
           <div className='w-1/2 m-4'>
-            <div className='h-16 w-64 bg-[#FFF4D3] gap-2 rounded-xl p-2 justify-center items-center flex flex-col'>
+            <div className='h-16 w-64 bg-[#FFF4D3] gap-2 rounded-xl p-2 justify-center items-center flex flex-col cursor-pointer' onClick={() => {
+              setUploadThumbPopup(true)
+            }}>
               <div className='text-[#E5AD00]'>  < Upload />  </div>
-              <div className='text-[#E5AD00]'> upload new Thumbnail  </div>
+              <div className='text-[#E5AD00]' > upload new Thumbnail  </div>
             </div>
             <div className=' m-4 '>
               <p>
@@ -631,24 +664,26 @@ const preview_video = () => {
       <Dialog open={uploadDocPopup} onOpenChange={setUploadDocPopup}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Upload Video</DialogTitle>
+            <DialogTitle>Upload CSV</DialogTitle>
           </DialogHeader>
-          <div className="gap-4 border-dashed justify-center flex flex-col m-4 items-center">
-            <div>
-              {/* Hidden file input */}
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                style={{ display: 'none' }} // Hide the input
-                id="file-upload" // Add an ID to associate with the label
-              />
-              {/* Label styled as a button */}
-              <label htmlFor="file-upload" className="bg-gray-200 p-2 border-dashed border-2 rounded cursor-pointer">
-                Choose a file
-              </label>
-            </div>
-            {/* Show the selected file name */}
+          <div
+            className='bg-[#FFF4D3] mt-4 h-32 gap-2 rounded-xl p-2 justify-center items-center flex flex-col cursor-pointer'
+            onClick={() => {
+              fileInputRef.current.click();
+            }}
+          >
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              style={{ display: 'none' }} // Hide the input
+              id="file-upload" // Add an ID to associate with the label
+            />
+            <div className='text-[#E5AD00]'><Upload /></div>
+            <div className='text-[#E5AD00]'>Choose File</div>
+          </div>
+
+          <div className="gap-4 border-dashed justify-center flex flex-col items-center">
             {selectedFile?.name && <p>{selectedFile.name}</p>}
           </div>
           <DialogFooter>
@@ -673,41 +708,56 @@ const preview_video = () => {
         </DialogContent>
       </Dialog>
 
-      {/* file Popup */}
-
-
-
-
-      {/* <Dialog open={filePreviewPopUp} onOpenChange={setFilePreviewPopUp}>
+      {/* thumb Popup */}
+      <Dialog open={uploadThumbPopup} onOpenChange={setUploadThumbPopup}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Csv Preview</DialogTitle>
+            <DialogTitle>Upload Thumb</DialogTitle>
           </DialogHeader>
-          <div className="gap-4 border-dashed justify-center  flex flex-col m-4 items-center">
-            <Table>
-              <TableHeader className="bg-blue-50">
-                <TableRow>
-                  {fileData?.headers?.map((header, index) => (
-                    <TableHead key={index}>{header}</TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {fileData?.records && fileData.records.map((record, index) => (
-                  <TableRow key={index}>
-                    {record.map((data, i) => (
-                      <TableCell key={i}>{data}</TableCell>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+          <div
+            className='bg-[#FFF4D3] mt-4 h-32 gap-2 rounded-xl p-2 justify-center items-center flex flex-col cursor-pointer'
+            onClick={() => {
+              fileInputRef.current.click();
+            }}
+          >
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              style={{ display: 'none' }} // Hide the input
+              id="file-upload" // Add an ID to associate with the label
+            />
+            <div className='text-[#E5AD00]'><Upload /></div>
+            <div className='text-[#E5AD00]'>Choose File</div>
+          </div>
 
+          <div className="gap-4 border-dashed justify-center flex flex-col items-center">
+            {selectedFile?.name && <p>{selectedFile.name}</p>}
           </div>
           <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setUploadThumbPopup(false);
+                setSelectedFile(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="bg-[#FFC000] text-black"
+              onClick={uploadNewThumb}
+            >
+              Submit
+            </Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog> */}
+      </Dialog>
+
+
+
+
+
       {filePreviewPopUp && (
         <>
           {/* Overlay */}
