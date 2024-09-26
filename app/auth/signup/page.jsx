@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { postData } from '@/utils/api';
 const sign_up = () => {
   const router = useRouter(); // Initialize useRouter
   const { toast } = useToast()
@@ -32,22 +33,17 @@ const sign_up = () => {
 
   let sign_up_api = async () => {
     try {
-      const response = await fetch('http://54.225.255.162/api/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          password: form.password,
-        }),
+
+      const response = await postData('api/auth/signup', {
+
+
+        email: form.email,
+        name: form.name,
+        password: form.password,
+
       });
-      if (!response.ok) {
-        throw new Error('Login failed');
-      }
-      const data = await response.json();
-      if (data.code != 200) {
+
+      if (response.code != 200) {
         toast({
           variant: "destructive",
           title: "Uh oh! Something went wrong.",

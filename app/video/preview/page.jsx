@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import axios from "axios";
-
+import { fetchData, postData, deleteData } from '../../../utils/api';
 import { useRouter } from 'next/navigation';
 import {
   Select,
@@ -53,13 +53,13 @@ import {
 
 import Image from 'next/image';
 import { Textarea } from '@/components/ui/textarea';
+
 const preview_video = () => {
   const { toast } = useToast()
   const id = window.location.href.split("id=")[1]
   const token = localStorage.getItem("token");
   const [videoUrl, setVideoUrl] = useState();
   const [videoThumb, setVideoThumb] = useState();
-  console.log(videoThumb, "videoThumb")
   const [transcript, setTranscript] = useState("");
   const [selectedWord, setSelectedWord] = useState('');
   const [segmentID, setSegmentID] = useState('');
@@ -99,15 +99,7 @@ const preview_video = () => {
       if (selectedFile) {
         const formData = new FormData();
         formData.append('csv', selectedFile);
-        const response = await fetch(`http://54.225.255.162/api/csv/${id}`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-          body: formData,
-        });
-        const data = await response.json();
-        console.log(data, 'data')
+        const data = await postData(`api/csv/${id}`, formData);
         if (data.code == 200) {
           toast({
             description: "Csv file uploaded sucessfully",
@@ -117,7 +109,6 @@ const preview_video = () => {
           setId("")
           setSelectedFile(null)
         }
-
       }
     } catch (error) {
       console.log(error, '==========error')
@@ -125,18 +116,12 @@ const preview_video = () => {
   }
   const getAllSegment = async () => {
     try {
-      const response = await axios.get('http://54.225.255.162/api/v1/segment', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-        params: {
-          instance_id: id
-        },
-      });
-      let segment_data = response.data
-      console.log(segment_data, "manisj")
-      if (segment_data.code == 200) {
-        setSegmentData(segment_data.result)
+      const queryParams = {
+        instance_id: id,
+      };
+      const result = await fetchData('api/v1/segment', queryParams);
+      if (result.code == 200) {
+        setSegmentData(result?.result)
       }
     } catch (error) {
       console.log(error, '========error')
@@ -146,17 +131,11 @@ const preview_video = () => {
   }
   const getFile = async () => {
     try {
-      const response = await fetch(`http://54.225.255.162/api/csv/${id}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-      const data = await response.json();
-      console.log(data.result, 'data.result')
-      if (data.code == 200) {
+      const result = await fetchData(`api/csv/${id}`, {});
+      console.log(result, '=========resultfile')
+      if (result.code == 200) {
         setHasFile(true)
-        setFileData(data.result)
+        setFileData(result.result)
       }
     } catch (error) {
       console.log(error, '=========error')
@@ -164,14 +143,11 @@ const preview_video = () => {
   }
   const deleteFile = async () => {
     try {
-      const response = await fetch(`http://54.225.255.162/api/csv/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-      const data = await response.json();
+      const data = await deleteData(`api/csv/${id}`, {});
       if (data.code == 200) {
+        toast({
+          description: "Csv file deleted sucessfully",
+        })
         setHasFile(false)
         setDeleteFilePopUp(false)
       }
@@ -181,7 +157,6 @@ const preview_video = () => {
   }
 
   const handleDoubleClick = (word, start, end, index) => {
-    console.log(start, end, "eeeeeeeeee")
     setEditingWordIndex(index);
     setInputVisible(true)
     setStartTime(start)
@@ -191,21 +166,13 @@ const preview_video = () => {
   };
   const handleTickClick = async () => {
     try {
-      const response = await fetch(`http://54.225.255.162/api/v1/segment`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: inputValue,
-          start_time: `${startTime}`,
-          segment: inputValue,
-          instance_id: id,
-          end_time: `${endTime}`
-        }),
+      const data = await postData(`api/v1/segment`, {
+        name: inputValue,
+        start_time: `${startTime}`,
+        segment: inputValue,
+        instance_id: id,
+        end_time: `${endTime}`
       });
-      const data = await response.json();
       if (data.code == 200) {
         toast({
           description: "Segment added SuccessfullY"
@@ -226,15 +193,11 @@ const preview_video = () => {
   };
   const deleteSegment = async () => {
     try {
-      const response = await axios.delete('http://54.225.255.162/api/v1/segment', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-        params: {
-          id: segmentID
-        },
+      const data = await deleteData(`api/v1/segment`, {
+        id: segmentID
+
       });
-      if (response.data.code != 200) {
+      if (data.code != 200) {
         toast({
           variant: "destructive",
           title: "Uh oh! Something went wrong.",
@@ -254,37 +217,15 @@ const preview_video = () => {
   }
   const myfunction = async (id) => {
     try {
-      const response = await fetch(`http://54.225.255.162/api/v1/file/${id}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-      const get_transcript = await fetch(`http://54.225.255.162/api/v1/transcript/${id}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-      const transcript_data = await get_transcript.json();
-      const video_data = await response.json();
-      setData(transcript_data?.result?.words)
-      console.log(transcript_data?.result?.words?.map(
-        (data) => {
-          return (
-            data.start,
-            data.end
-
-          )
-        }
-      ), "transcript_data")
-      console.log(video_data, "data")
-      if (video_data.code == 200) {
-        setVideoUrl(video_data.result.url)
-        setVideoThumb(video_data.result.thumbnail)
+      const video_result = await fetchData(`api/v1/file/${id}`, {});
+      const get_transcript = await fetchData(`api/v1/transcript/${id}`, {});
+      setData(get_transcript?.result?.words)
+      if (video_result.code == 200) {
+        setVideoUrl(video_result.result.url)
+        setVideoThumb(video_result.result.thumbnail)
       }
-      if (transcript_data.code == 200) {
-        setTranscript(transcript_data.result.transcript)
+      if (get_transcript.code == 200) {
+        setTranscript(get_transcript.result.transcript)
       }
     } catch (error) {
       console.log(error, '==========error')
@@ -292,14 +233,8 @@ const preview_video = () => {
   }
   const generateVideo = async () => {
     try {
-      const generate_video = await fetch(`http://54.225.255.162/api/v1/generate/${id}`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-      const generatedVideoData = await generate_video.json();
-      if (generatedVideoData.code == 200) {
+      const data = await postData(`api/v1/generate/${id}`, {})
+      if (data.code == 200) {
         toast({
           description: "Video generated sucessfully",
         })
@@ -315,15 +250,7 @@ const preview_video = () => {
       if (selectedFile) {
         const formData = new FormData();
         formData.append('thumb', selectedFile);
-        const response = await fetch(`http://54.225.255.162/api/v1/thumb/${id}`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-          body: formData,
-        });
-        const data = await response.json();
-        console.log(data, 'thumbdata')
+        const data = await postData(`api/v1/thumb/${id}`, formData)
         if (data.code == 200) {
           toast({
             description: "Thumbnail uploaded sucessfully",

@@ -25,7 +25,8 @@ import axios from "axios";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import Header from "@/app/auth/header/page";
 import Dashboard from "@/components/dashboard";
-
+import { fetchData } from '../../../utils/api';
+import { postData } from "../../../utils/api";
 // Mock Data
 const token = localStorage.getItem("token");
 const DataTableDemo = () => {
@@ -35,16 +36,12 @@ const DataTableDemo = () => {
   const [instance, setInstance] = useState();
   const getAllInstance = async () => {
     try {
-      const response = await axios.get('http://54.225.255.162/api/v1/instance', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-        params: {
-          page: 0,
-          limit: 100
-        },
-      });
-      if (response.data.code != 200) {
+      const queryParams = {
+        page: 0,
+        limit: 100
+      };
+      const result = await fetchData('api/v1/instance', queryParams);
+      if (result.code != 200) {
         toast({
           variant: "destructive",
           title: "Uh oh! Something went wrong.",
@@ -52,7 +49,7 @@ const DataTableDemo = () => {
         })
       }
       else {
-        const data = response.data.result.instances
+        const data = result.result.instances
         setAllInstances(data)
       }
     } catch (error) {
@@ -67,24 +64,10 @@ const DataTableDemo = () => {
   const createInstance = async () => {
     try {
       if (instance) {
-        const response = await fetch('http://54.225.255.162/api/v1/instance', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name: instance,
-          }),
+        const response = await postData('api/v1/instance', {
+          name: instance,
         });
-        if (!response.ok) {
-          toast({
-            variant: "destructive",
-            title: "Uh oh! Something went wrong.",
-          });
-        }
-        const data = await response.json();
-        if (data.code !== 200) {
+        if (response.code !== 200) {
           toast({
             variant: "destructive",
             title: "Uh oh! Something went wrong.",

@@ -14,8 +14,8 @@ import {
   Trash,
   Upload,
 } from "lucide-react";
-
 import { NameLogo } from "@/components/ui/name-logo";
+
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from 'next/navigation';
 import { Input } from "@/components/ui/input";
@@ -48,16 +48,17 @@ import {
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import Header from "@/app/auth/header/page";
 import { Button } from "./ui/button";
+import { fetchData, postData, deleteData, putData } from "@/utils/api";
 
 
 const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAllInstance }) => {
-  console.log(allInstances, "parshant")
   const token = localStorage?.getItem("token");
-
   const { toast } = useToast();
   const router = useRouter();
   const [sorting, setSorting] = useState([]);
   const [instanceId, setInstanceId] = useState("");
+
+
   const [id, setId] = useState('')
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -78,6 +79,7 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
   let openUpdateInstanceModal = (name, id, e) => {
     e.stopPropagation()
     setInstance(name);
+
     setInstanceId(id)
     setupdateInstanceModal(true);
   }
@@ -112,15 +114,11 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
         const deleteInstance = async (e) => {
           e.stopPropagation(); // Stop row click event
           try {
-            const response = await axios.delete('http://54.225.255.162/api/v1/instance', {
-              headers: {
-                'Authorization': `Bearer ${token}`,
-              },
-              params: {
-                id: instance_id
-              },
-            });
-            if (response.data.code != 200) {
+            const queryParams = {
+              id: instance_id
+            };
+            const data = await deleteData('api/v1/instance', queryParams);
+            if (data.code != 200) {
               toast({
                 variant: "destructive",
                 title: "Uh oh! Something went wrong.",
@@ -167,20 +165,12 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
 
   const updateInstance = async () => {
     try {
-      const response = await fetch('http://54.225.255.162/api/v1/instance', {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          id: instanceId,
-          name: instance,
-          "data_id": null,
-          "video_id": null
-        }),
+      const data = await putData('api/v1/instance', {
+        id: instanceId,
+        name: instance,
+        "data_id": null,
+        "video_id": null
       });
-      const data = await response.json();
       if (data.code != 200) {
         toast({
           variant: "destructive",
@@ -218,14 +208,9 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
   });
   const getVideo = async (e, row) => {
     try {
-      console.log(row.original.id, '=========id')
-      const response = await axios.get(`http://54.225.255.162/api/v1/file/${row.original.id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-      console.log(response, 'response')
-      if (response.data.code == 200) {
+      const data = await fetchData(`api/v1/file/${row.original.id}`, {});
+      console.log(data, 'datafile')
+      if (data.code == 200) {
         router.push(`/video/preview?id=${row.original.id}`)
       }
     } catch (error) {
@@ -244,21 +229,12 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
       if (selectedFile) {
         const formData = new FormData();
         formData.append('file', selectedFile);
-        const response = await fetch(`http://54.225.255.162/api/v1/file/${id}`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-          body: formData,
-        });
-        const data = await response.json();
-        console.log(data, 'data')
+        const data = await postData(`api/v1/file/${id}`, formData);
         if (data.code == 200) {
           setUploadFileModal(false);
           setId("")
           router.push(`/video/preview?id=${id}`)
         }
-
       }
     } catch (error) {
       console.log(error, '==========error')

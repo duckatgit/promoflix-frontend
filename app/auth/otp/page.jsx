@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from 'next/navigation';
-
+import { postData } from '@/utils/api'
 const OtpComponent = () => {
   const router = useRouter();
   const [value, setValue] = React.useState("")
@@ -30,14 +30,11 @@ const OtpComponent = () => {
     setCanResend(false);  // Disable the button
     setResendTimer(25);   // Start the 25-second timer
 
-    const response = await fetch('http://54.225.255.162/api/auth/send_otp', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: email,
-      }),
+
+    const response = await postData('api/auth/send-otp', {
+
+      email: form.email,
+
     });
     const data = await response.json();
 
@@ -70,22 +67,16 @@ const OtpComponent = () => {
   const handle_otp_api = async () => {
     try {
       let otpVal = Number(value)
-      const response = await fetch('http://54.225.255.162/api/auth/verify', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          otp: otpVal,
-          email: email,
-        }),
+      const response = await postData('api/auth/verify', {
+        otp: otpVal,
+        email: email,
+
       });
-      const data = await response.json();
-      if (data.code !== 200) {
+      if (response.code !== 200) {
         toast({
           variant: "destructive",
           title: "Uh oh! Something went wrong.",
-          description: data.result,
+          description: response.result,
         });
       } else {
         toast({
