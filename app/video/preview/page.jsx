@@ -82,6 +82,48 @@ const preview_video = () => {
   const [data, setData] = useState([])
   const [segmentData, setSegmentData] = useState([])
   const fileInputRef = useRef(null);
+  const [socket, setSocket] = useState(null);
+  const [receivedMessages, setReceivedMessages] = useState([]);
+  console.log(receivedMessages, '========receivedMessages')
+  const connectWebSocket = () => {
+    if (!socket) {
+      const ws = new WebSocket(`ws://54.225.255.162:9001/ws/${token}`); // Using the token in the URL
+      ws.onopen = () => {
+        console.log('Connected to the WebSocket server');
+      };
+
+      ws.onmessage = (event) => {
+        console.log(event, "event")
+        console.log('Message received from server: ', event.data);
+        setReceivedMessages((prevMessages) => [...prevMessages, event.data]);
+        toast({
+          description: "video generated successfully sucessfully",
+        })
+      };
+
+      ws.onerror = (error) => {
+        console.error('WebSocket Error: ', error);
+      };
+
+      ws.onclose = () => {
+        console.log('WebSocket connection closed');
+      };
+      setSocket(ws); // Store the WebSocket instance
+    }
+  };
+  const sendMessage = () => {
+    let message = {
+      "GetVideo": {
+        "instance_id": id
+      }
+    }
+    if (socket && message) {
+      socket.send(JSON.stringify(message));
+    }
+  };
+
+
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -271,6 +313,7 @@ const preview_video = () => {
         myfunction(id)
         getAllSegment()
         getFile()
+        connectWebSocket()
       }
     }, []
   )
@@ -440,7 +483,7 @@ const preview_video = () => {
             </div>
             <div className='my-2'>
               <Button className="bg-[#FFC000] text-black" onClick={() => {
-                generateVideo()
+                sendMessage()
               }}>Merge Video</Button>
               <Button className="bg-[#FFC000] text-black ml-3">Reset all</Button>
             </div>
