@@ -33,7 +33,7 @@ const OtpComponent = () => {
 
     const response = await postData('api/auth/send-otp', {
 
-      email: form.email,
+      email: email,
 
     });
     const data = await response.json();
@@ -113,7 +113,7 @@ const OtpComponent = () => {
               <p className='text-sm'>Please enter your one time password that is sent to your email</p>
             </div>
             <div className='my-4'>
-              <div className='flex gap-4 justify-center'>
+              <div className='flex justify-center'>
                 <InputOTP
                   maxLength={4}
                   value={value}
@@ -133,7 +133,7 @@ const OtpComponent = () => {
                 {canResend ? 'Resend OTP' : `Resend OTP in ${resendTimer}s`}
               </div>
             </div>
-            <Button className="text-black w-full mt-8 bg-yellow-400" onClick={handle_otp_api}>Submit</Button>
+            <Button className="text-black w-full mt-8 bg-yellow-400 hover:shadow-xl hover:bg-yellow-500" onClick={handle_otp_api}>Submit</Button>
           </div>
         </div>
       </div>

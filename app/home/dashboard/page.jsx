@@ -1,34 +1,13 @@
 "use client";
 
-import React, { Suspense, useEffect, useRef, useState } from "react";
-import {
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import {
-  ArrowUpDown,
-  ChevronDown,
-  Edit,
-  Trash,
-  Upload,
-} from "lucide-react";
-
-import { NameLogo } from "@/components/ui/name-logo";
+import React, { Suspense, useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from 'next/navigation';
-import { Input } from "@/components/ui/input";
-import axios from "axios";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import Header from "@/app/auth/header/page";
 import Dashboard from "@/components/dashboard";
 import { fetchData } from '../../../utils/api';
 import { postData } from "../../../utils/api";
-// Mock Data
-const token = localStorage.getItem("token");
+
 const DataTableDemo = () => {
   const { toast } = useToast();
   const router = useRouter();

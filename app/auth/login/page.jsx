@@ -2,12 +2,10 @@
 import React, { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
-import { useRouter } from 'next/navigation'; // Import useRouter from next/navigation
 
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -16,10 +14,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { postData } from '@/utils/api';
+import { useRouter } from 'next/navigation';
 
-const login = () => {
-
-  const router = useRouter(); // Initialize useRouter
+const Login = () => {
+  const router = useRouter();
   const { toast } = useToast()
   const [form, setForm] = useState({
     email: "",
@@ -32,6 +30,7 @@ const login = () => {
       [id]: value
     }))
   }
+
   let login_api = async () => {
     try {
       const response = await postData('api/auth/login', {
@@ -49,6 +48,7 @@ const login = () => {
         toast({
           description: "Login SuccessfullY"
         })
+        localStorage.setItem("name", response?.result?.user?.name)
         localStorage.setItem("token", response.result.token.access_token)
         router.push('/home/dashboard'); // Redirect to the dashboard page
       }
@@ -56,6 +56,7 @@ const login = () => {
       alert(error.message)
     }
   }
+
   return (
     <>
       <div className=' grid w-full grid-cols-1 md:grid-cols-2'>
@@ -131,4 +132,4 @@ const login = () => {
   )
 }
 
-export default login
+export default Login

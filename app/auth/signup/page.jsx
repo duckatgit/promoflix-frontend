@@ -15,19 +15,21 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { postData } from '@/utils/api';
-const sign_up = () => {
-  const router = useRouter(); // Initialize useRouter
+
+const Sign_up = () => {
+  const router = useRouter();
   const { toast } = useToast()
   const [form, setForm] = useState({
     name: '',
     email: '',
-    password: ''
+    password: '',
+    confirm_password: '',
   })
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setForm((prevForm) => ({
       ...prevForm,
-      [id]: value,  // Update the specific field in the form object
+      [id]: value,
     }));
   };
 
@@ -35,12 +37,9 @@ const sign_up = () => {
     try {
 
       const response = await postData('api/auth/signup', {
-
-
         email: form.email,
         name: form.name,
         password: form.password,
-
       });
 
       if (response.code != 200) {
@@ -107,16 +106,14 @@ const sign_up = () => {
                     />
                   </div>
                   <div className="flex flex-col space-y-1.5 w-[400px]">
-                    <Label htmlFor="password">Password</Label>
+                    <Label>Password</Label>
                     <Input id="password" placeholder="Enter your password" value={form.password}
                       onChange={handleInputChange}  // Handle input change
                     />
                   </div>
                   <div className="flex flex-col space-y-1.5 w-[400px]">
-                    <Label htmlFor="confirm_password">Confirm Password</Label>
-                    <Input id="confirm_password" placeholder="Re-Enter your password" value={form.password}
-                      onChange={handleInputChange}  // Handle input change
-                    />
+                    <Label>Confirm Password</Label>
+                    <Input id="confirm_password" placeholder="Re-Enter your password" value={form.confirmPassword} onChange={handleInputChange} />
                   </div>
                 </div>
               </form>
@@ -133,4 +130,4 @@ const sign_up = () => {
   )
 }
 
-export default sign_up
+export default Sign_up

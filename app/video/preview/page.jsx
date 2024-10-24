@@ -4,35 +4,20 @@ import React, { useEffect, useState, useRef } from 'react'
 import Header from "../../auth/header/page";
 import { Button } from '@/components/ui/button';
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
-import axios from "axios";
 import { fetchData, postData, deleteData } from '../../../utils/api';
-import { useRouter } from 'next/navigation';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
-  ArrowUpDown,
   Check,
   X,
-  ChevronDown,
-  Cross,
   Trash,
   Upload,
-  Delete,
   File,
   EyeIcon,
 } from "lucide-react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -50,21 +35,24 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useSearchParams } from 'next/navigation'
+import { safeLocalStorage } from "@/lib/safelocastorage"
+
 
 import Image from 'next/image';
-import { Textarea } from '@/components/ui/textarea';
 
-const preview_video = () => {
+const Preview_video = () => {
   const { toast } = useToast()
-  const id = window.location.href.split("id=")[1]
-  const token = localStorage.getItem("token");
+  const searchParams = useSearchParams()
+  console.log('searchParams', searchParams.get('id'))
+  const id = searchParams.get('id')
+  console.log('id', id)
+  const token = safeLocalStorage.getItem("token");
   const [videoUrl, setVideoUrl] = useState();
   const [videoThumb, setVideoThumb] = useState();
   const [transcript, setTranscript] = useState("");
-  const [selectedWord, setSelectedWord] = useState('');
   const [segmentID, setSegmentID] = useState('');
   const [editingWordIndex, setEditingWordIndex] = useState(null); // Add this state
-  const [textDialog, setTextDialog] = useState(false);
   const [inputVisible, setInputVisible] = useState(false);
   const [deletePopUp, setDeletePopUp] = useState(false);
   const [uploadDocPopup, setUploadDocPopup] = useState(false);
@@ -77,14 +65,12 @@ const preview_video = () => {
   const [startTime, setStartTime] = useState('')
   const [endTime, setEndTime] = useState('')
   const [inputValue, setInputValue] = useState('');
-  const [inputPosition, setInputPosition] = useState({ top: 0, left: 0 });
-  const textareaRef = useRef(null);
   const [data, setData] = useState([])
   const [segmentData, setSegmentData] = useState([])
   const fileInputRef = useRef(null);
   const [socket, setSocket] = useState(null);
   const [receivedMessages, setReceivedMessages] = useState([]);
-  console.log(receivedMessages, '========receivedMessages')
+
   const connectWebSocket = () => {
     if (!socket) {
       const ws = new WebSocket(`ws://54.225.255.162:9001/ws/${token}`); // Using the token in the URL
@@ -341,13 +327,21 @@ const preview_video = () => {
             <div className='flex flex-wrap justify-between bg-gray-300  border-r'>
               <div className='flex gap-4 m-4'>
                 {arr?.map(
-                  (i) => {
-                    return <p className='bg-white p-2 rounded-xl'> {i.name}<X className='cursor-pointer' onClick={() => {
-                      {
-                        setDeletePopUp(true)
-                        setSegmentID(i.id)
-                      }
-                    }} /></p>
+                  (i, index) => {
+                    return (
+                      <div className='bg-white p-2 rounded-xl flex gap-1' key={index}>
+                        {i.name}
+                        <X
+                          className='cursor-pointer'
+                          onClick={() => {
+                            {
+                              setDeletePopUp(true)
+                              setSegmentID(i.id)
+                            }
+                          }}
+                        />
+                      </div>
+                    )
                   }
                 )}
               </div>
@@ -461,26 +455,26 @@ const preview_video = () => {
                       onClick={() => handleDoubleClick(i.punctuated_word, i.start, i.end, index)}
                       key={index} // Added key for list items
                     >
-                      {matchedSegment ? `{{${matchedSegment.segment}}}` : i.punctuated_word}
+                      {/* {matchedSegment ? `{{${matchedSegment.segment}}}` : i.punctuated_word} */}
                     </span>
                   );
                 })}
               </p>
             </div>
-            <div className='flex flex-wrap justify-between bg-gray-300  border-r '>
+            {/* <div className='flex flex-wrap justify-between bg-gray-300  border-r '>
               <div className='flex gap-4 m-4'>
                 {arr?.map(
-                  (i) => {
-                    return <p className='bg-white p-2 rounded-xl'> {i.name}<X className='cursor-pointer' onClick={() => {
-                      {
-                        setDeletePopUp(true)
-                        setSegmentID(i.id)
-                      }
-                    }} /></p>
-                  }
-                )}
+                    (i) => {
+                      return <p className='bg-white p-2 rounded-xl'> {i.name}<X className='cursor-pointer' onClick={() => {
+                        {
+                          setDeletePopUp(true)
+                          setSegmentID(i.id)
+                        }
+                      }} /></p>
+                    }
+                  )}
               </div>
-            </div>
+            </div> */}
             <div className='my-2'>
               <Button className="bg-[#FFC000] text-black" onClick={() => {
                 sendMessage()
@@ -489,8 +483,8 @@ const preview_video = () => {
             </div>
           </div>
         </div>
-        <h1 className='mx-4 mt-2 mb-2'>Video Thumbnail</h1>
-        <div className='flex justify-between border-2 rounded-lg'>
+        {/* <h1 className='mx-4 mt-2 mb-2'>Video Thumbnail</h1> */}
+        {/* <div className='flex justify-between border-2 rounded-lg'>
           <div className='w-1/2 m-4'>
             <div>
               <Label htmlFor="email">Email Videos from</Label>
@@ -584,7 +578,7 @@ const preview_video = () => {
               </Button>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
 
@@ -739,7 +733,7 @@ const preview_video = () => {
             <span
               onClick={() => setFilePreviewPopUp(false)}
               className="absolute right-4 w-12 top-4 rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-neutral-950 focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-neutral-100 data-[state=open]:text-neutral-500 dark:ring-offset-neutral-950 dark:focus:ring-neutral-300 dark:data-[state=open]:bg-neutral-800 dark:data-[state=open]:text-neutral-400">
-              <X className="h-8 w-8" />
+              <X className="h-8 w-8 cursor-pointer" />
             </span>
 
             {/* CSV Preview */}
@@ -774,4 +768,4 @@ const preview_video = () => {
   )
 }
 
-export default preview_video
+export default Preview_video

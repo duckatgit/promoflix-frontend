@@ -9,23 +9,13 @@ import {
 } from "@tanstack/react-table";
 import {
   ArrowUpDown,
-  ChevronDown,
   Edit,
   Trash,
   Upload,
 } from "lucide-react";
-import { NameLogo } from "@/components/ui/name-logo";
 
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from 'next/navigation';
-import { Input } from "@/components/ui/input";
-import axios from "axios";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -46,13 +36,11 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import Header from "@/app/auth/header/page";
 import { Button } from "./ui/button";
 import { fetchData, postData, deleteData, putData } from "@/utils/api";
 
 
 const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAllInstance }) => {
-  const token = localStorage?.getItem("token");
   const { toast } = useToast();
   const router = useRouter();
   const [sorting, setSorting] = useState([]);
@@ -255,12 +243,12 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
   return (
     <><div className="w-full">
       <Button
-        className="flex justify-end ml-auto text-black mb-2"
+        className="flex justify-end ml-auto text-black mb-2 gap-2"
         style={{ backgroundColor: "#FFC000" }}
         onClick={handleUploadClick}
       >
         <Upload className="h-4 w-4" />
-        Create Instance
+        <span>Create Instance</span>
       </Button>
 
       <Dialog open={uploadFileModal} onOpenChange={setUploadFileModal} >
@@ -317,11 +305,14 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
           </DialogHeader>
           <div className="gap-4 border-dashed justify-center flex flex-col m-4 items-center">
             <div className="flex flex-col space-y-1.5 w-[400px]">
-              <input className="h-10 rounded-md" type="text" value={instance} onChange={(e) => { setInstance(e.target.value); }} />
+              <input className="h-10 rounded-md pl-3" type="text" value={instance} onChange={(e) => { setInstance(e.target.value); }} />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setFileModal(false)}>
+            <Button variant="outline" onClick={() => {
+              setFileModal(false)
+              setInstance("")
+            }}>
               Cancel
             </Button>
             <Button
@@ -396,10 +387,6 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
         </TableBody>
       </Table>
     </div><div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
         <div className="space-x-2">
           <Button
             variant="outline"
