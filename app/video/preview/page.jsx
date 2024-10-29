@@ -35,11 +35,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { safeLocalStorage } from "@/lib/safelocastorage"
 
 
 import Image from 'next/image';
+import { useSetAtom } from 'jotai';
+import { videoArrayAtom } from '@/utils/atom';
 
 const Preview_video = () => {
   const { toast } = useToast()
@@ -48,6 +50,7 @@ const Preview_video = () => {
   const id = searchParams.get('id')
   console.log('id', id)
   const token = safeLocalStorage.getItem("token");
+  const router = useRouter();
   const [videoUrl, setVideoUrl] = useState();
   const [videoThumb, setVideoThumb] = useState();
   const [transcript, setTranscript] = useState("");
@@ -69,6 +72,8 @@ const Preview_video = () => {
   const [segmentData, setSegmentData] = useState([])
   const fileInputRef = useRef(null);
   const [socket, setSocket] = useState(null);
+ const setVideoArray = useSetAtom(videoArrayAtom);
+
   const [receivedMessages, setReceivedMessages] = useState([]);
 
   const connectWebSocket = () => {
@@ -97,7 +102,12 @@ const Preview_video = () => {
       setSocket(ws); // Store the WebSocket instance
     }
   };
-  const sendMessage = () => {
+  const sendMessage = async() => {
+    const data = await postData(`api/v1/generate/${id}`, {});
+    if (data.code == 200) {
+      setVideoArray(data.result)
+      router.push(`/video/generate?id=${id}`)
+    }
     let message = {
       "GetVideo": {
         "instance_id": id
@@ -184,6 +194,14 @@ const Preview_video = () => {
     }
   }
 
+
+const getKeyFromUrl = (url) => {
+  const parsedUrl = new URL(url);
+  const segments = parsedUrl.pathname.split('/');
+  const keyWithExtension = segments.pop();
+  return keyWithExtension;
+};
+
   const handleDoubleClick = (word, start, end, index) => {
     setEditingWordIndex(index);
     setInputVisible(true)
@@ -246,14 +264,41 @@ const Preview_video = () => {
   const myfunction = async (id) => {
     try {
       const video_result = await fetchData(`api/v1/file/${id}`, {});
-      const get_transcript = await fetchData(`api/v1/transcript/${id}`, {});
-      setData(get_transcript?.result?.words)
       if (video_result.code == 200) {
         setVideoUrl(video_result.result.url)
         setVideoThumb(video_result.result.thumbnail)
+        const socket = new WebSocket('ws://54.225.255.162/wws');
+        const id=getKeyFromUrl(video_result.result.url)
+        socket.onopen = () => {
+
+          socket.send(JSON.stringify({
+            bucket: "hirello-1183",
+            key: `videos/${id}`,
+          }));
+        };
+        const newWords=[]
+        socket.onmessage = (event) => {
+          const data = JSON.parse(event.data);
+          if (data && data.segments) {
+            data.segments.forEach(segment => {
+             if (segment.words) {
+
+              segment.words.forEach(word => {
+                newWords.push({ word: word.word, start: word.start, end: word.end });
+              });
+            }
+          })
+        };
+        setData(newWords)
       }
-      if (get_transcript.code == 200) {
-        setTranscript(get_transcript.result.transcript)
+
+        socket.onerror = (error) => {
+          console.error('WebSocket error:', error);
+        };
+
+        socket.onclose = () => {
+          console.log('WebSocket connection closed');
+        };
       }
     } catch (error) {
       console.log(error, '==========error')
@@ -309,7 +354,7 @@ const Preview_video = () => {
     console.log(segmentData, 'segmentData')
     arr = segmentData
   }
-  console.log(arr, 'arr')
+
   return (
     <div className='m-8 '>
       <Header />
@@ -349,17 +394,13 @@ const Preview_video = () => {
             <div className=' m-4 '>
               <p>
                 {data?.map((i, index) => {
-                  // Find the matched segment
-                  const matchedSegment = segmentData?.find(
-                    (segment) => segment.start_time == i.start && segment.end_time == i.end
-                  );
                   return (
                     <span
-                      className="p-2 break-all"
-                      onClick={() => handleDoubleClick(i.punctuated_word, i.start, i.end, index)}
+                      className="p-2 "
+                      onClick={() => handleDoubleClick(i.word, i.start, i.end, index)}
                       key={index} // Added key for list items
                     >
-                      {matchedSegment ? `{{${matchedSegment.segment}}}` : i.punctuated_word}
+                     {i.word}
                     </span>
                   );
                 })}
