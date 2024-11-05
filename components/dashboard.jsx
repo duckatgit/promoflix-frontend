@@ -105,7 +105,7 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
             const queryParams = {
               id: instance_id
             };
-            const data = await deleteData('api/v1/instance', queryParams);
+            const data = await deleteData('api/v1/instance', queryParams,"hirello");
             if (data.code != 200) {
               toast({
                 variant: "destructive",
@@ -158,7 +158,7 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
         name: instance,
         "data_id": null,
         "video_id": null
-      });
+      },"hirello");
       if (data.code != 200) {
         toast({
           variant: "destructive",
@@ -196,7 +196,7 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
   });
   const getVideo = async (e, row) => {
     try {
-      const data = await fetchData(`api/v1/file/${row.original.id}`, {});
+      const data = await fetchData(`api/v1/file/${row.original.id}`, {},"hirello");
       console.log(data, 'datafile')
       if (data.code == 200) {
         router.push(`/video/preview?id=${row.original.id}`)
@@ -217,7 +217,7 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
       if (selectedFile) {
         const formData = new FormData();
         formData.append('file', selectedFile);
-        const data = await postData(`api/v1/file/${id}`, formData);
+        const data = await postData(`api/v1/file/${id}`, formData, "hirello");
         if (data.code == 200) {
           setUploadFileModal(false);
           setId("")

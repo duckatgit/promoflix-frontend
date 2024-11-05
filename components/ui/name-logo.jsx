@@ -1,6 +1,6 @@
 const NameLogo = ({ name }) => {
-  const firstLetter = name.charAt(0);
-  const fullName = name.slice(1);
+  const firstLetter = name?.charAt(0);
+  const fullName = name?.slice(1);
 
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>

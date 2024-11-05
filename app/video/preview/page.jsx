@@ -43,6 +43,9 @@ import Image from 'next/image';
 import { useSetAtom } from 'jotai';
 import { videoArrayAtom } from '@/utils/atom';
 
+const whisperxSocker = process.env.NEXT_PUBLIC_VIDEO_WHISPERX_SOCKET;
+const hirelloSocket = process.env.NEXT_PUBLIC_VIDEO_HIRELLO_SOCKET;
+
 const Preview_video = () => {
   const { toast } = useToast()
   const searchParams = useSearchParams()
@@ -73,12 +76,16 @@ const Preview_video = () => {
   const fileInputRef = useRef(null);
   const [socket, setSocket] = useState(null);
  const setVideoArray = useSetAtom(videoArrayAtom);
+ const [selectedIndices, setSelectedIndices] = useState({ start: null, end: null });
+ const [isSelecting, setIsSelecting] = useState(false);
+ const startRef = useRef(null);
+ const [highlightedSegment,setHighlightedSegment]=useState("")
 
   const [receivedMessages, setReceivedMessages] = useState([]);
 
   const connectWebSocket = () => {
     if (!socket) {
-      const ws = new WebSocket(`ws://54.225.255.162:9001/ws/${token}`); // Using the token in the URL
+      const ws = new WebSocket(`${hirelloSocket}/${token}`); // Using the token in the URL
       ws.onopen = () => {
         console.log('Connected to the WebSocket server');
       };
@@ -103,7 +110,7 @@ const Preview_video = () => {
     }
   };
   const sendMessage = async() => {
-    const data = await postData(`api/v1/generate/${id}`, {});
+    const data = await postData(`api/v1/generate/${id}`, {},"hirello");
     if (data.code == 200) {
       setVideoArray(data.result)
       router.push(`/video/generate?id=${id}`)
@@ -137,7 +144,7 @@ const Preview_video = () => {
       if (selectedFile) {
         const formData = new FormData();
         formData.append('csv', selectedFile);
-        const data = await postData(`api/csv/${id}`, formData);
+        const data = await postData(`api/csv/${id}`, formData,"csv");
         if (data.code == 200) {
           toast({
             description: "Csv file uploaded sucessfully",
@@ -157,7 +164,7 @@ const Preview_video = () => {
       const queryParams = {
         instance_id: id,
       };
-      const result = await fetchData('api/v1/segment', queryParams);
+      const result = await fetchData('api/v1/segment', queryParams,"hirello");
       if (result.code == 200) {
         setSegmentData(result?.result)
       }
@@ -169,7 +176,7 @@ const Preview_video = () => {
   }
   const getFile = async () => {
     try {
-      const result = await fetchData(`api/csv/${id}`, {});
+      const result = await fetchData(`api/csv/${id}`, {},"csv");
       console.log(result, '=========resultfile')
       if (result.code == 200) {
         setHasFile(true)
@@ -181,7 +188,7 @@ const Preview_video = () => {
   }
   const deleteFile = async () => {
     try {
-      const data = await deleteData(`api/csv/${id}`, {});
+      const data = await deleteData(`api/csv/${id}`, {},"csv");
       if (data.code == 200) {
         toast({
           description: "Csv file deleted sucessfully",
@@ -202,30 +209,77 @@ const getKeyFromUrl = (url) => {
   return keyWithExtension;
 };
 
+function findWords(index) {
+
+  let end = data[data.length-1].start
+  let start = data[0].start
+
+  for (let i = index; i < data.length - 1; i++) {
+    const current = data[i];
+    const next = data[i + 1];
+    if ((next.start - current.end) > 0.2) {
+      end=current.end;
+      break;
+    }
+  }
+
+
+  for (let i = index; i > 0; i--) {
+
+    const current = data[i];
+    const previous = data[i - 1];
+
+    if (current.start - previous.end > 0.2) {
+      start=current.start
+     break
+    }
+  }
+
+  setStartTime(start)
+  setEndTime(end)
+}
+
   const handleDoubleClick = (word, start, end, index) => {
-    setEditingWordIndex(index);
-    setInputVisible(true)
-    setStartTime(start)
-    setEndTime(end)
-    setInputValue(word)
-    myfunction(id)
+    findWords(index)
+
   };
   const handleTickClick = async () => {
     try {
-      const data = await postData(`api/v1/segment`, {
-        name: inputValue,
+      let highlight_si;
+      let highlight_ei;
+      if(selectedIndices.start==selectedIndices.end){
+        highlight_si=1
+        highlight_ei=1
+      }
+      else{
+        highlight_si=0
+        highlight_ei=(selectedIndices.end-selectedIndices.start)
+      }
+      let segments=""
+
+      for(let item of data){
+        if(startTime<=item.start && endTime >= item.end){
+          segments=segments+item.word+" "
+        }
+      }
+
+      const responseData = await postData(`api/v1/segment`, {
+        name: inputValue?.trim(),
         start_time: `${startTime}`,
-        segment: inputValue,
+        segment: segments?.trim(),
         instance_id: id,
-        end_time: `${endTime}`
-      });
-      if (data.code == 200) {
+        end_time: `${endTime}`,
+        highlight_si:highlight_si,
+        highlight_ei:highlight_ei,
+        highlight: highlightedSegment?.trim(),
+      },"hirello");
+      if (responseData.code == 200) {
         toast({
           description: "Segment added SuccessfullY"
         })
         getAllSegment()
       }
-      console.log('API Response:', data);
+      console.log('API Response:', responseData);
     } catch (error) {
       console.error('Error in API call:', error);
     }
@@ -242,7 +296,7 @@ const getKeyFromUrl = (url) => {
       const data = await deleteData(`api/v1/segment`, {
         id: segmentID
 
-      });
+      },"hirello");
       if (data.code != 200) {
         toast({
           variant: "destructive",
@@ -263,11 +317,11 @@ const getKeyFromUrl = (url) => {
   }
   const myfunction = async (id) => {
     try {
-      const video_result = await fetchData(`api/v1/file/${id}`, {});
+      const video_result = await fetchData(`api/v1/file/${id}`, {},"hirello");
       if (video_result.code == 200) {
         setVideoUrl(video_result.result.url)
         setVideoThumb(video_result.result.thumbnail)
-        const socket = new WebSocket('ws://54.225.255.162/wws');
+        const socket = new WebSocket(whisperxSocker);
         const id=getKeyFromUrl(video_result.result.url)
         socket.onopen = () => {
 
@@ -306,7 +360,7 @@ const getKeyFromUrl = (url) => {
   }
   const generateVideo = async () => {
     try {
-      const data = await postData(`api/v1/generate/${id}`, {})
+      const data = await postData(`api/v1/generate/${id}`, {},"hirello")
       if (data.code == 200) {
         toast({
           description: "Video generated sucessfully",
@@ -316,14 +370,42 @@ const getKeyFromUrl = (url) => {
       console.log(error, '========error')
     }
   }
-  //upload thum
+
+    const handleMouseDown = (index) => {
+      setIsSelecting(true);
+      setSelectedIndices({ start: index, end: index });
+      startRef.current = index;
+    };
+
+    const handleMouseUp = (index) => {
+      setIsSelecting(false);
+      const start = startRef.current;
+      const end = index;
+
+      const selectedStart = Math.min(start, end);
+      const selectedEnd = Math.max(start, end);
+
+      setSelectedIndices({ start: selectedStart, end: selectedEnd });
+      findWords(selectedStart);
+      let segment=""
+      console.log(selectedStart,"==>",selectedEnd)
+      for(let i=selectedStart;i<=selectedEnd;i++){
+
+        segment=segment+data[i].word+" "
+      }
+      setHighlightedSegment(segment)
+      setEditingWordIndex(selectedStart);
+      setInputVisible(true)
+      setInputValue(segment)
+      myfunction(id)
+    };
 
   const uploadNewThumb = async () => {
     try {
       if (selectedFile) {
         const formData = new FormData();
         formData.append('thumb', selectedFile);
-        const data = await postData(`api/v1/thumb/${id}`, formData)
+        const data = await postData(`api/v1/thumb/${id}`, formData,"hirello")
         if (data.code == 200) {
           toast({
             description: "Thumbnail uploaded sucessfully",
@@ -397,7 +479,9 @@ const getKeyFromUrl = (url) => {
                   return (
                     <span
                       className="p-2 "
-                      onClick={() => handleDoubleClick(i.word, i.start, i.end, index)}
+                      onMouseDown={() => handleMouseDown(index)}
+                      onMouseUp={() => handleMouseUp(index)}
+
                       key={index} // Added key for list items
                     >
                      {i.word}

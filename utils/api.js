@@ -4,9 +4,11 @@ import axios from 'axios';
 
 // Base URL for your API (can be environment-specific)
 const BASE_URL = process.env.NEXT_PUBLIC_VIDEO_API_BASE_URL;
-const apiClient = axios.create({
-  baseURL: BASE_URL,
-});
+const AUTH_URL = process.env.NEXT_PUBLIC_VIDEO_API_AUTH_URL;
+const HIRELLO_URL = process.env.NEXT_PUBLIC_VIDEO_API_HIRELLO_URL;
+const CSV_URL = process.env.NEXT_PUBLIC_VIDEO_API_CSV_URL;
+
+const apiClient = axios.create();
 // Request interceptor
 apiClient.interceptors.request.use(
   config => {
@@ -41,15 +43,27 @@ apiClient.interceptors.response.use(
   }
 );
 // Example: Fetch data from an endpoint
-export const fetchData = async (endpoint, params) => {
+
+const findBaseUrl=(type)=>{
+  switch(type){
+    case "hirello":
+      return HIRELLO_URL;
+    case "csv":
+      return CSV_URL
+    default:
+      return AUTH_URL
+  }
+}
+export const fetchData = async (endpoint, params,type) => {
   try {
     let response
+    let baseUrl = findBaseUrl(type);
     if (params) {
-      response = await apiClient.get(`${BASE_URL}/${endpoint}`, {
+      response = await apiClient.get(`${baseUrl}/${endpoint}`, {
         params: { ...params },
       });
     } else {
-      response = await apiClient.get(`${BASE_URL}/${endpoint}`);
+      response = await apiClient.get(`${baseUrl}/${endpoint}`);
     }
     console.log(response.data, endpoint, "pershant")
     return response.data;
@@ -60,9 +74,10 @@ export const fetchData = async (endpoint, params) => {
 };
 
 // Example: Post data to an endpoint
-export const postData = async (endpoint, data) => {
+export const postData = async (endpoint, data,type) => {
   try {
-    const response = await apiClient.post(`${BASE_URL}/${endpoint}`, data);
+    let baseUrl = findBaseUrl(type);
+    const response = await apiClient.post(`${baseUrl}/${endpoint}`, data);
     return response.data;
   } catch (error) {
     console.error('Error posting data:', error);
@@ -77,9 +92,10 @@ export const postData = async (endpoint, data) => {
  * @param {Object} data - The data to send in the request body.
  * @returns {Promise<Object>} - The response data.
  */
-export const putData = async (endpoint, data) => {
+export const putData = async (endpoint, data,type) => {
   try {
-    const response = await apiClient.put(`${BASE_URL}/${endpoint}`, data);
+    let baseUrl = findBaseUrl(type);
+    const response = await apiClient.put(`${baseUrl}/${endpoint}`, data);
     return response.data;
   } catch (error) {
     console.error('Error updating data:', error);
@@ -92,15 +108,16 @@ export const putData = async (endpoint, data) => {
  * @param {string} endpoint - The API endpoint to call (e.g., 'users/:id').
  * @returns {Promise<Object>} - The response data.
  */
-export const deleteData = async (endpoint, params) => {
+export const deleteData = async (endpoint, params,type) => {
   try {
     let response
+    let baseUrl = findBaseUrl(type);
     if (params) {
-      response = await apiClient.delete(`${BASE_URL}/${endpoint}`, {
+      response = await apiClient.delete(`${baseUrl}/${endpoint}`, {
         params: { ...params },
       });
     } else (
-      response = await apiClient.delete(`${BASE_URL}/${endpoint}`)
+      response = await apiClient.delete(`${baseUrl}/${endpoint}`)
     )
     return response.data;
   } catch (error) {

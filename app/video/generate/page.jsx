@@ -9,6 +9,8 @@ import { videoArrayAtom } from '@/utils/atom';
 import Image from 'next/image';
 import { safeLocalStorage } from "@/lib/safelocastorage"
 
+const hirelloSocket = process.env.NEXT_PUBLIC_VIDEO_HIRELLO_SOCKET;
+
 const Generate_video = () => {
   const searchParams = useSearchParams();
   const token = safeLocalStorage.getItem("token");
@@ -19,7 +21,7 @@ const Generate_video = () => {
 
   const connectWebSocket = () => {
     if (!socket) {
-      const ws = new WebSocket(`ws://54.225.255.162:9001/ws/${token}`); // Using the token in the URL
+      const ws = new WebSocket(`${hirelloSocket}/${token}`); // Using the token in the URL
       ws.onopen = () => {
         console.log('Connected to the WebSocket server');
       };
