@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Header from '../../auth/header/page';
 
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAtom } from 'jotai';
 import { videoArrayAtom } from '@/utils/atom';
 import Image from 'next/image';
@@ -14,6 +14,7 @@ const hirelloSocket = process.env.NEXT_PUBLIC_VIDEO_HIRELLO_SOCKET;
 const Generate_video = () => {
   const searchParams = useSearchParams();
   const token = safeLocalStorage.getItem("token");
+  const router = useRouter();
   const id = searchParams.get('id');
   const [socket, setSocket] = useState(null);
 
@@ -53,6 +54,7 @@ const Generate_video = () => {
   return (
     <div className="m-8 ">
       <Header />
+      <p className='py-2 px-3 cursor-pointer border w-[60px]' onClick={()=>router.push(`/video/preview?id=${id}`)}>Back</p>
       <div className="flex flex-wrap justify-evenly">
         {videoArray?.map((item) => (
           <div className="w-[230px] mt-2" key={item.id}>

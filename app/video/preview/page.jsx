@@ -81,6 +81,7 @@ const Preview_video = () => {
  const [isSelecting, setIsSelecting] = useState(false);
  const startRef = useRef(null);
  const [highlightedSegment,setHighlightedSegment]=useState("")
+ const [indexToVisible,setIndexToVisible]=useState(null)
 
   const [receivedMessages, setReceivedMessages] = useState([]);
 
@@ -228,8 +229,8 @@ function findWords(index) {
   for (let i = index; i < data.length - 1; i++) {
     const current = data[i];
     const next = data[i + 1];
-    const updatedStartTime = next.start - 0.1
-    const updatedEndTime = current.end + 0.1
+    const updatedStartTime = next.start
+    const updatedEndTime = current.end
     if ((updatedStartTime - updatedEndTime) > 0.2) {
       end=current.end;
       break;
@@ -241,8 +242,8 @@ function findWords(index) {
 
     const current = data[i];
     const previous = data[i - 1];
-    const updatedStartTime = current.start - 0.1
-    const updatedEndTime = previous.end + 0.1
+    const updatedStartTime = current.start
+    const updatedEndTime = previous.end
     if (updatedStartTime - updatedEndTime > 0.2) {
       start=current.start
      break
@@ -386,6 +387,7 @@ function findWords(index) {
   }
 
     const handleMouseDown = (index) => {
+      setIndexToVisible(index)
       setIsSelecting(true);
       setSelectedIndices({ start: index, end: index });
       startRef.current = index;
@@ -488,10 +490,12 @@ function findWords(index) {
               <p>
                 {data?.map((i, index) => {
                   const word=i?.word?.trim()?.toLowerCase()
+                  const value=inputValue.trim().toLowerCase()
                   let isYellow=isHighlighted[word]
                   return (
+                    <>
                     <span
-                      className={`my-2 ${isYellow?'bg-[#E1b530]':''}`}
+                      className={`my-2 ${isYellow?'bg-[#FEF08A]':''}`}
                       onMouseDown={() => handleMouseDown(index)}
                       onMouseUp={() => handleMouseUp(index)}
 
@@ -499,14 +503,9 @@ function findWords(index) {
                     >
                      {i.word}
                     </span>
-                  );
-                })}
-              </p>
-
-
-              {editingWordIndex !== null && (
+                    {(editingWordIndex !== null && indexToVisible==index)  && (
                 <div
-                  className='w-1/2'
+                  className='w-auto absolute'
                   style={{
                     display: 'flex',
                     backgroundColor: '#fff',
@@ -527,9 +526,10 @@ function findWords(index) {
                   </div>
                 </div>
               )}
-
-
-
+                    </>
+                  );
+                })}
+              </p>
 
             </div>
           </div>
@@ -587,7 +587,7 @@ function findWords(index) {
                   let isYellow=isHighlighted[word]
                   return (
                     <span
-                      className={`my-2 break-all ${isYellow?'bg-[#E1b530]':''}`}
+                      className={`my-2 break-all ${isYellow?'bg-[#FEF08A]':''}`}
                       onClick={() => handleDoubleClick(i.punctuated_word, i.start, i.end, index)}
                       key={index} // Added key for list items
                     >
