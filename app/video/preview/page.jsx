@@ -74,6 +74,7 @@ const Preview_video = () => {
   const [data, setData] = useState([])
   const [segmentData, setSegmentData] = useState([])
   const fileInputRef = useRef(null);
+  const [isHighlighted,setIsHighlighted]=useState({})
   const [socket, setSocket] = useState(null);
  const setVideoArray = useSetAtom(videoArrayAtom);
  const [selectedIndices, setSelectedIndices] = useState({ start: null, end: null });
@@ -167,6 +168,16 @@ const Preview_video = () => {
       const result = await fetchData('api/v1/segment', queryParams,"hirello");
       if (result.code == 200) {
         setSegmentData(result?.result)
+        if(result?.result?.length>0){
+          let selected={}
+          for(let item of result?.result){
+            const word=item.highlight?.toLowerCase()
+            selected[word]=true
+          }
+          setIsHighlighted(selected)
+
+        }
+
       }
     } catch (error) {
       console.log(error, '========error')
@@ -217,7 +228,9 @@ function findWords(index) {
   for (let i = index; i < data.length - 1; i++) {
     const current = data[i];
     const next = data[i + 1];
-    if ((next.start - current.end) > 0.2) {
+    const updatedStartTime = next.start - 0.1
+    const updatedEndTime = current.end + 0.1
+    if ((updatedStartTime - updatedEndTime) > 0.2) {
       end=current.end;
       break;
     }
@@ -228,8 +241,9 @@ function findWords(index) {
 
     const current = data[i];
     const previous = data[i - 1];
-
-    if (current.start - previous.end > 0.2) {
+    const updatedStartTime = current.start - 0.1
+    const updatedEndTime = previous.end + 0.1
+    if (updatedStartTime - updatedEndTime > 0.2) {
       start=current.start
      break
     }
@@ -259,16 +273,16 @@ function findWords(index) {
 
       for(let item of data){
         if(startTime<=item.start && endTime >= item.end){
-          segments=segments+item.word+" "
+          segments=segments+item.word
         }
       }
 
       const responseData = await postData(`api/v1/segment`, {
         name: inputValue?.trim(),
-        start_time: `${startTime}`,
+        start_time: startTime,
         segment: segments?.trim(),
         instance_id: id,
-        end_time: `${endTime}`,
+        end_time: endTime,
         highlight_si:highlight_si,
         highlight_ei:highlight_ei,
         highlight: highlightedSegment?.trim(),
@@ -388,10 +402,8 @@ function findWords(index) {
       setSelectedIndices({ start: selectedStart, end: selectedEnd });
       findWords(selectedStart);
       let segment=""
-      console.log(selectedStart,"==>",selectedEnd)
       for(let i=selectedStart;i<=selectedEnd;i++){
-
-        segment=segment+data[i].word+" "
+        segment=segment+data[i].word
       }
       setHighlightedSegment(segment)
       setEditingWordIndex(selectedStart);
@@ -433,7 +445,6 @@ function findWords(index) {
   const video_url = videoUrl
   let arr = []
   if (segmentData) {
-    console.log(segmentData, 'segmentData')
     arr = segmentData
   }
 
@@ -456,7 +467,7 @@ function findWords(index) {
                 {arr?.map(
                   (i, index) => {
                     return (
-                      <div className='bg-white p-2 rounded-xl flex gap-1' key={index}>
+                      <div className={`bg-white p-2 rounded-xl flex gap-1`} key={index}>
                         {i.name}
                         <X
                           className='cursor-pointer'
@@ -476,9 +487,11 @@ function findWords(index) {
             <div className=' m-4 '>
               <p>
                 {data?.map((i, index) => {
+                  const word=i?.word?.trim()?.toLowerCase()
+                  let isYellow=isHighlighted[word]
                   return (
                     <span
-                      className="p-2 "
+                      className={`my-2 ${isYellow?'bg-[#E1b530]':''}`}
                       onMouseDown={() => handleMouseDown(index)}
                       onMouseUp={() => handleMouseUp(index)}
 
@@ -570,13 +583,11 @@ function findWords(index) {
             <div className=' m-4 '>
               <p>
                 {data?.map((i, index) => {
-                  // Find the matched segment
-                  const matchedSegment = segmentData?.find(
-                    (segment) => segment.start_time == i.start && segment.end_time == i.end
-                  );
+                  const word=i?.word?.trim()
+                  let isYellow=isHighlighted[word]
                   return (
                     <span
-                      className="p-2 break-all"
+                      className={`my-2 break-all ${isYellow?'bg-[#E1b530]':''}`}
                       onClick={() => handleDoubleClick(i.punctuated_word, i.start, i.end, index)}
                       key={index} // Added key for list items
                     >
