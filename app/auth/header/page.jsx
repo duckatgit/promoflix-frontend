@@ -44,7 +44,7 @@ const Header = () => {
             <NameLogo name={name} />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem onClick={logOutUser}>Log out</DropdownMenuItem>
+            <DropdownMenuItem style={{cursor:"pointer"}} onClick={logOutUser}>Log out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
