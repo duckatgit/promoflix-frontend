@@ -20,12 +20,12 @@ const Header = () => {
     setname(data);
   }, []);
 
-  const logOutUser = ()=>{
+  const logOutUser = () => {
     toast({
-        description: "Logout SuccessfullY"
-      })
-    localStorage.removeItem('token')
-    localStorage.removeItem('name')
+      description: "Logout SuccessfullY"
+    })
+    safeLocalStorage.removeItem('token')
+    safeLocalStorage.removeItem('name')
     router.push('/auth/login');
   }
 
@@ -42,7 +42,7 @@ const Header = () => {
             <NameLogo name={name} />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem style={{cursor:"pointer"}} onClick={logOutUser}>Log out</DropdownMenuItem>
+            <DropdownMenuItem style={{ cursor: "pointer" }} onClick={logOutUser}>Log out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

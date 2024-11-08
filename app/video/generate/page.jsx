@@ -92,6 +92,7 @@ const Generate_video = () => {
     updateCsvData()
   }, [videoArray])
 
+
   return (
     <div className="m-8 ">
       <Header />
@@ -105,7 +106,12 @@ const Generate_video = () => {
         </Button>
 
         {csvData && (
-          <CSVLink className='py-2 px-3 ml-2 cursor-pointer ' data={csvData.records} headers={csvData.headers}>
+          <CSVLink
+            className='py-2 px-3 ml-2 cursor-pointer '
+            filename={`${id}.csv`}
+            data={csvData.records}
+            headers={csvData.headers}
+          >
             <Button variant="outline" >Download CSV</Button>
           </CSVLink>
         )}
