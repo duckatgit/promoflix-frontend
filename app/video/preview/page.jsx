@@ -444,7 +444,7 @@ const Preview_video = () => {
       myfunction(id);
       getAllSegment();
       getFile();
-      connectWebSocket();
+      // connectWebSocket();
     }
   }, []);
   const video_url = videoUrl;
@@ -452,6 +452,8 @@ const Preview_video = () => {
   if (segmentData) {
     arr = segmentData;
   }
+
+  console.log(selectedFile,fileData)
 
   return (
     <div className="m-8 ">
