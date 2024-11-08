@@ -68,6 +68,30 @@ const Generate_video = () => {
     connectWebSocket()
   }, [])
 
+
+  const updateCsvData = () => {
+    if (videoArray) {
+      videoArray.forEach((video) => {
+        setCsvData((preCsvData) => {
+          const newCsvRecords = preCsvData.records.map((data) => {
+            if (video.texts.includes(data[0]) && video.status === 'succeeded' && !data.includes(video.video_url)) {
+              let newCsvRecData = [...data]
+              return [...newCsvRecData, video.video_url]
+            } else {
+              return data
+            }
+          })
+          return { ...preCsvData, records: newCsvRecords }
+        })
+
+      })
+    }
+  }
+
+  useEffect(() => {
+    updateCsvData()
+  }, [videoArray])
+
   return (
     <div className="m-8 ">
       <Header />
@@ -85,6 +109,7 @@ const Generate_video = () => {
             <Button variant="outline" >Download CSV</Button>
           </CSVLink>
         )}
+
       </div>
 
 

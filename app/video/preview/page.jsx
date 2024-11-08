@@ -456,8 +456,6 @@ const Preview_video = () => {
     arr = segmentData;
   }
 
-  console.log(selectedFile, fileData)
-
   return (
     <div className="m-8 ">
       <Header />
