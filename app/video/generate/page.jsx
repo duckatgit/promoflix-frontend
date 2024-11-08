@@ -2,15 +2,13 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import Header from '../../auth/header/page';
-import { CSVLink, CSVDownload } from "react-csv";
+import { CSVLink } from "react-csv";
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAtom } from 'jotai';
-import { videoArrayAtom } from '@/utils/atom';
+import { videoArrayAtom, csvDataAtom } from '@/utils/atom';
 import Image from 'next/image';
 import { safeLocalStorage } from "@/lib/safelocastorage"
 import { useToast } from '@/hooks/use-toast';
-import { fetchData, postData, deleteData } from "../../../utils/api";
-import { Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 const hirelloSocket = process.env.NEXT_PUBLIC_VIDEO_HIRELLO_SOCKET;
 
@@ -21,9 +19,8 @@ const Generate_video = () => {
   const { toast } = useToast()
   const id = searchParams.get('id');
   const [socket, setSocket] = useState(null);
-  const [hasFile, setHasFile] = useState(false);
-  const [fileData, setFileData] = useState({});
   const [videoArray, setVideoArray] = useAtom(videoArrayAtom);
+  const [csvData, setCsvData] = useAtom(csvDataAtom)
 
   const connectWebSocket = () => {
     if (!socket) {
@@ -67,22 +64,8 @@ const Generate_video = () => {
     }
   };
 
-  const getFile = async () => {
-    try {
-      const result = await fetchData(`api/csv/${id}`, {}, "csv");
-      console.log(result, "=========resultfile");
-      if (result.code == 200) {
-        setHasFile(true);
-        setFileData(result.result);
-      }
-    } catch (error) {
-      console.log(error, "=========error");
-    }
-  };
-
   useEffect(() => {
     connectWebSocket()
-    getFile()
   }, [])
 
   return (
@@ -97,8 +80,8 @@ const Generate_video = () => {
           Back
         </Button>
 
-        {hasFile && (
-          <CSVLink className='py-2 px-3 ml-2 cursor-pointer ' data={fileData.records} headers={fileData.headers}>
+        {csvData && (
+          <CSVLink className='py-2 px-3 ml-2 cursor-pointer ' data={csvData.records} headers={csvData.headers}>
             <Button variant="outline" >Download CSV</Button>
           </CSVLink>
         )}

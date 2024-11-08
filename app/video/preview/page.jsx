@@ -39,7 +39,8 @@ import { safeLocalStorage } from "@/lib/safelocastorage";
 
 import Image from "next/image";
 import { useSetAtom } from "jotai";
-import { videoArrayAtom } from "@/utils/atom";
+import { videoArrayAtom, csvDataAtom } from "@/utils/atom";
+
 
 const whisperxSocker = process.env.NEXT_PUBLIC_VIDEO_WHISPERX_SOCKET;
 const hirelloSocket = process.env.NEXT_PUBLIC_VIDEO_HIRELLO_SOCKET;
@@ -75,6 +76,7 @@ const Preview_video = () => {
   const [isHighlighted, setIsHighlighted] = useState({});
   const [socket, setSocket] = useState(null);
   const setVideoArray = useSetAtom(videoArrayAtom);
+  const setCsvData = useSetAtom(csvDataAtom);
   const [selectedIndices, setSelectedIndices] = useState({
     start: null,
     end: null,
@@ -190,6 +192,7 @@ const Preview_video = () => {
       console.log(result, "=========resultfile");
       if (result.code == 200) {
         setHasFile(true);
+        setCsvData(result.result)
         setFileData(result.result);
       }
     } catch (error) {
@@ -453,7 +456,7 @@ const Preview_video = () => {
     arr = segmentData;
   }
 
-  console.log(selectedFile,fileData)
+  console.log(selectedFile, fileData)
 
   return (
     <div className="m-8 ">
@@ -640,9 +643,8 @@ const Preview_video = () => {
                   let isYellow = isHighlighted[word];
                   return (
                     <span
-                      className={`my-2 break-all ${
-                        isYellow ? "bg-[#FEF08A]" : ""
-                      }`}
+                      className={`my-2 break-all ${isYellow ? "bg-[#FEF08A]" : ""
+                        }`}
                       onClick={() =>
                         handleDoubleClick(
                           i.punctuated_word,
