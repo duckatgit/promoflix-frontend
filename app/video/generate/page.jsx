@@ -11,6 +11,7 @@ import { safeLocalStorage } from "@/lib/safelocastorage"
 import { useToast } from '@/hooks/use-toast';
 import { fetchData, postData, deleteData } from "../../../utils/api";
 import { Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 const hirelloSocket = process.env.NEXT_PUBLIC_VIDEO_HIRELLO_SOCKET;
 
 const Generate_video = () => {
@@ -87,14 +88,20 @@ const Generate_video = () => {
   return (
     <div className="m-8 ">
       <Header />
-      <div className="flex flex-wrap">
-        <p className='py-2 px-3 cursor-pointer border w-[60px]' onClick={() => router.push(`/video/preview?id=${id}`)}>Back</p>
+      <div className="flex items-center justify-between">
 
-        {hasFile && (<CSVLink className='py-2 px-3 ml-2 cursor-pointer border ' data={fileData.records} headers={fileData.headers}>
-          <Download
-            className="text-neutral-400 border-2 rounded-3xl size-10 border-neutral-400 p-2 mr-2 cursor-pointer"
-          />
-        </CSVLink>)}
+        <Button
+          className='py-2 px-3 cursor-pointer border w-[60px]'
+          onClick={() => router.push(`/video/preview?id=${id}`)}
+        >
+          Back
+        </Button>
+
+        {hasFile && (
+          <CSVLink className='py-2 px-3 ml-2 cursor-pointer ' data={fileData.records} headers={fileData.headers}>
+            <Button variant="outline" >Download CSV</Button>
+          </CSVLink>
+        )}
       </div>
 
 
@@ -110,11 +117,12 @@ const Generate_video = () => {
               )
               :
               (<Image
-                className="border rounded-lg"
                 src="/assets/web-icon-flat.jpg"
                 alt="My Image"
                 width={400}
                 height={230}
+                className="border rounded-lg w-[400px] h-[225px]"
+                objectFit='stretch'
               />)}
 
             <p className="text-center">Status: {item.status}</p>
