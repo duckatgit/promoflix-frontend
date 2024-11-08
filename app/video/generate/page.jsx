@@ -71,10 +71,11 @@ const Generate_video = () => {
 
   const updateCsvData = () => {
     if (videoArray) {
-      videoArray.forEach((video) => {
+      videoArray.forEach((video, videoIndex) => {
         setCsvData((preCsvData) => {
-          const newCsvRecords = preCsvData.records.map((data) => {
-            if (video.texts.includes(data[0]) && video.status === 'succeeded' && !data.includes(video.video_url)) {
+          const newCsvRecords = preCsvData.records.map((data, recordIndex) => {
+            // const isIncluded = data.some(item => video.texts.includes(item));
+            if (videoIndex === recordIndex && video.status === 'succeeded' && !data.includes(video.video_url)) {
               let newCsvRecData = [...data]
               return [...newCsvRecData, video.video_url]
             } else {
@@ -92,7 +93,7 @@ const Generate_video = () => {
     updateCsvData()
   }, [videoArray])
 
-
+  console.log(videoArray)
   return (
     <div className="m-8 ">
       <Header />
