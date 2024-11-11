@@ -29,9 +29,13 @@ const Header = () => {
     router.push('/auth/login');
   }
 
+  const redirectToHomePage = () => {
+    router.push('/home/dashboard');
+  }
+
   return (
     <div className="flex justify-between mt-2">
-      <div>
+      <div className="cursor-pointer" onClick={redirectToHomePage}>
         <img src="/assets/semi-final 2 (1).png" alt="" />
       </div>
       <div style={{ width: "500px" }}></div>

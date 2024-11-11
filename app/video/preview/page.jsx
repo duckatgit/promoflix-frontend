@@ -40,6 +40,7 @@ import { safeLocalStorage } from "@/lib/safelocastorage";
 import Image from "next/image";
 import { useSetAtom } from "jotai";
 import { videoArrayAtom, csvDataAtom } from "@/utils/atom";
+import { Skeleton } from "@/components/ui/skeleton"
 
 
 const whisperxSocker = process.env.NEXT_PUBLIC_VIDEO_WHISPERX_SOCKET;
@@ -115,6 +116,15 @@ const Preview_video = () => {
     }
   };
   const sendMessage = async () => {
+    if (!hasFile) {
+      toast({
+        variant: "destructive",
+        title: "",
+        description: "Please upload csv file",
+      })
+      return;
+    }
+
     const data = await postData(`api/v1/generate/${id}`, {}, "hirello");
     if (data.code == 200) {
       setVideoArray(data.result);
@@ -365,7 +375,7 @@ const Preview_video = () => {
               }
             });
           }
-          setData(newWords);
+          setData(() => [...newWords]);
         };
 
         socket.onerror = (error) => {
@@ -455,7 +465,6 @@ const Preview_video = () => {
   if (segmentData) {
     arr = segmentData;
   }
-
   return (
     <div className="m-8 ">
       <Header />
@@ -495,65 +504,82 @@ const Preview_video = () => {
               </div>
             </div>
             <div className=" m-4 ">
-              <p>
-                {data?.map((i, index) => {
-                  const word = i?.word?.trim()?.toLowerCase();
-                  const value = inputValue.trim().toLowerCase();
-                  let isYellow = isHighlighted[word];
-                  return (
-                    <>
-                      <span
-                        className={`my-2 ${isYellow ? "bg-[#FEF08A]" : ""}`}
-                        onMouseDown={() => handleMouseDown(index)}
-                        onMouseUp={() => handleMouseUp(index)}
-                        key={index} // Added key for list items
-                      >
-                        {i.word}
-                      </span>
-                      {editingWordIndex !== null && indexToVisible == index && (
-                        <div
-                          className="w-auto absolute"
-                          style={{
-                            display: "flex",
-                            backgroundColor: "#fff",
-                            padding: "10px",
-                            borderRadius: "8px",
-                            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
-                            zIndex: 10,
-                          }}
+              {data && data.length > 0 ?
+                <p>
+                  {data?.map((i, index) => {
+                    const word = i?.word?.trim()?.toLowerCase();
+                    const value = inputValue.trim().toLowerCase();
+                    let isYellow = isHighlighted[word];
+                    return (
+                      <>
+                        <span
+                          className={`my-2 ${isYellow ? "bg-[#FEF08A]" : ""}`}
+                          onMouseDown={() => handleMouseDown(index)}
+                          onMouseUp={() => handleMouseUp(index)}
+                          key={index} // Added key for list items
                         >
-                          <Input
-                            value={inputValue}
-                            onChange={handleInputChange}
-                          />
-                          <div className="flex justify-between ">
-                            <div
-                              className="bg-gray-300 p-2 mx-2 my-1 text-gray-600"
-                              onClick={handleTickClick}
-                              style={{
-                                cursor: "pointer",
-                                borderRadius: "10px",
-                              }}
-                            >
-                              <Check />
-                            </div>
-                            <div
-                              className="bg-gray-300 p-2  mx-2 my-1 text-gray-600"
-                              onClick={handleCrossClick}
-                              style={{
-                                cursor: "pointer",
-                                borderRadius: "10px",
-                              }}
-                            >
-                              <X />
+                          {i.word}
+                        </span>
+                        {editingWordIndex !== null && indexToVisible == index && (
+                          <div
+                            className="w-auto absolute"
+                            style={{
+                              display: "flex",
+                              backgroundColor: "#fff",
+                              padding: "10px",
+                              borderRadius: "8px",
+                              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
+                              zIndex: 10,
+                            }}
+                          >
+                            <Input
+                              value={inputValue}
+                              onChange={handleInputChange}
+                            />
+                            <div className="flex justify-between ">
+                              <div
+                                className="bg-gray-300 p-2 mx-2 my-1 text-gray-600"
+                                onClick={handleTickClick}
+                                style={{
+                                  cursor: "pointer",
+                                  borderRadius: "10px",
+                                }}
+                              >
+                                <Check />
+                              </div>
+                              <div
+                                className="bg-gray-300 p-2  mx-2 my-1 text-gray-600"
+                                onClick={handleCrossClick}
+                                style={{
+                                  cursor: "pointer",
+                                  borderRadius: "10px",
+                                }}
+                              >
+                                <X />
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      )}
-                    </>
-                  );
-                })}
-              </p>
+                        )}
+                      </>
+                    );
+                  })
+                  }
+                </p>
+                : (
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-full bg-gray-300" />
+                    <Skeleton className="h-4 w-full bg-gray-300" />
+                    <Skeleton className="h-4 w-full bg-gray-300" />
+                    <Skeleton className="h-4 w-full bg-gray-300" />
+                    <Skeleton className="h-4 w-full bg-gray-300" />
+                    <Skeleton className="h-4 w-full bg-gray-300" />
+                    <Skeleton className="h-4 w-full bg-gray-300" />
+                    <Skeleton className="h-4 w-full bg-gray-300" />
+                    <Skeleton className="h-4 w-full bg-gray-300" />
+                    <Skeleton className="h-4 w-full bg-gray-300" />
+                  </div>
+                )}
+
             </div>
           </div>
         </div>

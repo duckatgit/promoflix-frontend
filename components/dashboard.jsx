@@ -38,6 +38,7 @@ import {
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "./ui/button";
 import { fetchData, postData, deleteData, putData } from "@/utils/api";
+import Image from "next/image";
 
 
 const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAllInstance }) => {
@@ -53,6 +54,7 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
   const [rowSelection, setRowSelection] = useState({});
   const [fileModal, setFileModal] = useState(false);
   const [uploadFileModal, setUploadFileModal] = useState(false);
+  const [showLoader, setShowLoader] = useState(false)
 
   const [updateInstanceModal, setupdateInstanceModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null); // State to store the selected file
@@ -105,7 +107,7 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
             const queryParams = {
               id: instance_id
             };
-            const data = await deleteData('api/v1/instance', queryParams,"hirello");
+            const data = await deleteData('api/v1/instance', queryParams, "hirello");
             if (data.code != 200) {
               toast({
                 variant: "destructive",
@@ -158,7 +160,7 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
         name: instance,
         "data_id": null,
         "video_id": null
-      },"hirello");
+      }, "hirello");
       if (data.code != 200) {
         toast({
           variant: "destructive",
@@ -196,7 +198,7 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
   });
   const getVideo = async (e, row) => {
     try {
-      const data = await fetchData(`api/v1/file/${row.original.id}`, {},"hirello");
+      const data = await fetchData(`api/v1/file/${row.original.id}`, {}, "hirello");
       console.log(data, 'datafile')
       if (data.code == 200) {
         router.push(`/video/preview?id=${row.original.id}`)
@@ -217,14 +219,17 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
       if (selectedFile) {
         const formData = new FormData();
         formData.append('file', selectedFile);
+        setShowLoader(true)
         const data = await postData(`api/v1/file/${id}`, formData, "hirello");
         if (data.code == 200) {
           setUploadFileModal(false);
+          setShowLoader(false)
           setId("")
           router.push(`/video/preview?id=${id}`)
         }
       }
     } catch (error) {
+      setShowLoader(false)
       console.log(error, '==========error')
     }
   }
@@ -240,153 +245,174 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
       }
     };
   }
+
+  console.log('allInstances', allInstances)
   return (
-    <><div className="w-full">
-      <Button
-        className="flex justify-end ml-auto text-black mb-2 gap-2"
-        style={{ backgroundColor: "#FFC000" }}
-        onClick={handleUploadClick}
-      >
-        <Upload className="h-4 w-4" />
-        <span>Create Instance</span>
-      </Button>
+    <>
 
-      <Dialog open={uploadFileModal} onOpenChange={setUploadFileModal} >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Upload Video</DialogTitle>
-          </DialogHeader>
-          <div className="gap-4 border-dashed justify-center flex flex-col m-4 items-center">
-            <div>
-              {/* Hidden file input */}
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                style={{ display: 'none' }} // Hide the input
-                id="file-upload" // Add an ID to associate with the label
-              />
-              {/* Label styled as a button */}
-              <label htmlFor="file-upload" className="bg-gray-200 p-2 border-dashed border-2 rounded cursor-pointer">
-                Choose a file
-              </label>
+
+      <div className="w-full">
+        <Button
+          className="flex justify-end ml-auto text-black mb-2 gap-2"
+          style={{ backgroundColor: "#FFC000" }}
+          onClick={handleUploadClick}
+        >
+          <Upload className="h-4 w-4" />
+          <span>Create Instance</span>
+        </Button>
+
+        <Dialog open={uploadFileModal} onOpenChange={setUploadFileModal} >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Upload Video</DialogTitle>
+            </DialogHeader>
+
+            <div className="gap-4 border-dashed justify-center flex flex-col m-4 items-center">
+
+              {showLoader && (
+                <div className="flex absolute w-full top-0 bottom-0 justify-center bg-gray-300 bg-opacity-50 ">
+                  <Image
+                    src="/assets/tube-spinner.svg"
+                    alt="Logo"
+                    width={50}
+                    height={50}
+                  />
+                </div>
+              )}
+
+
+
+              <div>
+                {/* Hidden file input */}
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  style={{ display: 'none' }} // Hide the input
+                  id="file-upload" // Add an ID to associate with the label
+                />
+                {/* Label styled as a button */}
+                <label htmlFor="file-upload" className="bg-gray-200 p-2 border-dashed border-2 rounded cursor-pointer">
+                  Choose a file
+                </label>
+              </div>
+              {/* Show the selected file name */}
+              {selectedFile?.name && <p>{selectedFile.name}</p>}
             </div>
-            {/* Show the selected file name */}
-            {selectedFile?.name && <p>{selectedFile.name}</p>}
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setUploadFileModal(false);
-                setSelectedFile(null);
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              className="bg-[#FFC000] text-black"
-              onClick={() => {
-                handleSendFile();
-              }}
-            >
-              Submit
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setUploadFileModal(false);
+                  setShowLoader(false)
+                  setSelectedFile(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="bg-[#FFC000] text-black"
+                onClick={() => {
+                  handleSendFile();
+                }}
+              >
+                Submit
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
 
-      <Dialog open={fileModal} onOpenChange={setFileModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Create Instance
-            </DialogTitle>
-          </DialogHeader>
-          <div className="gap-4 border-dashed justify-center flex flex-col m-4 items-center">
-            <div className="flex flex-col space-y-1.5 w-[400px]">
-              <input className="h-10 rounded-md pl-3" type="text" value={instance} onChange={(e) => { setInstance(e.target.value); }} />
+        <Dialog open={fileModal} onOpenChange={setFileModal}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Create Instance
+              </DialogTitle>
+            </DialogHeader>
+            <div className="gap-4 border-dashed justify-center flex flex-col m-4 items-center">
+              <div className="flex flex-col space-y-1.5 w-[400px]">
+                <input className="h-10 rounded-md pl-3" type="text" value={instance} onChange={(e) => { setInstance(e.target.value); }} />
+              </div>
             </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => {
-              setFileModal(false)
-              setInstance("")
-            }}>
-              Cancel
-            </Button>
-            <Button
-              className="bg-[#FFC000] text-black"
-              onClick={() => {
-                createInstance();
-                setFileModal(false);
-                getAllInstance();
-              }}
-            >
-              Submit
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      <Dialog open={updateInstanceModal} onOpenChange={setupdateInstanceModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Update Instance
-            </DialogTitle>
-          </DialogHeader>
-          <div className="gap-4 border-dashed justify-center flex flex-col m-4 items-center">
-            <div className="flex flex-col space-y-1.5 w-[400px]">
-              <input className="h-10 rounded-md" type="text" value={instance} onChange={(e) => { setInstance(e.target.value); }} />
+            <DialogFooter>
+              <Button variant="outline" onClick={() => {
+                setFileModal(false)
+                setInstance("")
+              }}>
+                Cancel
+              </Button>
+              <Button
+                className="bg-[#FFC000] text-black"
+                onClick={() => {
+                  createInstance();
+                  setFileModal(false);
+                  getAllInstance();
+                }}
+              >
+                Submit
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+        <Dialog open={updateInstanceModal} onOpenChange={setupdateInstanceModal}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Update Instance
+              </DialogTitle>
+            </DialogHeader>
+            <div className="gap-4 border-dashed justify-center flex flex-col m-4 items-center">
+              <div className="flex flex-col space-y-1.5 w-[400px]">
+                <input className="h-10 rounded-md" type="text" value={instance} onChange={(e) => { setInstance(e.target.value); }} />
+              </div>
             </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setupdateInstanceModal(false)}>
-              Cancel
-            </Button>
-            <Button
-              className="bg-[#FFC000] text-black"
-              onClick={() => {
-                updateInstance();
-                setupdateInstanceModal(false);
-                getAllInstance();
-              }}
-            >
-              Update
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setupdateInstanceModal(false)}>
+                Cancel
+              </Button>
+              <Button
+                className="bg-[#FFC000] text-black"
+                onClick={() => {
+                  updateInstance();
+                  setupdateInstanceModal(false);
+                  getAllInstance();
+                }}
+              >
+                Update
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map(headerGroup => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map(header => (
-                <TableHead key={header.id}>
-                  {flexRender(header.column.columnDef.header, header.getContext())}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows.map(row => (
-            <TableRow className="cursor-pointer" key={row.id} onClick={
-              (e) => {
-                setId(row?.original?.id),
-                  getVideo(e, row)
-              }
-            }>
-              {row.getVisibleCells().map(cell => (
-                <TableCell key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div><div className="flex items-center justify-end space-x-2 py-4">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map(headerGroup => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map(header => (
+                  <TableHead key={header.id}>
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows.map(row => (
+              <TableRow className="cursor-pointer" key={row.id} onClick={
+                (e) => {
+                  setId(row?.original?.id),
+                    getVideo(e, row)
+                }
+              }>
+                {row.getVisibleCells().map(cell => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div><div className="flex items-center justify-end space-x-2 py-4">
         <div className="space-x-2">
           <Button
             variant="outline"

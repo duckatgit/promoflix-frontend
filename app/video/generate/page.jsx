@@ -47,6 +47,15 @@ const Generate_video = () => {
           toast({
             description: updatedData[0].message,
           })
+
+          const targetUrl = `/video/generate?id=${id}`;
+          if (router.pathname !== '/video/generate' || router.query.id !== id) {
+            // Only navigate if we are not already on the target page
+            setTimeout(() => {
+              console.log(`Navigating to ${targetUrl}`);
+              router.push(targetUrl);
+            }, 0);
+          }
         }
 
         // setReceivedMessages((prevMessages) => [...prevMessages, event.data]);
@@ -84,7 +93,6 @@ const Generate_video = () => {
           })
           return { ...preCsvData, records: newCsvRecords }
         })
-
       })
     }
   }
@@ -93,7 +101,6 @@ const Generate_video = () => {
     updateCsvData()
   }, [videoArray])
 
-  console.log(videoArray)
   return (
     <div className="m-8 ">
       <Header />
