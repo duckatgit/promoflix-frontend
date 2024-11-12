@@ -38,10 +38,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { safeLocalStorage } from "@/lib/safelocastorage";
 
 import Image from "next/image";
-import { useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { videoArrayAtom, csvDataAtom } from "@/utils/atom";
-import { Skeleton } from "@/components/ui/skeleton"
-
 
 const whisperxSocker = process.env.NEXT_PUBLIC_VIDEO_WHISPERX_SOCKET;
 const hirelloSocket = process.env.NEXT_PUBLIC_VIDEO_HIRELLO_SOCKET;
@@ -73,10 +71,11 @@ const Preview_video = () => {
   const [inputValue, setInputValue] = useState("");
   const [data, setData] = useState([]);
   const [segmentData, setSegmentData] = useState([]);
+  const [transcriptSteps, setTranscriptSteps] = useState('Loading...')
   const fileInputRef = useRef(null);
   const [isHighlighted, setIsHighlighted] = useState({});
   const [socket, setSocket] = useState(null);
-  const setVideoArray = useSetAtom(videoArrayAtom);
+  const [videoArray, setVideoArray] = useAtom(videoArrayAtom);
   const setCsvData = useSetAtom(csvDataAtom);
   const [selectedIndices, setSelectedIndices] = useState({
     start: null,
@@ -184,7 +183,8 @@ const Preview_video = () => {
           let selected = {};
           for (let item of result?.result) {
             const word = item.highlight?.toLowerCase();
-            selected[word] = true;
+            // selected[word] = true;
+            selected[word] = { start_time: item?.start_time, end_time: item?.end_time, highlight: true }
           }
           setIsHighlighted(selected);
         } else {
@@ -364,6 +364,7 @@ const Preview_video = () => {
           const data = JSON.parse(event.data);
           if (data && data.segments) {
             data.segments.forEach((segment) => {
+
               if (segment.words) {
                 segment.words.forEach((word) => {
                   newWords.push({
@@ -374,6 +375,10 @@ const Preview_video = () => {
                 });
               }
             });
+            setTranscriptSteps(() => 'Loading...')
+
+          } else {
+            setTranscriptSteps(() => data?.step)
           }
           setData(() => [...newWords]);
         };
@@ -468,6 +473,27 @@ const Preview_video = () => {
   return (
     <div className="m-8 ">
       <Header />
+      <div className="flex items-center justify-between ">
+
+        <Button
+          className='py-2 px-3 ml-4 cursor-pointer border w-[60px]'
+          onClick={() => router.push(`/home/dashboard`)}
+        >
+          Back
+        </Button>
+
+        {/* {csvData && (
+          <CSVLink
+            className='py-2 m-0 cursor-pointer '
+            filename={`${id}.csv`}
+            data={csvData.records}
+            headers={csvData.headers}
+          >
+            <Button variant="outline" >Download CSV</Button>
+          </CSVLink>
+        )} */}
+
+      </div>
       <div>
         <div className="flex justify-between">
           <div className="w-1/2 m-4">
@@ -509,7 +535,10 @@ const Preview_video = () => {
                   {data?.map((i, index) => {
                     const word = i?.word?.trim()?.toLowerCase();
                     const value = inputValue.trim().toLowerCase();
-                    let isYellow = isHighlighted[word];
+                    let isYellow = i.start >= isHighlighted[word]?.start_time && i.end <= isHighlighted[word]?.end_time ? true : false;
+
+                    // let isYellow = isHighlighted[word]?.highlight && i.id === isHighlighted[word].id;
+
                     return (
                       <>
                         <span
@@ -566,17 +595,15 @@ const Preview_video = () => {
                   }
                 </p>
                 : (
-                  <div className="space-y-2">
-                    <Skeleton className="h-4 w-full bg-gray-300" />
-                    <Skeleton className="h-4 w-full bg-gray-300" />
-                    <Skeleton className="h-4 w-full bg-gray-300" />
-                    <Skeleton className="h-4 w-full bg-gray-300" />
-                    <Skeleton className="h-4 w-full bg-gray-300" />
-                    <Skeleton className="h-4 w-full bg-gray-300" />
-                    <Skeleton className="h-4 w-full bg-gray-300" />
-                    <Skeleton className="h-4 w-full bg-gray-300" />
-                    <Skeleton className="h-4 w-full bg-gray-300" />
-                    <Skeleton className="h-4 w-full bg-gray-300" />
+                  <div className="flex flex-col w-full h-[300px] justify-center items-center ">
+                    <Image
+                      src="/assets/tube-spinner.svg"
+                      alt="Logo"
+                      width={50}
+                      height={50}
+                    />
+                    <p>{transcriptSteps}</p>
+
                   </div>
                 )}
 
@@ -708,9 +735,13 @@ const Preview_video = () => {
               >
                 Merge Video
               </Button>
-              <Button className="bg-[#FFC000] text-black ml-3">
-                Reset all
+
+              <Button
+                onClick={() => router.push(`/video/generate?id=${id}`)}
+                className="bg-[#FFC000] text-black ml-3">
+                Go to generate page
               </Button>
+
             </div>
           </div>
         </div>

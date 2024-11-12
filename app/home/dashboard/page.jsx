@@ -19,7 +19,7 @@ const DataTableDemo = () => {
         page: 0,
         limit: 100
       };
-      const result = await fetchData('api/v1/instance', queryParams,"hirello");
+      const result = await fetchData('api/v1/instance', queryParams, "hirello");
       if (result.code != 200) {
         toast({
           variant: "destructive",
@@ -45,7 +45,7 @@ const DataTableDemo = () => {
       if (instance) {
         const response = await postData('api/v1/instance', {
           name: instance,
-        },"hirello");
+        }, "hirello");
         if (response.code !== 200) {
           toast({
             variant: "destructive",

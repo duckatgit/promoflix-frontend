@@ -10,6 +10,7 @@ import Image from 'next/image';
 import { safeLocalStorage } from "@/lib/safelocastorage"
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
+import { FileVideo2 } from 'lucide-react';
 const hirelloSocket = process.env.NEXT_PUBLIC_VIDEO_HIRELLO_SOCKET;
 
 const Generate_video = () => {
@@ -48,14 +49,14 @@ const Generate_video = () => {
             description: updatedData[0].message,
           })
 
-          const targetUrl = `/video/generate?id=${id}`;
-          if (router.pathname !== '/video/generate' || router.query.id !== id) {
-            // Only navigate if we are not already on the target page
-            setTimeout(() => {
-              console.log(`Navigating to ${targetUrl}`);
-              router.push(targetUrl);
-            }, 0);
-          }
+          // const targetUrl = `/video/generate?id=${id}`;
+          // if (router.pathname !== '/video/generate' || router.query.id !== id) {
+          //   // Only navigate if we are not already on the target page
+          //   setTimeout(() => {
+          //     console.log(`Navigating to ${targetUrl}`);
+          //     router.push(targetUrl);
+          //   }, 0);
+          // }
         }
 
         // setReceivedMessages((prevMessages) => [...prevMessages, event.data]);
@@ -104,10 +105,10 @@ const Generate_video = () => {
   return (
     <div className="m-8 ">
       <Header />
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between ">
 
         <Button
-          className='py-2 px-3 cursor-pointer border w-[60px]'
+          className='py-2 px-3 ml-4 cursor-pointer border w-[60px]'
           onClick={() => router.push(`/video/preview?id=${id}`)}
         >
           Back
@@ -115,7 +116,7 @@ const Generate_video = () => {
 
         {csvData && (
           <CSVLink
-            className='py-2 px-3 ml-2 cursor-pointer '
+            className='py-2 m-0 cursor-pointer '
             filename={`${id}.csv`}
             data={csvData.records}
             headers={csvData.headers}
@@ -127,29 +128,46 @@ const Generate_video = () => {
       </div>
 
 
-      <div className="flex flex-wrap justify-evenly">
-        {videoArray?.map((item) => (
-          <div className="w-[400px] mt-2" key={item.id}>
-            {item?.video_url ?
-              (
-                <video width="400" controls>
-                  <source src={item?.video_url} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-              )
-              :
-              (<Image
-                src="/assets/web-icon-flat.jpg"
-                alt="My Image"
-                width={400}
-                height={230}
-                className="border rounded-lg w-[400px] h-[225px]"
-                objectFit='stretch'
-              />)}
+      <div className="flex flex-wrap ml-4 border justify-around">
+        <div className='w-full p-4 font-bold '>
+          <p>Generated Videos</p>
 
-            <p className="text-center">Status: {item.status}</p>
-          </div>
-        ))}
+        </div>
+        {videoArray && videoArray.length > 0 ? videoArray?.map((item, index) => {
+          const findKeyword = csvData?.records[index][0] || ''
+          return (
+            <div className="w-[300px] mt-2 mb-2 ml-2" key={item.id}>
+              {item?.video_url ?
+                (
+                  <div className='flex w-[300px] p-4 overflow-hidden border'>
+                    <div className='flex flex-col items-center w-3/5 border-r-2 p-2'>
+                      <video width="150" controls>
+                        <source src={item?.video_url} type="video/mp4" />
+                        Your browser does not support the video tag.
+                      </video>
+                    </div>
+                    <div className='flex flex-col items-start pl-2 w-2/5'>
+                      <p className="text-center font-bold">{findKeyword.charAt(0).toUpperCase() + findKeyword.slice(1)}</p>
+                    </div>
+                  </div>
+                )
+                :
+                (
+                  <div className='flex w-[300px] p-4 overflow-hidden border'>
+                    <div className='flex flex-col items-center w-3/5 border-r-2 p-2'>
+                      <FileVideo2 size={60} strokeWidth={1} className="" key={item.id} />
+                      <p className="text-center">{item.status}</p>
+                    </div>
+                    <div className='flex flex-col items-start pl-2 w-2/5'>
+                      <p className="text-center font-bold">{findKeyword.charAt(0).toUpperCase() + findKeyword.slice(1)}</p>
+                    </div>
+                  </div>
+                )}
+
+            </div>
+          )
+
+        }) : <p className='mt-2 mb-16'>No data found</p>}
       </div>
     </div>
   );
