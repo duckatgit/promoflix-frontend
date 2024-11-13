@@ -36,6 +36,7 @@ const Generate_video = () => {
 
         const updatedData = JSON.parse(event.data)?.GeneratedVideo
 
+        console.log('updatedData', updatedData)
         if (updatedData && updatedData.length > 0) {
           setVideoArray((prevState) => {
             return prevState.map((data) => {
@@ -80,14 +81,14 @@ const Generate_video = () => {
 
 
   const updateCsvData = () => {
-    if (videoArray) {
+    if (videoArray && csvData) {
       videoArray.forEach((video, videoIndex) => {
         setCsvData((preCsvData) => {
-          const newCsvRecords = preCsvData.records.map((data, recordIndex) => {
+          const newCsvRecords = preCsvData?.records.map((data, recordIndex) => {
             // const isIncluded = data.some(item => video.texts.includes(item));
             if (videoIndex === recordIndex && video.status === 'succeeded' && !data.includes(video.video_url)) {
               let newCsvRecData = [...data]
-              return [...newCsvRecData, video.video_url]
+              return [...newCsvRecData, video.video_url, video.thumbnail, video.gif, video.status]
             } else {
               return data
             }
@@ -101,6 +102,23 @@ const Generate_video = () => {
   useEffect(() => {
     updateCsvData()
   }, [videoArray])
+
+  useEffect(() => {
+    if (csvData && csvData?.headers) {
+      setCsvData((preData) => {
+        if (!preData?.headers.includes('url') || !preData?.headers.includes('thumbnail')) {
+          console.log('preData', preData, !preData?.headers.includes('url'), !preData?.headers.includes('thumbnail'))
+          return { ...preData, headers: [...preData.headers, 'url', 'thumbnail', 'gif', 'status'] }
+        } else {
+          return preData
+        }
+      })
+    }
+  }, [])
+
+  console.log(csvData)
+
+  console.log('videoArray', videoArray)
 
   return (
     <div className="m-8 ">

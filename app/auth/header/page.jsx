@@ -33,7 +33,7 @@ const Header = () => {
 
   return (
     <div className="flex justify-between mt-2">
-      <div >
+      <div className="cursor-pointer" onClick={() => router.push('/home/dashboard')}>
         <img src="/assets/semi-final 2 (1).png" alt="" />
       </div>
       <div style={{ width: "500px" }}></div>

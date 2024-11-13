@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { fetchData, postData, deleteData } from "../../../utils/api";
+import { v4 as uuidv4 } from 'uuid';
 import {
   Dialog,
   DialogContent,
@@ -69,6 +70,7 @@ const Preview_video = () => {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [inputValue, setInputValue] = useState("");
+  const [csvUrlInput, setCsvUrlInput] = useState('')
   const [data, setData] = useState([]);
   const [segmentData, setSegmentData] = useState([]);
   const [transcriptSteps, setTranscriptSteps] = useState('Loading...')
@@ -115,20 +117,67 @@ const Preview_video = () => {
     }
   };
   const sendMessage = async () => {
-    if (!hasFile) {
+    if (!hasFile && !csvUrlInput) {
       toast({
         variant: "destructive",
         title: "",
-        description: "Please upload csv file",
+        description: "Please upload csv file or Spreadsheet url",
       })
       return;
     }
 
-    const data = await postData(`api/v1/generate/${id}`, {}, "hirello");
-    if (data.code == 200) {
-      setVideoArray(data.result);
-      router.push(`/video/generate?id=${id}`);
+    if (hasFile) {
+      const data = await postData(`api/v1/generate/${id}`, {}, "hirello");
+      if (data.code == 200) {
+        console.log(data)
+        setVideoArray(data.result);
+        router.push(`/video/generate?id=${id}`);
+      }
+    } else {
+      let googleSheetId = ''
+
+      const regex = /\/d\/([a-zA-Z0-9-_]+)/;
+      const match = csvUrlInput.match(regex);
+      if (match) {
+        googleSheetId = match[1]; // The ID is the first captured group
+      } else {
+        toast({
+          variant: "destructive",
+          title: "",
+          description: "Invalid url",
+        })
+        return;
+      }
+
+      const data = await postData(`api/googlesheet/${id}/${googleSheetId}`, {}, "csv");
+      if (data.code == 200) {
+        let newVidArr = []
+        if (data.result?.records) {
+          for (let i = 0; i < data.result?.records; i++) {
+            newVidArr.push({
+              id: uuidv4(),
+              user_id: "09d220c2-f815-44dc-9f64-6a870dfd8ca8",
+              instance_id: id,
+              video_url: null,
+              thumbnail: null,
+              gif: null,
+              status: "queued",
+              texts: [
+                "up"
+              ],
+              message: "Video generation has started.",
+              created_at: "2024-11-13T12:25:46.963",
+              updated_at: "2024-11-13T12:25:46.963"
+            })
+          }
+        }
+
+        setVideoArray([...newVidArr]);
+        router.push(`/video/generate?id=${id}`);
+      }
     }
+
+
     let message = {
       GetVideo: {
         instance_id: id,
@@ -217,6 +266,7 @@ const Preview_video = () => {
           description: "Csv file deleted sucessfully",
         });
         setHasFile(false);
+        setCsvData(null)
         setDeleteFilePopUp(false);
       }
     } catch (error) {
@@ -364,7 +414,6 @@ const Preview_video = () => {
           const data = JSON.parse(event.data);
           if (data && data.segments) {
             data.segments.forEach((segment) => {
-
               if (segment.words) {
                 segment.words.forEach((word) => {
                   newWords.push({
@@ -422,14 +471,14 @@ const Preview_video = () => {
 
     const selectedStart = Math.min(start, end);
     const selectedEnd = Math.max(start, end);
-
+    console.log('test', selectedStart, selectedEnd)
     setSelectedIndices({ start: selectedStart, end: selectedEnd });
     findWords(selectedStart);
     let segment = "";
     for (let i = selectedStart; i <= selectedEnd; i++) {
       segment = segment + data[i].word;
     }
-    console.log("segement word", segment, selectedStart, selectedEnd);
+    console.log("segement word", data[selectedStart], segment, selectedStart, selectedEnd);
     setHighlightedSegment(segment);
     setEditingWordIndex(selectedStart);
     setInputVisible(true);
@@ -503,7 +552,7 @@ const Preview_video = () => {
                 Your browser does not support the video tag.
               </video>
             )}
-            <p className="mt-2">Video Title</p>
+            {/* <p className="mt-2">Video Title</p> */}
           </div>
           <div className="w-1/2 m-4 shadow-2xl">
             <div className="flex flex-wrap justify-between bg-gray-300  border-r">
@@ -536,7 +585,6 @@ const Preview_video = () => {
                     const word = i?.word?.trim()?.toLowerCase();
                     const value = inputValue.trim().toLowerCase();
                     let isYellow = i.start >= isHighlighted[word]?.start_time && i.end <= isHighlighted[word]?.end_time ? true : false;
-
                     // let isYellow = isHighlighted[word]?.highlight && i.id === isHighlighted[word].id;
 
                     return (
@@ -633,6 +681,8 @@ const Preview_video = () => {
                   id="email"
                   type="text"
                   placeholder="Paste Spreadsheet URL"
+                  value={csvUrlInput}
+                  onChange={(e) => { setCsvUrlInput(e.target.value) }}
                 />
               </div>
             </div>
@@ -666,8 +716,8 @@ const Preview_video = () => {
           </div>
         )}
         <h1 className="mx-4 mt-2 mb-2">Video Thumbnail</h1>
-        <div className="flex justify-between border-2 rounded-lg">
-          <div className="w-1/2 m-4 relative h-[500px]">
+        <div className="flex justify-around border-2 rounded-lg">
+          <div className="w-2/5 m-4 relative h-[300px]">
             <Image
               layout="fill"
               className="rounded-2xl   object-cover"
@@ -675,7 +725,7 @@ const Preview_video = () => {
               alt=""
             />
           </div>
-          <div className="w-1/2 m-4">
+          <div className="w-2/5 m-4">
             <div
               className="h-16 w-64 bg-[#FFF4D3] gap-2 rounded-xl p-2 justify-center items-center flex flex-col cursor-pointer"
               onClick={() => {
@@ -733,7 +783,7 @@ const Preview_video = () => {
                   sendMessage();
                 }}
               >
-                Merge Video
+                Generated Videos
               </Button>
 
               <Button
