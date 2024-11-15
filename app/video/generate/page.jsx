@@ -116,9 +116,6 @@ const Generate_video = () => {
     }
   }, [])
 
-  console.log(csvData)
-
-  console.log('videoArray', videoArray)
 
   return (
     <div className="m-8 ">

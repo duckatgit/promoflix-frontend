@@ -471,14 +471,12 @@ const Preview_video = () => {
 
     const selectedStart = Math.min(start, end);
     const selectedEnd = Math.max(start, end);
-    console.log('test', selectedStart, selectedEnd)
     setSelectedIndices({ start: selectedStart, end: selectedEnd });
     findWords(selectedStart);
     let segment = "";
     for (let i = selectedStart; i <= selectedEnd; i++) {
       segment = segment + data[i].word;
     }
-    console.log("segement word", data[selectedStart], segment, selectedStart, selectedEnd);
     setHighlightedSegment(segment);
     setEditingWordIndex(selectedStart);
     setInputVisible(true);
