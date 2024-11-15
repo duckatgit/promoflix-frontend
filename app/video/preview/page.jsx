@@ -519,6 +519,22 @@ const Preview_video = () => {
   if (segmentData) {
     arr = segmentData;
   }
+
+  function cleanAndSplit(text) {
+    // Step 1: Find and capture the special characters at the end of the string
+    const removedChars = text.match(/[^a-zA-Z0-9\s]+$/);
+
+    // Step 2: Remove the special characters from the end of the string
+    const cleanedText = text.replace(/[^a-zA-Z0-9\s]+$/, '');
+
+    // Step 3: Return an object with the cleaned word and the removed special characters
+    return {
+      newWord: cleanedText,
+      removedChar: removedChars ? removedChars[0] : ''
+    };
+  }
+
+
   return (
     <div className="m-8 ">
       <Header />
@@ -586,17 +602,38 @@ const Preview_video = () => {
                     const value = inputValue.trim().toLowerCase();
                     let isYellow = i.start >= isHighlighted[word]?.start_time && i.end <= isHighlighted[word]?.end_time ? true : false;
                     // let isYellow = isHighlighted[word]?.highlight && i.id === isHighlighted[word].id;
-
+                    const { newWord, removedChar } = cleanAndSplit(i.word)
                     return (
                       <>
-                        <span
-                          className={`my-2 ${isYellow ? "bg-[#FEF08A]" : ""}`}
-                          onMouseDown={() => handleMouseDown(index)}
-                          onMouseUp={() => handleMouseUp(index)}
-                          key={index} // Added key for list items
-                        >
-                          {i.word}
-                        </span>
+                        {isYellow ?
+                          <>
+                            <span
+                              className={`my-2 ${isYellow ? "bg-[#FEF08A]" : ""}`}
+                              onMouseDown={() => handleMouseDown(index)}
+                              onMouseUp={() => handleMouseUp(index)}
+                              key={index} // Added key for list items
+                            >
+                              {newWord}
+                            </span>
+                            <span
+                              className={`my-2 }`}
+                              onMouseDown={() => handleMouseDown(index)}
+                              onMouseUp={() => handleMouseUp(index)}
+                              key={`${index}dup`} // Added key for list items
+                            >
+                              {removedChar}
+                            </span>
+                          </>
+                          :
+                          <span
+                            className={`my-2 ${isYellow ? "bg-[#FEF08A]" : ""}`}
+                            onMouseDown={() => handleMouseDown(index)}
+                            onMouseUp={() => handleMouseUp(index)}
+                            key={index} // Added key for list items
+                          >
+                            {i.word}
+                          </span>}
+
                         {editingWordIndex !== null && indexToVisible == index && (
                           <div
                             className="w-auto absolute"

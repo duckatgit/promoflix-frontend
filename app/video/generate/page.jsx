@@ -31,7 +31,7 @@ const Generate_video = () => {
       };
 
       ws.onmessage = (event) => {
-        // console.log(event, "event")
+        console.log(event, "event")
         // console.log('Message received from server: ', JSON.parse(event.data));
 
         const updatedData = JSON.parse(event.data)?.GeneratedVideo
