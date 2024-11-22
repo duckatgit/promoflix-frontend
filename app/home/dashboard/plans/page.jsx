@@ -1,0 +1,76 @@
+"use client";
+import PlansCard from "@/components/ui/plans-card";
+import { useToast } from "@/hooks/use-toast";
+import { fetchData, postData } from "@/utils/api";
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from "react";
+const AUTH_URL = process.env.NEXT_PUBLIC_VIDEO_API_AUTH_URL;
+const HIRELLO_URL = process.env.NEXT_PUBLIC_VIDEO_API_HIRELLO_URL;
+const Plans = () => {
+    const router = useRouter();
+    const { toast } = useToast();
+    const [plansData, setPlansData] = useState([])
+    const [loading, setLoading] = useState(false);
+    const [userId, setUserId] = useState("");
+
+
+    const fetchPlansApi = async () => {
+        try {
+            const response = await fetchData('api/plan')
+            if (response.code != 200) {
+                toast({
+                    variant: "destructive",
+                    title: "Uh oh! Something went wrong.",
+                    description: response.result,
+                })
+            }
+            else {
+                setPlansData(response.result)
+                toast({
+                    description: "Data fetched SuccessfullY"
+                })
+            }
+        } catch (error) {
+            alert(error.message)
+        }
+    }
+
+    useEffect(() => {
+        fetchPlansApi();
+    }, [])
+
+    const handleCheckoutPlan = async (id) => {
+        try {
+            setLoading(true);
+            setUserId(id);
+            const baseUrl = process.env.NODE_ENV === "development"
+                ? "http://localhost:3000"
+                : AUTH_URL;
+
+            const response = await postData('api/plan/plan_checkout', { cancel_url: baseUrl, plan_id: id, success_url: baseUrl })
+            if (response.code != 200) {
+                setLoading(false);
+                toast({
+                    variant: "destructive",
+                    title: "Uh oh! Something went wrong.",
+                    description: response.result,
+                })
+            }
+            else {
+                setLoading(false);
+                router.push(`${response.result}`);
+            }
+        } catch (error) {
+            setLoading(false);
+            alert(error.message)
+        }
+    }
+    return (
+        <div class="container mx-6 my-6 grid grid-cols-4 gap-3">
+            {plansData.map((plan, id) => {
+                return <> <PlansCard key={id} name={plan?.name} price={plan?.price} billing_period={plan?.billing_period} extra_videos_cost={plan?.extra_videos_cost} quantity={plan?.quota1} handleCheckoutPlan={handleCheckoutPlan} plan_id={plan?.id} loading={loading} userId={userId} /></>
+            })}
+        </div>
+    )
+}
+export default Plans

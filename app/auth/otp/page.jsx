@@ -89,6 +89,11 @@ const OtpComponent = () => {
     }
   };
 
+  useEffect(() => {
+    if (Number(value.length) === 4) {
+      handle_otp_api()
+    }
+  }, [value])
   return (
     <div className='grid w-full grid-cols-1 md:grid-cols-2'>
       <div className='relative'>
@@ -133,7 +138,7 @@ const OtpComponent = () => {
                 {canResend ? 'Resend OTP' : `Resend OTP in ${resendTimer}s`}
               </div>
             </div>
-            <Button className="text-black w-full mt-8 bg-yellow-400 hover:shadow-xl hover:bg-yellow-500" onClick={handle_otp_api}>Submit</Button>
+            {/* <Button className="text-black w-full mt-8 bg-yellow-400 hover:shadow-xl hover:bg-yellow-500" onClick={handle_otp_api}>Submit</Button> */}
           </div>
         </div>
       </div>

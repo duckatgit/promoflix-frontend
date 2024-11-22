@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from 'react'
+import { LoadingSpinner } from '@/components/ui/spinner';
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 
@@ -19,6 +20,7 @@ import { useRouter } from 'next/navigation';
 const Login = () => {
   const router = useRouter();
   const { toast } = useToast()
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     email: "",
     password: ""
@@ -33,11 +35,13 @@ const Login = () => {
 
   let login_api = async () => {
     try {
+      setLoading(true);
       const response = await postData('api/auth/login', {
         email: form.email,
         password: form.password,
       });
       if (response.code != 200) {
+        setLoading(false);
         toast({
           variant: "destructive",
           title: "Uh oh! Something went wrong.",
@@ -45,6 +49,7 @@ const Login = () => {
         })
       }
       else {
+        setLoading(false);
         toast({
           description: "Login SuccessfullY"
         })
@@ -120,7 +125,16 @@ const Login = () => {
 
               </CardContent>
               <CardFooter className="flex justify-between">
-                <Button className="w-full text-black" style={{ backgroundColor: "#FFC000" }} onClick={login_api}>Login</Button>
+                <Button className="w-full text-black" style={{ backgroundColor: "#FFC000" }} onClick={login_api}>
+                  {loading ? (
+                    <>
+                      Login <LoadingSpinner className="ml-2 text-white" />
+                    </>
+                  ) : (
+                    "Login"
+                  )}
+                </Button>
+
               </CardFooter>
               <p className="text-center text-sm my-2 mt-12">Do you have an account? <a href='/auth/signup'><span className="font-bold text-[#FFC000]">Sign up</span></a></p>
             </Card>

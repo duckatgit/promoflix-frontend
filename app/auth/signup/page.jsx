@@ -15,10 +15,12 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { postData } from '@/utils/api';
+import { LoadingSpinner } from '@/components/ui/spinner';
 
 const Sign_up = () => {
   const router = useRouter();
   const { toast } = useToast()
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -35,7 +37,7 @@ const Sign_up = () => {
 
   let sign_up_api = async () => {
     try {
-
+      setLoading(true);
       const response = await postData('api/auth/signup', {
         email: form.email,
         name: form.name,
@@ -43,6 +45,7 @@ const Sign_up = () => {
       });
 
       if (response.code != 200) {
+        setLoading(false);
         toast({
           variant: "destructive",
           title: "Uh oh! Something went wrong.",
@@ -50,6 +53,7 @@ const Sign_up = () => {
         })
       }
       else {
+        setLoading(false);
         localStorage.setItem("email", form.email)
         toast({
           description: "OTP sent to your email successfully.",
@@ -119,7 +123,14 @@ const Sign_up = () => {
               </form>
             </CardContent>
             <CardFooter className="flex justify-between">
-              <Button className="w-full text-black" style={{ backgroundColor: "#FFC000" }} onClick={sign_up_api}>Submit</Button>
+              <Button className="w-full text-black" style={{ backgroundColor: "#FFC000" }} onClick={sign_up_api}>
+                {loading ? (
+                  <>
+                    Submit <LoadingSpinner className="ml-2 text-white" />
+                  </>
+                ) : (
+                  "Submit"
+                )}</Button>
             </CardFooter>
             <p className="text-center text-sm my-2">Already Have an Account?<a className="text-[#FFC000] font-bold" href='/auth/login'> Sign In</a></p>
           </Card>

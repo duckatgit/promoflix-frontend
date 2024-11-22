@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
+import { fetchData } from "@/utils/api";
 
 const Header = () => {
   const [name, setname] = useState("John Doe");
@@ -29,7 +30,22 @@ const Header = () => {
     router.push('/auth/login');
   }
 
-
+  const fetchBillingHistory = async () => {
+    try {
+      const baseUrl = process.env.NODE_ENV === "development"
+        ? "http://localhost:3000"
+        : AUTH_URL;
+      const response = await fetchData('api/plan/customer_portal', { return_url: baseUrl })
+      if (response.code != 200) {
+        alert("failed to fetch Billing History")
+      }
+      else {
+        router.push(`${response.result}`);
+      }
+    } catch (error) {
+      alert(error.message)
+    }
+  }
 
   return (
     <div className="flex justify-between mt-2">
@@ -44,6 +60,8 @@ const Header = () => {
             <NameLogo name={name} />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
+            <DropdownMenuItem style={{ cursor: "pointer" }} onClick={() => router.push('/home/dashboard/plans')}>Plans</DropdownMenuItem>
+            <DropdownMenuItem style={{ cursor: "pointer" }} onClick={() => fetchBillingHistory()}>Billing History</DropdownMenuItem>
             <DropdownMenuItem style={{ cursor: "pointer" }} onClick={logOutUser}>Log out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
