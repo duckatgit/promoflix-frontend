@@ -23,7 +23,9 @@ const Header = () => {
 
   const logOutUser = () => {
     toast({
-      description: "Logout SuccessfullY"
+      type: "success",
+      title: "Logout",
+      description: "You are logout successfullY"
     })
     safeLocalStorage.removeItem('token')
     safeLocalStorage.removeItem('name')

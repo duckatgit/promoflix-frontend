@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { postData } from '@/utils/api';
 import { LoadingSpinner } from '@/components/ui/spinner';
+import FormDesign from '@/components/common-designs/form-design';
 
 const Sign_up = () => {
   const router = useRouter();
@@ -56,45 +57,36 @@ const Sign_up = () => {
         setLoading(false);
         localStorage.setItem("email", form.email)
         toast({
+          type: "success",
           description: "OTP sent to your email successfully.",
         })
         router.push('/auth/otp'); // Redirect to the success page
       } // handle response data
     } catch (error) {
+      setLoading(false);
       alert(error.message)
 
     }
   }
   return (
     <div className=' grid w-full grid-cols-1 md:grid-cols-2'>
-      <div className='relative  '>
-        <div className='font-[Kalnia] absolute top-6 left-6 text-white text-3xl underline underline-offset-8'>
-          Promoflix
-        </div>
-        <div className='font-[Kalnia] absolute bottom-10 left-6 text-white text-5xl'>
-          <div >
-            Get Your
-          </div>
-          <div >
-            Personalized
-          </div>
-          <div>
-            Intro
-          </div>
-        </div>
-        <img src="/assets/sign-in image.png" alt="" className='w-full p-1 h-[100vh] rounded-3xl' />
-      </div>
       <div className='flex mx-4 md:mx-2'>
         <div className='flex w-full h-screen justify-center items-center border-none'>
           <Card >
-            <CardHeader className="justify-center items-center px-14 py-6">
-              <img src="/assets/semi-final 2 (1).png" alt="" />
+            <CardHeader className="">
+              <div className="ml-1 mb-6 justify-center items-center">
+                <img src="/assets/promo-logo.png" alt="" />
+              </div>
               <CardTitle style={{
                 fontSize: '32px'
               }} className=" font-[Kalnia] ">Welcome</CardTitle>
               <p className='text-xs'>Enter your details to create your account</p>
             </CardHeader>
             <CardContent className="">
+              <div className="flex items-center gap-5 mb-6">
+                <img src="/assets/devicon_google.png" alt="" />
+                <img src="/assets/logos_facebook.png" alt="" />
+              </div>
               <form>
                 <div className="grid w-full items-center gap-4">
                   <div className="flex flex-col space-y-1.5 ">
@@ -123,18 +115,21 @@ const Sign_up = () => {
               </form>
             </CardContent>
             <CardFooter className="flex justify-between">
-              <Button className="w-full text-black" style={{ backgroundColor: "#FFC000" }} onClick={sign_up_api}>
+              <Button className="w-full text-white" style={{ backgroundColor: "#333333" }} onClick={sign_up_api}>
                 {loading ? (
                   <>
-                    Submit <LoadingSpinner className="ml-2 text-white" />
+                    Sign UP <LoadingSpinner className="ml-2 text-white" />
                   </>
                 ) : (
-                  "Submit"
+                  "Sign Up"
                 )}</Button>
             </CardFooter>
-            <p className="text-center text-sm my-2">Already Have an Account?<a className="text-[#FFC000] font-bold" href='/auth/login'> Sign In</a></p>
+            <p className="ml-[24px] text-sm my-2">Already Have an Account?<a className="text-[#E7680F] font-bold" href='/auth/login'> Login</a></p>
           </Card>
         </div>
+      </div>
+      <div className=''>
+        <FormDesign type="signup" />
       </div>
     </div >
 

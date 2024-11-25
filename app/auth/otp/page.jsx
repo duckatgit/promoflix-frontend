@@ -80,6 +80,7 @@ const OtpComponent = () => {
         });
       } else {
         toast({
+          type: "success",
           description: "Otp Matched Successfully",
         });
         router.push('/auth/login'); // Redirect to the success page
