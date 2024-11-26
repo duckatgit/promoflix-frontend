@@ -131,7 +131,7 @@ const Login = () => {
                 </Button>
 
               </CardFooter>
-              <p className="ml-[24px] text-sm my-2 mt-12">Don't have an account yet? <a href='/auth/signup'><span className="font-bold text-[#E7680F]">Create a promoflix account</span></a></p>
+              <p className="ml-[24px] text-sm my-2 mt-12">{"Don't have an account yet?"} <a href='/auth/signup'><span className="font-bold text-[#E7680F]">Create a promoflix account</span></a></p>
             </Card>
           </div>
         </div>
