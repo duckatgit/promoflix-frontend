@@ -9,11 +9,16 @@ const FormDesign = ({ type }) => {
         if (videoRef.current) {
             if (isPlaying) {
                 videoRef.current.pause();
+                setIsPlaying(false);
             } else {
                 videoRef.current.play();
+                setIsPlaying(true);
             }
-            setIsPlaying(!isPlaying);
         }
+    };
+    const handleVideoEnd = () => {
+        videoRef.current.pause();
+        setIsPlaying(false);
     };
     return (
         <div
@@ -43,8 +48,9 @@ const FormDesign = ({ type }) => {
             >
                 <video
                     ref={videoRef}
-                    loop
+                    loop={false}
                     muted
+                    onClick={handleVideoEnd}
                     style={{
                         width: "100%",
                         height: "100%",

@@ -84,8 +84,8 @@ const Sign_up = () => {
             </CardHeader>
             <CardContent className="">
               <div className="flex items-center gap-5 mb-6">
-                <img src="/assets/devicon_google.png" alt="" />
-                <img src="/assets/logos_facebook.png" alt="" />
+                <span className='border bg-[#F1F0F9] p-3' ><img src="/assets/devicon_google.png" alt="" /></span>
+                <span className='border bg-[#F1F0F9] p-3'> <img src="/assets/logos_facebook.png" alt="" /></span>
               </div>
               <form>
                 <div className="grid w-full items-center gap-4">

@@ -11,6 +11,8 @@ import {
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
 import { fetchData } from "@/utils/api";
+import { Input } from "@/components/ui/input";
+import { IoSearchOutline } from "react-icons/io5";
 
 const Header = () => {
   const [name, setname] = useState("John Doe");
@@ -50,13 +52,27 @@ const Header = () => {
   }
 
   return (
-    <div className="flex justify-between mt-2">
+    <div className="flex justify-between px-8 py-[10px] bg-white ">
       <div className="cursor-pointer" onClick={() => router.push('/home/dashboard')}>
-        <img src="/assets/semi-final 2 (1).png" alt="" />
+        <img src="/assets/promo-logo.png" alt="" />
       </div>
-      <div style={{ width: "500px" }}></div>
-      <div>
-        {/* <NameLogo name={name} /> */}
+      {/* <div style={{ width: "450px" }}></div> */}
+
+
+      <div className="flex gap-10">
+        <div className="relative border border-[#bababa] w-60 flex items-center rounded-lg px-2">
+          {/* Search Icon */}
+          <IoSearchOutline className="text-gray-500 text-lg" />
+
+          {/* Search Input */}
+          <input
+            id="search"
+            placeholder="Search"
+            value=""
+            className="w-full pl-2 outline-none border-none bg-transparent"
+          // onChange={handleInputChange}  
+          />
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger>
             <NameLogo name={name} />
