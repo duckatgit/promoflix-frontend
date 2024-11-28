@@ -83,10 +83,10 @@ const Sign_up = () => {
               <p className='text-xs'>Enter your details to create your account</p>
             </CardHeader>
             <CardContent className="">
-              <div className="flex items-center gap-5 mb-6">
+              {/* <div className="flex items-center gap-5 mb-6">
                 <span className='border bg-[#F1F0F9] p-3' ><img src="/assets/devicon_google.png" alt="" /></span>
                 <span className='border bg-[#F1F0F9] p-3'> <img src="/assets/logos_facebook.png" alt="" /></span>
-              </div>
+              </div> */}
               <form>
                 <div className="grid w-full items-center gap-4">
                   <div className="flex flex-col space-y-1.5 ">
@@ -103,13 +103,13 @@ const Sign_up = () => {
                   </div>
                   <div className="flex flex-col space-y-1.5 w-[400px]">
                     <Label>Password</Label>
-                    <Input id="password" placeholder="Enter your password" value={form.password}
+                    <Input id="password" type="password" placeholder="Enter your password" value={form.password}
                       onChange={handleInputChange}  // Handle input change
                     />
                   </div>
                   <div className="flex flex-col space-y-1.5 w-[400px]">
                     <Label>Confirm Password</Label>
-                    <Input id="confirm_password" placeholder="Re-Enter your password" value={form.confirmPassword} onChange={handleInputChange} />
+                    <Input id="confirm_password" type="password" placeholder="Re-Enter your password" value={form.confirmPassword} onChange={handleInputChange} />
                   </div>
                 </div>
               </form>

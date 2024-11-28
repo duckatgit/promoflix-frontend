@@ -85,10 +85,10 @@ const Login = () => {
                 <p className='text-xs'>Enter your email and password to access your account.</p>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center gap-5 mb-6">
+                {/* <div className="flex items-center gap-5 mb-6">
                   <span className='border bg-[#F1F0F9] p-3' ><img src="/assets/devicon_google.png" alt="" /></span>
                   <span className='border bg-[#F1F0F9] p-3'> <img src="/assets/logos_facebook.png" alt="" /></span>
-                </div>
+                </div> */}
                 <form>
                   <div className="grid w-full items-center gap-4 ">
                     <div className="flex flex-col space-y-1.5 w-[400px]">
