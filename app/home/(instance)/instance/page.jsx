@@ -93,13 +93,12 @@ const InstancePage = () => {
 
     const handleSendFile = async (file) => {
         try {
-            console.log(file, "file");
-
             const formData = new FormData();
             formData.append('file', file);
+
             const data = await postData(`api/v1/file/${id}`, formData, "hirello");
             if (data.code == 200) {
-                router.push(`/video/preview?id=${id}`)
+                router.push(`/home/video/preview?id=${id}`)
             }
         } catch (error) {
             console.log(error, '==========error')

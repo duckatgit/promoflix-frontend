@@ -63,7 +63,15 @@ const Sidebar = () => {
             <div className="sidebar-content">
                 <div className="border-b-4 border-[#edeef2] p-2">
 
-
+                    <div className="menu-item hover:menu-item-active" onClick={() => router.push('/home/instance')}>
+                        <span className="icon">
+                            <img
+                                src="/assets/pricing-plans-icon.png"
+                                alt="Pricing Plans Icon"
+                            />
+                        </span>
+                        <span className="text">Instance</span>
+                    </div>
                     <div className="menu-item hover:menu-item-active" onClick={() => router.push('/home/dashboard/plans')}>
                         <span className="icon">
                             <img
