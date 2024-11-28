@@ -1,42 +1,67 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import { MdCheckCircleOutline } from "react-icons/md";
 import { LoadingSpinner } from "./spinner";
 
-const PlansCard = ({ name, price, billing_period, extra_videos_cost, quantity, handleCheckoutPlan, plan_id, loading, userId }) => {
-
-    return (
-        <div className="flex flex-col  rounded-lg border-1 border-slate-500 shadow-md">
-            <div className={`${name === "Free Plan" ? "bg-[#f3edff]" : "bg-[#e6f1fc]"} p-4`}>
-                <p>{name}</p>
-                <p>{`${price}$ /${billing_period}`}  </p>
-                <p>0/{quantity} used  </p>
-
-            </div>
-            <div className="p-4">
-                <p className="flex gap-1 items-center"><MdCheckCircleOutline className="text-[#8a4af3]" />Clone your face & voice </p>
-                <p className="flex gap-1 items-center"><MdCheckCircleOutline className="text-[#8a4af3]" />{`${quantity} videos a month`} </p>
-                <p className="flex gap-1 items-center"><MdCheckCircleOutline className="text-[#8a4af3]" />{`${extra_videos_cost}$ per extra video`}  </p>
-            </div>
-            <div className="text-center p-4">
-                <Button
-                    className="w-full rounded-full"
-                    onClick={() => handleCheckoutPlan(plan_id)}
-                    style={{ backgroundColor: name === "Free Plan" ? "#f3edff" : "#03a9f4", color: name === "Free Plan" ? "purple" : "white" }}
-                >
-                    {loading && userId === plan_id ? (
-                        <>
-                            {name === "Free Plan" ? "Current" : "Get started"}
-                            <LoadingSpinner className="ml-2 text-white" />
-                        </>
-                    ) : (
-                        name === "Free Plan" ? "Current" : "Get started"
-                    )}
-                </Button>
-
-            </div>
-        </div >
-    );
+const PlansCard = ({
+  name,
+  price,
+  billing_period,
+  extra_videos_cost,
+  quantity,
+  handleCheckoutPlan,
+  plan_id,
+  loading,
+  userId,
+}) => {
+  console.log(name, "price");
+  return (
+    <div className="w-[270px] border rounded-[10px] border-[#D9D9D9]">
+      <div className={`bg-[#FFFAF6] p-4 m-4`}>
+        <p className="text-center text-[24px] font-medium mb-4">{name}</p>
+        <p className="text-[#B3B3B3] ">
+          {" "}
+          <span className="text-4xl text-black font-bold">
+            {" "}
+            <sup className="text-[22px] text-black  right-[-10px] top-[-10px]">
+              $
+            </sup>{" "}
+            {price}
+          </span>{" "}
+          / <span> {billing_period} </span>{" "}
+        </p>
+        <p className="text-[#B3B3B3] my-4">0/{quantity} used </p>
+      </div>
+      <div className="p-4 mx-8">
+        <ul className="list-disc text-[#757575]">
+          <li>Clone your face & voice</li>
+          <li>{`${quantity} videos a month`}</li>
+          <li>{`${extra_videos_cost}$ per extra video`}</li>
+        </ul>
+      </div>
+      <div className="text-center p-4">
+        <Button
+          className={`py-2 px-3 cursor-pointer rounded-[8px] text-base w-[204px] ${
+            name === "Free Plan"
+              ? "bg-transparent text-[#E7680F] border border-[#E7680F]  "
+              : ""
+          }`}
+          onClick={() => handleCheckoutPlan(plan_id)}
+        >
+          {loading && userId === plan_id ? (
+            <>
+              {name === "Free Plan" ? "Current" : "Get started"}
+              <LoadingSpinner className="ml-2 text-white" />
+            </>
+          ) : name === "Free Plan" ? (
+            "Current"
+          ) : (
+            "Buy"
+          )}
+        </Button>
+      </div>
+    </div>
+  );
 };
 
 export default PlansCard;

@@ -66,16 +66,16 @@ const Sidebar = () => {
                     <div className="menu-item hover:menu-item-active" onClick={() => router.push('/home/instance')}>
                         <span className="icon">
                             <img
-                                src="/assets/pricing-plans-icon.png"
+                                src="/assets/billing-icon.png"
                                 alt="Pricing Plans Icon"
                             />
                         </span>
                         <span className="text">Instance</span>
                     </div>
-                    <div className="menu-item hover:menu-item-active" onClick={() => router.push('/home/dashboard/plans')}>
+                    <div className="menu-item hover:menu-item-active" onClick={() => router.push('/home/plan')}>
                         <span className="icon">
                             <img
-                                src="/assets/pricing-plans-icon.png"
+                                src="/assets/billing-icon.png"
                                 alt="Pricing Plans Icon"
                             />
                         </span>

@@ -177,7 +177,12 @@ const InstancePage = () => {
                     </div>
                     {/* Upload Section */}
 
-                    <div class="relative border-2 border-dashed border-gray-300 rounded-[10px] px-[36px] py-[41px] text-center h-auto">
+                    <div class="relative border-2 border-dashed border-gray-300 rounded-[10px] px-[16px] py-[20px] text-center h-auto"
+                        onClick={() => {
+                            fileInputRef.current.click();
+
+                        }}
+                    >
                         <input
                             type="file"
                             ref={fileInputRef}
