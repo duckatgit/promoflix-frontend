@@ -12,7 +12,7 @@ export default function Home() {
     const storedToken = localStorage.getItem("token");
 
     if (storedToken) {
-      router.replace('/home/dashboard');
+      router.replace('/home/instance');
     } else {
       router.replace('/auth/login');
     }

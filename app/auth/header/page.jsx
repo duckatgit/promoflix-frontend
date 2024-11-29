@@ -53,7 +53,7 @@ const Header = () => {
 
   return (
     <div className="flex justify-between px-8 py-[10px] bg-white ">
-      <div className="cursor-pointer" onClick={() => router.push('/home/dashboard')}>
+      <div className="cursor-pointer" onClick={() => router.push('/home/instance')}>
         <img src="/assets/promo-logo.png" alt="" />
       </div>
       {/* <div style={{ width: "450px" }}></div> */}
@@ -77,7 +77,7 @@ const Header = () => {
           <DropdownMenuTrigger>
             <NameLogo name={name} />
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          {/* <DropdownMenuContent>
             <DropdownMenuItem style={{ cursor: "pointer" }} onClick={() => router.push('/home/dashboard/plans')}>Plans</DropdownMenuItem>
             <DropdownMenuItem style={{ cursor: "pointer" }} onClick={() => fetchBillingHistory()}>Billing History</DropdownMenuItem>
             <DropdownMenuItem style={{ cursor: "pointer" }} onClick={logOutUser}>Log out</DropdownMenuItem>

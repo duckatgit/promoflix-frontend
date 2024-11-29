@@ -397,9 +397,8 @@ const InstancePage = () => {
             {/* Upload Section */}
 
             <div
-              className={`relative ${
-                id ? "cursor-pointer" : "cursor-no-drop"
-              } border-2 border-dashed border-gray-300 rounded-[10px] px-[16px] py-[20px] text-center `}
+              className={`relative ${id ? "cursor-pointer" : "cursor-no-drop"
+                } border-2 border-dashed border-gray-300 rounded-[10px] px-[16px] py-[20px] text-center `}
               onClick={() => {
                 if (id) {
                   fileInputRef.current.click(); // Only trigger the click if `id` is present
@@ -434,11 +433,10 @@ const InstancePage = () => {
                 <p className="text-sm font-medium text-gray-700">
                   Upload Data, or{" "}
                   <span
-                    className={`${
-                      id
+                    className={`${id
                         ? "text-orange-500 cursor-pointer"
                         : "text-gray-500 cursor-no-drop"
-                    }`}
+                      }`}
                   >
                     Browse
                   </span>
