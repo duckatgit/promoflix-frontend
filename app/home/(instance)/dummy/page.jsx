@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { FileVideo2 } from "lucide-react";
 import download from "../../../../public/assets/download.svg";
-import ProgressLoader from "./ProgressLoader";
+// import ProgressLoader from "./ProgressLoader";
 const hirelloSocket = process.env.NEXT_PUBLIC_VIDEO_HIRELLO_SOCKET;
 
 const Generate_video = () => {
@@ -195,7 +195,7 @@ const Generate_video = () => {
                   </div>
                 ) : (
                   <div>
-                    <ProgressLoader percentage={progressPercentage} />
+                    {/* <ProgressLoader percentage={progressPercentage} /> */}
 
                     <p className="mt-4">
                       {findKeyword.charAt(0).toUpperCase() +

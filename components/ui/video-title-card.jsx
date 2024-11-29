@@ -13,14 +13,16 @@ function VideoTitleCard({
   return (
     <div
       className="max-w-sm cursor-pointer  min-w-[311px] bg-white border border-slate-200 rounded-lg p-4 h-[200px] "
-      onClick={() => {
+      onClick={(e) => {
+        e.stopPropagation();
         getVideo(id);
       }}
     >
       <div className="flex justify-end space-x-2">
         <button
           className="text-[#B4B4B4] hover:text-gray-600"
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation();
             setupdateInstanceModal(true),
               setUpdatedInstanceID(id),
               updateInstance(title);
@@ -30,7 +32,7 @@ function VideoTitleCard({
         </button>
         <button
           className="text-red-500 hover:text-red-600"
-          onClick={() => deleteInstance(id)}
+          onClick={(e) => {  e.stopPropagation();deleteInstance(id);}}
         >
           <RiDeleteBin6Line size={20} />
         </button>

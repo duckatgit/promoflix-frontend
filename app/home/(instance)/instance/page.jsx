@@ -32,6 +32,8 @@ const InstancePage = () => {
   const [instance, setInstance] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [showLoader, setShowLoader] = useState(false);
+  const [showUploadeVideoLoader, setShowUploadeVideoLoader] = useState(false);
+
   const [uploadFileModal, setUploadFileModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null); // State to store the selected file
 
@@ -90,7 +92,7 @@ const InstancePage = () => {
       const data = await fetchData(`api/v1/file/${id}`, {}, "hirello");
       console.log(data, "datafile");
       if (data.code == 200) {
-        router.push(`/home/dummy?id=${id}`);
+        router.push(`/home/video/preview?id=${id}`);
       }
     } catch (error) {
       console.log(error, "=========error");
@@ -101,38 +103,6 @@ const InstancePage = () => {
     getAllInstance();
   }, []);
 
-  //   const createInstance = async () => {
-  //     try {
-  //       if (instance) {
-  //         const response = await postData(
-  //           "api/v1/instance",
-  //           {
-  //             name: instance,
-  //           },
-  //           "hirello"
-  //         );
-  //         setInstance("");
-  //         if (response.code !== 200) {
-  //           toast({
-  //             variant: "destructive",
-  //             title: "Uh oh! Something went wrong.",
-  //           });
-  //         } else {
-  //           setId(response?.result?.id);
-  //           setInstance("");
-  //           toast({
-  //             description: "Instence Added successfully",
-  //           });
-  //         }
-  //       }
-  //     } catch (error) {
-  //       toast({
-  //         variant: "destructive",
-  //         title: "Uh oh! Something went wrong.",
-  //         description: error.message,
-  //       });
-  //     }
-  //   };
   console.log(id, "ididdidid");
   const createInstance = async () => {
     if (!instance) return; // Exit early if no instance is provided
@@ -214,17 +184,17 @@ const InstancePage = () => {
       if (selectedFile) {
         const formData = new FormData();
         formData.append("file", selectedFile);
-        // setShowLoader(true);
+        setShowUploadeVideoLoader(true);
         const data = await postData(`api/v1/file/${id}`, formData, "hirello");
         if (data.code == 200) {
           setUploadFileModal(false);
-          // setShowLoader(false);
+          setShowUploadeVideoLoader(false);
           setId("");
-          router.push(`/home/dummy?id=${id}`);
+          router.push(`/home/video/preview?id=${id}`);
         }
       }
     } catch (error) {
-      setShowLoader(false);
+      setShowUploadeVideoLoader(false);
       console.log(error, "==========error");
     }
   };
@@ -346,7 +316,7 @@ const InstancePage = () => {
           </DialogHeader>
 
           <div className="gap-4 border-dashed justify-center flex flex-col m-4 items-center">
-            {showLoader && (
+            {showUploadeVideoLoader && (
               <div className="flex absolute w-full top-0 bottom-0 justify-center bg-gray-300 bg-opacity-50 ">
                 <Image
                   src="/assets/tube-spinner.svg"
@@ -361,17 +331,16 @@ const InstancePage = () => {
               {/* Hidden file input */}
               <input
                 type="file"
+                 accept="video/*"
                 ref={fileModalInputRef}
                 onChange={handleModalFileChange}
                 style={{ display: "none" }} // Hide the input
-      
               />
               {/* Label styled as a button */}
               <label
                 onClick={() => {
-                  fileModalInputRef.current.click(); 
+                  fileModalInputRef.current.click();
                 }}
-               
                 className="bg-gray-200 p-2 border-dashed border-2 rounded cursor-pointer"
               >
                 Choose a file
@@ -385,14 +354,14 @@ const InstancePage = () => {
               variant="outline"
               onClick={() => {
                 setUploadFileModal(false);
-                setShowLoader(false);
+                setShowUploadeVideoLoader(false);
                 setSelectedFile(null);
               }}
             >
               Cancel
             </Button>
             <Button
-            type="button"
+              type="button"
               className="bg-[#FFC000] text-black"
               onClick={() => {
                 handleSendModalFile();
@@ -498,6 +467,7 @@ const InstancePage = () => {
           ))}
         </div>
       </div>
+   
     </>
   );
 };
