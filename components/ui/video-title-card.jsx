@@ -4,18 +4,26 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 function VideoTitleCard({
   title,
   id,
+  getVideo,
   deleteInstance,
   updateInstance,
   setupdateInstanceModal,
   setUpdatedInstanceID,
 }) {
   return (
-    <div className="max-w-sm  min-w-[311px] bg-white border border-slate-200 rounded-lg p-4 h-[200px] ">
+    <div
+      className="max-w-sm cursor-pointer  min-w-[311px] bg-white border border-slate-200 rounded-lg p-4 h-[200px] "
+      onClick={() => {
+        getVideo(id);
+      }}
+    >
       <div className="flex justify-end space-x-2">
         <button
           className="text-[#B4B4B4] hover:text-gray-600"
           onClick={() => {
-            setupdateInstanceModal(true), setUpdatedInstanceID(id) , updateInstance(title);
+            setupdateInstanceModal(true),
+              setUpdatedInstanceID(id),
+              updateInstance(title);
           }}
         >
           <TbEdit size={20} />

@@ -27,9 +27,13 @@ const InstancePage = () => {
   const [updatedInstanceId, setUpdatedInstanceID] = useState();
 
   const fileInputRef = useRef(null);
+  const fileModalInputRef = useRef(null);
+
   const [instance, setInstance] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [showLoader, setShowLoader] = useState(false);
+  const [uploadFileModal, setUploadFileModal] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null); // State to store the selected file
 
   const getAllInstance = async () => {
     try {
@@ -50,6 +54,47 @@ const InstancePage = () => {
       }
     } catch (error) {
       console.log(error);
+    }
+  };
+  const handleModalFileChange = (event) => {
+    const file = event.target.files[0];
+
+    const maxFileSize = 50 * 1024 * 1024; // 50 MB in bytes
+
+    if (file) {
+      if (file.size > maxFileSize) {
+        toast({
+          variant: "destructive",
+          title: "File too large",
+          description:
+            "The maximum file size is 50 MB. Please select a smaller file.",
+        });
+        return;
+      }
+
+      setSelectedFile(file); // Store the selected file in state
+      const fileInput = event.target;
+      if (fileInput.files.length > 0) {
+        const selectedFile = fileInput.files[0];
+        fileInput.value = null; // Reset the input if the same file is selected again
+        setSelectedFile(selectedFile);
+      }
+    }
+  };
+
+  const handleUploadvideo = () => {
+    setUploadFileModal(true);
+  };
+  const getVideo = async (id) => {
+    try {
+      const data = await fetchData(`api/v1/file/${id}`, {}, "hirello");
+      console.log(data, "datafile");
+      if (data.code == 200) {
+        router.push(`/home/dummy?id=${id}`);
+      }
+    } catch (error) {
+      console.log(error, "=========error");
+      handleUploadvideo();
     }
   };
   useEffect(() => {
@@ -155,8 +200,28 @@ const InstancePage = () => {
 
       const data = await postData(`api/v1/file/${id}`, formData, "hirello");
       if (data.code == 200) {
+        setUploadFileModal(false);
         setShowLoader(false);
         router.push(`/home/video/preview?id=${id}`);
+      }
+    } catch (error) {
+      setShowLoader(false);
+      console.log(error, "==========error");
+    }
+  };
+  const handleSendModalFile = async () => {
+    try {
+      if (selectedFile) {
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+        // setShowLoader(true);
+        const data = await postData(`api/v1/file/${id}`, formData, "hirello");
+        if (data.code == 200) {
+          setUploadFileModal(false);
+          // setShowLoader(false);
+          setId("");
+          router.push(`/home/dummy?id=${id}`);
+        }
       }
     } catch (error) {
       setShowLoader(false);
@@ -274,6 +339,70 @@ const InstancePage = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <Dialog open={uploadFileModal} onOpenChange={setUploadFileModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Upload Video</DialogTitle>
+          </DialogHeader>
+
+          <div className="gap-4 border-dashed justify-center flex flex-col m-4 items-center">
+            {showLoader && (
+              <div className="flex absolute w-full top-0 bottom-0 justify-center bg-gray-300 bg-opacity-50 ">
+                <Image
+                  src="/assets/tube-spinner.svg"
+                  alt="Logo"
+                  width={50}
+                  height={50}
+                />
+              </div>
+            )}
+
+            <div>
+              {/* Hidden file input */}
+              <input
+                type="file"
+                ref={fileModalInputRef}
+                onChange={handleModalFileChange}
+                style={{ display: "none" }} // Hide the input
+      
+              />
+              {/* Label styled as a button */}
+              <label
+                onClick={() => {
+                  fileModalInputRef.current.click(); 
+                }}
+               
+                className="bg-gray-200 p-2 border-dashed border-2 rounded cursor-pointer"
+              >
+                Choose a file
+              </label>
+            </div>
+            {/* Show the selected file name */}
+            {selectedFile?.name && <p>{selectedFile.name}</p>}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setUploadFileModal(false);
+                setShowLoader(false);
+                setSelectedFile(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+            type="button"
+              className="bg-[#FFC000] text-black"
+              onClick={() => {
+                handleSendModalFile();
+              }}
+            >
+              Submit
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <div className="flex gap-5 h-full overflow-y-auto">
         <div
@@ -360,6 +489,7 @@ const InstancePage = () => {
             <VideoTitleCard
               title={ele?.name}
               id={ele?.id}
+              getVideo={getVideo}
               deleteInstance={deleteInstance}
               updateInstance={setUpdatedInstance}
               setupdateInstanceModal={setupdateInstanceModal}

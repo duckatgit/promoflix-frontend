@@ -43,6 +43,8 @@ import { useAtom, useSetAtom } from "jotai";
 import { videoArrayAtom, csvDataAtom } from "@/utils/atom";
 import Header from "@/app/auth/header/page";
 import { fetchData, postData, deleteData } from "@/utils/api";
+import { getContrastingColor, getRandomColor } from "@/lib/getRandomColor";
+import { LoadingSpinner } from "@/components/ui/spinner";
 
 const whisperxSocker = process.env.NEXT_PUBLIC_VIDEO_WHISPERX_SOCKET;
 const hirelloSocket = process.env.NEXT_PUBLIC_VIDEO_HIRELLO_SOCKET;
@@ -65,7 +67,9 @@ const Preview_video = () => {
   const [deletePopUp, setDeletePopUp] = useState(false);
   const [uploadDocPopup, setUploadDocPopup] = useState(false);
   const [uploadThumbPopup, setUploadThumbPopup] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null); // State to store the selected file
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [fileName, setFileName] = useState(""); // State to store the selected file
+  // State to store the selected file
   const [thumbnailFile, setThumbnailFile] = useState(null); // State to store the selected file
 
   const [hasFile, setHasFile] = useState(false);
@@ -96,6 +100,8 @@ const Preview_video = () => {
 
   const [receivedMessages, setReceivedMessages] = useState([]);
   const [showAll, setShowAll] = useState(false);
+  const [loading, setLoading] = useState(false);
+
 
   const toggleShowAll = () => {
     setShowAll(!showAll);
@@ -128,21 +134,34 @@ const Preview_video = () => {
     }
   };
   const sendMessage = async () => {
+    setLoading(true);
     if (!hasFile && !csvUrlInput) {
       toast({
         type: "error",
         title: "",
         description: "Please upload csv file or Spreadsheet url",
       })
+      setLoading(false);
       return;
     }
 
     if (hasFile) {
-      const data = await postData(`api/v1/generate/${id}`, {}, "hirello");
-      if (data.code == 200) {
-        console.log(data)
-        setVideoArray(data.result);
-        router.push(`home/video/generate?id=${id}`);
+      try {
+        const data = await postData(`api/v1/generate/${id}`, {}, "hirello");
+        if (data.code == 200) {
+          setLoading(false);
+          console.log(data)
+          setVideoArray(data.result);
+          router.push(`/home/video/generate?id=${id}`);
+        }
+      } catch (error) {
+        console.log(error, "errrrr");
+
+        setLoading(false);
+        toast({
+          type: "error",
+          description: error?.message,
+        })
       }
     } else {
       let googleSheetId = ''
@@ -214,7 +233,6 @@ const Preview_video = () => {
             description: "Csv file uploaded sucessfully",
           });
           getFile();
-          setId("");
           setSelectedFile(null);
         }
       }
@@ -229,20 +247,31 @@ const Preview_video = () => {
   const handleFileChange = (event) => {
     console.log("csv handleFileChange");
     const file = event.target.files[0];
-    if (file) {
-      setSelectedFile(file); // Store the selected file in state
+    if (file && file.type.startsWith("image/")) {
+      toast({
+        type: "warning",
+        description: "Please select a valid file.",
+      });
       const fileInput = event.target;
-      if (fileInput.files.length > 0) {
-        const selectedFile = fileInput.files[0];
-        fileInput.value = null; // Reset the input if the same file is selected again
-        setSelectedFile(selectedFile);
+      fileInput.value = null;
+    }
+    else {
+      if (file) {
+        setFileName(file?.name);
+        setSelectedFile(file); // Store the selected file in state
+        const fileInput = event.target;
+        if (fileInput.files.length > 0) {
+          const selectedFile = fileInput.files[0];
+          fileInput.value = null; // Reset the input if the same file is selected again
+          setSelectedFile(selectedFile);
+        }
       }
     }
   };
   const handleThumbnailFileChange = (event) => {
     console.log("thumb handleThumbnailFileChange ");
     const file = event.target.files[0];
-    if (file) {
+    if (file && file.type.startsWith("image/")) {
       setThumbnailFile(file); // Store the selected file in state
       const fileInput = event.target;
       if (fileInput.files.length > 0) {
@@ -250,6 +279,14 @@ const Preview_video = () => {
         fileInput.value = null; // Reset the input if the same file is selected again
         setThumbnailFile(selectedFile);
       }
+    }
+    else {
+      toast({
+        type: "warning",
+        description: "Please select a valid image file.",
+      });
+      const fileInput = event.target;
+      fileInput.value = null;
     }
   };
   useEffect(() => {
@@ -308,6 +345,7 @@ const Preview_video = () => {
       const data = await deleteData(`api/csv/${id}`, {}, "csv");
       if (data.code == 200) {
         toast({
+          type: "success",
           description: "Csv file deleted sucessfully",
         });
         setHasFile(false);
@@ -315,6 +353,10 @@ const Preview_video = () => {
         setDeleteFilePopUp(false);
       }
     } catch (error) {
+      toast({
+        type: "error",
+        description: "failed to delete Csv file ",
+      });
       console.log(error, "========error");
     }
   };
@@ -396,12 +438,17 @@ const Preview_video = () => {
       );
       if (responseData.code == 200) {
         toast({
+          type: "success",
           description: "Segment added SuccessfullY",
         });
         getAllSegment();
       }
       console.log("API Response:", responseData);
     } catch (error) {
+      toast({
+        type: "error",
+        description: error?.message,
+      });
       console.error("Error in API call:", error);
     }
     setEditingWordIndex(null);
@@ -423,18 +470,23 @@ const Preview_video = () => {
       );
       if (data.code != 200) {
         toast({
-          variant: "destructive",
+          type: "error",
           title: "Uh oh! Something went wrong.",
           description: data.result,
         });
       } else {
         toast({
+          type: "success",
           description: "Segment deleted sucessfully",
         });
         setDeletePopUp(false);
         getAllSegment();
       }
     } catch (error) {
+      toast({
+        type: "error",
+        description: error?.message,
+      });
       console.log(error, "=========error");
     }
   };
@@ -545,13 +597,13 @@ const Preview_video = () => {
           });
           setVideoThumb(data?.result);
           setThumbnailFile(null);
-          setId("");
+          // setId("");
         }
       }
     } catch (error) {
       toast({
         type: "error",
-        description: error,
+        description: error?.message,
       });
       console.log(error, "========error");
     }
@@ -560,7 +612,7 @@ const Preview_video = () => {
     if (id) {
       myfunction(id);
       getAllSegment();
-
+      getFile()
       // connectWebSocket();
     }
   }, [id]);
@@ -606,12 +658,16 @@ const Preview_video = () => {
 
           <div className="flex flex-wrap gap-2 p-4  border-b border-gray-300 mb-4">
             {arr?.map((i, index) => {
+              const bgColor = getRandomColor();
+              const textColor = getContrastingColor(bgColor);
+
               return (
                 <div
                   className={`justify-between bg-[#333333] text-white px-3 py-1 rounded-xl flex gap-1 `}
+                  style={{ backgroundColor: bgColor }}
                   key={index}
                 >
-                  <p className="truncate"> {i.name}</p>
+                  <p className="truncate" style={{ color: textColor }}> {i.name}</p>
                   <X
                     className="cursor-pointer"
                     onClick={() => {
@@ -768,7 +824,8 @@ const Preview_video = () => {
                 ref={fileInputRef}
                 onChange={handleFileChange}
                 id="file-upload"
-                className="w-28 absolute right-[65px] top-[50px] opacity-0"
+                style={{ display: "none" }}
+                className="w-28 absolute right-[65px] top-[50px]"
               />
             </div>
 
@@ -846,7 +903,9 @@ const Preview_video = () => {
                   ref={fileInputRef2}
                   onChange={handleThumbnailFileChange}
                   id="file-upload"
-                  className="w-28 absolute right-[65px] top-[55px] opacity-0"
+                  // accept="image/*"
+                  style={{ display: "none" }}
+                  className="w-28 absolute right-[65px] top-[55px]"
                 />
               </div>
             </div>
@@ -858,13 +917,16 @@ const Preview_video = () => {
               </div>
               <div className="flex flex-wrap gap-2 p-4 ">
                 {arr?.map((i, index) => {
+                  const bgColor = getRandomColor();
+                  const textColor = getContrastingColor(bgColor);
                   return (
                     <div
 
                       className={`justify-between bg-[#333333] text-white px-3 py-1 rounded-xl flex gap-1 `}
+                      style={{ backgroundColor: bgColor }}
                       key={index}
                     >
-                      <p className="truncate"> {i.name}</p>
+                      <p className="truncate" style={{ color: textColor }}> {i.name}</p>
                       <X
                         className="cursor-pointer"
                         onClick={() => {
@@ -881,7 +943,15 @@ const Preview_video = () => {
 
             </div>
             <div className="flex gap-2 p-4 ">
-              <Button className=" text-white" style={{ backgroundColor: "#333333" }} onClick={() => { sendMessage() }}>Merge Video</Button>
+              <Button className=" text-white" style={{ backgroundColor: "#333333" }} onClick={() => { sendMessage() }}>
+                {loading ? (
+                  <>
+                    Merge Video <LoadingSpinner className="ml-2 text-white" />
+                  </>
+                ) : (
+                  "Merge Video"
+                )}
+              </Button>
               <Button className=" text-white" style={{ backgroundColor: "#333333" }} >Reset All</Button>
             </div>
           </div>

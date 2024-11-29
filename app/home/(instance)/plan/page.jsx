@@ -24,12 +24,13 @@ const Plans = () => {
         });
       } else {
         setPlansData(response.result);
-        toast({
-          description: "Data fetched SuccessfullY",
-        });
       }
     } catch (error) {
-      alert(error.message);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error?.result,
+      });
     }
   };
 
@@ -43,13 +44,13 @@ const Plans = () => {
       setUserId(id);
       const baseUrl =
         process.env.NODE_ENV === "development"
-          ? "http://localhost:3000"
+          ? process.env.NEXT_PUBLIC_BASE_URL
           : AUTH_URL;
 
       const response = await postData("api/plan/plan_checkout", {
-        cancel_url: baseUrl,
+        cancel_url: `${baseUrl}/home/plan`,
         plan_id: id,
-        success_url: baseUrl,
+        success_url: `${baseUrl}/home/plan`,
       });
       if (response.code != 200) {
         setLoading(false);
@@ -69,8 +70,8 @@ const Plans = () => {
   };
   return (
     <div className="w-full h-full bg-white rounded-[10px] overflow-auto">
-    <h2 className="mt-[64px] mb-[12px] text-center text-[40px] font-medium">Ready to get started?</h2>
-    <p className="text-[#B3B3B3] mb-[50px] text-center">Choose a plan to tailor your needs</p>
+      <h2 className="mt-[64px] mb-[12px] text-center text-[40px] font-medium">Ready to get started?</h2>
+      <p className="text-[#B3B3B3] mb-[50px] text-center">Choose a plan to tailor your needs</p>
       <div className="flex flex-wrap justify-center gap-3">
         {plansData.map((plan, id) => {
           return (
