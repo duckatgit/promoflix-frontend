@@ -203,7 +203,7 @@ const Preview_video = () => {
         }
 
         setVideoArray([...newVidArr]);
-        router.push(`/video/generate?id=${id}`);
+        router.push(`/home/video/generate?id=${id}`);
       }
     }
 
@@ -421,7 +421,6 @@ const Preview_video = () => {
 
       let cal_startTime = startTime - 0.1;
       let cal_endTime = endTime + 0.1;
-
       const responseData = await postData(
         `api/v1/segment`,
         {
@@ -436,11 +435,13 @@ const Preview_video = () => {
         },
         "hirello"
       );
+
       if (responseData.code == 200) {
         toast({
           type: "success",
           description: "Segment added SuccessfullY",
         });
+
         getAllSegment();
       }
       console.log("API Response:", responseData);

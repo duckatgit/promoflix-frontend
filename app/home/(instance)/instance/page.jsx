@@ -65,6 +65,7 @@ const InstancePage = () => {
                     setId(response?.result?.id)
                     setInstance("")
                     toast({
+                        type: "success",
                         description: "Instence Added successfully",
                     });
 
@@ -72,7 +73,7 @@ const InstancePage = () => {
             }
         } catch (error) {
             toast({
-                variant: "destructive",
+                type: "error",
                 title: "Uh oh! Something went wrong.",
                 description: error.message,
             });
