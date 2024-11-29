@@ -74,6 +74,7 @@ const Preview_video = () => {
   const [thumbnailFile, setThumbnailFile] = useState(null); // State to store the selected file
 
   const [hasFile, setHasFile] = useState(false);
+  console.log(hasFile, "ghggghggh")
   const [deleteFilePopUp, setDeleteFilePopUp] = useState(false);
   const [filePreviewPopUp, setFilePreviewPopUp] = useState(false);
   const [fileData, setFileData] = useState({});
@@ -333,6 +334,7 @@ const Preview_video = () => {
       return error;
     }
   };
+ 
   const getFile = async () => {
     try {
       const result = await fetchData(`api/csv/${id}`, {}, "csv");

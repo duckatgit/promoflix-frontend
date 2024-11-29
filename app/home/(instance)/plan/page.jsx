@@ -15,6 +15,7 @@ const Plans = () => {
   const [userId, setUserId] = useState("");
   const [quota, setQuota] = useState("");
   const [usedQuota, setUsedQuota] = useState(null);
+ 
   const [showLoader, setShowLoader] = useState(false);
 
   console.log(usedQuota, "oioioiioi");
@@ -131,6 +132,7 @@ const Plans = () => {
     if (matchingPlan) {
       // If a match is found, update usedQuota with used_quota1
       setUsedQuota(quota.used_quota1);
+   
     }
   }, [plansData, quota]);
   return (
@@ -173,6 +175,7 @@ const Plans = () => {
                   userId={userId}
                   highlighted={isHighlighted}
                   cancelPlan={cancelPlan} // Updated spelling
+                
                 />
               </>
             );

@@ -50,6 +50,8 @@ const InstancePage = () => {
         setShowUploadeVideoLoader(false);
 
         toast({
+          type: "error",
+          
           variant: "destructive",
           title: "Uh oh! Something went wrong.",
           description: data.result,
@@ -74,6 +76,8 @@ const InstancePage = () => {
     if (file) {
       if (file.size > maxFileSize) {
         toast({
+          type: "error",
+
           variant: "destructive",
           title: "File too large",
           description:
@@ -127,6 +131,8 @@ const InstancePage = () => {
       if (response?.code === 200) {
         setId(response?.result?.id);
         toast({
+          type: "success",
+
           description: "Instance added successfully",
         });
 
@@ -134,6 +140,8 @@ const InstancePage = () => {
         getAllInstance();
       } else {
         toast({
+          type: "error",
+
           variant: "destructive",
           title: "Uh oh! Something went wrong.",
           description: response?.message || "Unexpected error occurred.",
@@ -141,6 +149,8 @@ const InstancePage = () => {
       }
     } catch (error) {
       toast({
+        type: "error",
+
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
         description: error.message || "An unexpected error occurred.",
@@ -214,6 +224,8 @@ const InstancePage = () => {
     if (file) {
       if (file.size > maxFileSize) {
         toast({
+          type: "error",
+
           variant: "destructive",
           title: "File too large",
           description:
@@ -265,11 +277,13 @@ const InstancePage = () => {
       );
       if (data.code != 200) {
         toast({
+          type: "error",
           variant: "destructive",
           title: "Uh oh! Something went wrong.",
         });
       } else {
         toast({
+          type: "success",
           description: "Instence Updated successfully",
         });
         setInstance("");
