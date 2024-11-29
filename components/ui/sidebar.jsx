@@ -37,9 +37,9 @@ const Sidebar = () => {
     const fetchBillingHistory = async () => {
         try {
             const baseUrl = process.env.NODE_ENV === "development"
-                ? "http://localhost:3000"
+                ? process.env.NEXT_PUBLIC_BASE_URL
                 : AUTH_URL;
-            const response = await fetchData('api/plan/customer_portal', { return_url: baseUrl })
+            const response = await fetchData('api/plan/customer_portal', { return_url: `${baseUrl}/home/instance` })
             if (response.code != 200) {
                 alert("failed to fetch Billing History")
             }

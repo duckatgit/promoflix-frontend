@@ -58,7 +58,7 @@ const Login = () => {
         })
         localStorage.setItem("name", response?.result?.user?.name)
         localStorage.setItem("token", response.result.token.access_token)
-        router.push('/home/dashboard'); // Redirect to the dashboard page
+        router.push('/home/instance'); // Redirect to the dashboard page
       }
     } catch (error) {
       setLoading(false);
