@@ -1,10 +1,8 @@
-"use client"
-import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { MdCheckCircleOutline } from "react-icons/md";
 import { LoadingSpinner } from "./spinner";
 
 const PlansCard = ({
+  usedQuota,
   name,
   price,
   billing_period,
@@ -14,24 +12,49 @@ const PlansCard = ({
   plan_id,
   loading,
   userId,
+  highlighted,
+  cancelPlan,
 }) => {
-  console.log(name, "price");
+  const handleButtonClick = () => {
+    if (highlighted) {
+      cancelPlan(); // Call cancelPlan for highlighted plans
+    } else {
+      handleCheckoutPlan(plan_id); // Call handleCheckoutPlan for other plans
+    }
+  };
+  console.log(name, "Gold");
+
   return (
-    <div className="w-[270px] border rounded-[10px] border-[#D9D9D9]">
-      <div className={`bg-[#FFFAF6] p-4 m-4`}>
+    <div
+      className={`w-[270px] border rounded-[10px] ${
+        highlighted ? "border-[#E7680F]" : "border-[#D9D9D9]"
+      }`}
+    >
+      <div className="bg-[#FFFAF6] p-4 m-4">
         <p className="text-center text-[24px] font-medium mb-4">{name}</p>
         <p className="text-[#B3B3B3] ">
-          {" "}
           <span className="text-4xl text-black font-bold">
-            {" "}
-            <sup className="text-[22px] text-black  right-[-10px] top-[-10px]">
-              $
-            </sup>{" "}
-            {price}
+            <sup className="text-[22px] text-black">$</sup> {price}
           </span>{" "}
-          / <span> {billing_period} </span>{" "}
+          / <span> {billing_period} </span>
         </p>
-        <p className="text-[#B3B3B3] my-4">0/{quantity} used </p>
+        <p className="text-[#B3B3B3] my-4">
+          {highlighted ? usedQuota : 0}/{quantity} used{" "}
+        </p>
+        {highlighted &&
+          <div className="my-4">
+       
+          <div className="w-full h-2 bg-[#F5F5F5] rounded-full relative">
+            <div
+              className="h-4 bg-[#E7680F] rounded-full"
+              style={{
+                width: `${highlighted ? (usedQuota / quantity) * 100 : 0}%`,
+              }}
+            ></div>
+          </div>
+        </div>
+        }
+       
       </div>
       <div className="p-4 mx-8">
         <ul className="list-disc text-[#757575]">
@@ -43,19 +66,17 @@ const PlansCard = ({
       <div className="text-center p-4">
         <Button
           className={`py-2 px-3 cursor-pointer rounded-[8px] text-base w-[204px] ${
-            name === "Free Plan"
-              ? "bg-transparent text-[#E7680F] border border-[#E7680F]  "
-              : ""
+            highlighted ? "bg-red-500 text-white hover:bg-red-600" : ""
           }`}
-          onClick={() => handleCheckoutPlan(plan_id)}
+          onClick={handleButtonClick}
         >
           {loading && userId === plan_id ? (
             <>
-              {name === "Free Plan" ? "Current" : "Get started"}
+              {highlighted ? "Cancelling..." : "Processing..."}
               <LoadingSpinner className="ml-2 text-white" />
             </>
-          ) : name === "Free Plan" ? (
-            "Current"
+          ) : highlighted ? (
+            "Cancel Plan"
           ) : (
             "Buy"
           )}

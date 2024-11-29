@@ -97,6 +97,10 @@
 
 .menu-item:hover {
   border: 1px solid #E7680F;
+  /* color: #E7680F; */
+}
+.menu-item-active {
+  border: 1px solid #E7680F;
   color: #E7680F;
 }
 

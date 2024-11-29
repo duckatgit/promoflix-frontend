@@ -37,11 +37,12 @@ function VideoTitleCard({
           <RiDeleteBin6Line size={20} />
         </button>
       </div>
-      <div className="flex justify-between items-center">
+      {/* <div className="flex justify-between items-center">
         <h3 className="text-sm font-medium text-[#B4B4B4]">{title}</h3>
-      </div>
+      </div> */}
       <p className="mt-1 text-lg font-semibold text-[#333333]">
-        An Exclusive AI-Generated Interview with Industry Experts
+      
+        {title}
       </p>
       {/* <div className="mt-4 flex justify-between items-center">
                 <div className="flex gap-3">
