@@ -7,15 +7,10 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import {
-  ArrowUpDown,
-  Edit,
-  Trash,
-  Upload,
-} from "lucide-react";
+import { ArrowUpDown, Edit, Trash, Upload } from "lucide-react";
 
 import { useToast } from "@/hooks/use-toast";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -35,30 +30,40 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "./ui/button";
 import { fetchData, postData, deleteData, putData } from "@/utils/api";
 import Image from "next/image";
 
-
-const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAllInstance }) => {
+const Dashboard = ({
+  instance,
+  setInstance,
+  allInstances,
+  createInstance,
+  getAllInstance,
+}) => {
   const { toast } = useToast();
   const router = useRouter();
   const [sorting, setSorting] = useState([]);
   const [instanceId, setInstanceId] = useState("");
 
-
-  const [id, setId] = useState('')
+  const [id, setId] = useState("");
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
   const [fileModal, setFileModal] = useState(false);
   const [uploadFileModal, setUploadFileModal] = useState(false);
-  const [showLoader, setShowLoader] = useState(false)
+  const [showLoader, setShowLoader] = useState(false);
 
   const [updateInstanceModal, setupdateInstanceModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null); // State to store the selected file
-  console.log(selectedFile, "lllllll")
+  console.log(selectedFile, "lllllll");
   const fileInputRef = useRef(null);
   const handleUploadClick = () => {
     setFileModal(true);
@@ -67,12 +72,12 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
     setUploadFileModal(true);
   };
   let openUpdateInstanceModal = (name, id, e) => {
-    e.stopPropagation()
+    e.stopPropagation();
     setInstance(name);
 
-    setInstanceId(id)
+    setInstanceId(id);
     setupdateInstanceModal(true);
-  }
+  };
   const columns = [
     {
       id: "serial",
@@ -92,43 +97,53 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
-      cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
+      cell: ({ row }) => (
+        <div className="lowercase">{row.getValue("name")}</div>
+      ),
     },
     {
       accessorKey: "action",
       header: () => <div className="text-right">Action</div>,
       cell: ({ row }) => {
-        let instance_id = row.original.id
+        let instance_id = row.original.id;
         let instance_name = row.getValue("name"); // Assuming "name" is the key for the instance name
 
         const deleteInstance = async (e) => {
           e.stopPropagation(); // Stop row click event
           try {
             const queryParams = {
-              id: instance_id
+              id: instance_id,
             };
-            const data = await deleteData('api/v1/instance', queryParams, "hirello");
+            const data = await deleteData(
+              "api/v1/instance",
+              queryParams,
+              "hirello"
+            );
             if (data.code != 200) {
               toast({
                 variant: "destructive",
                 title: "Uh oh! Something went wrong.",
                 description: data.result,
-              })
-            }
-            else {
+              });
+            } else {
               toast({
                 description: "Instance deleted sucessfully",
-              })
-              getAllInstance()
+              });
+              getAllInstance();
             }
           } catch (error) {
-            console.log(error)
+            console.log(error);
           }
         };
 
         return (
           <div className="flex justify-end space-x-2">
-            <Edit className="h-4 w-4 text-grey cursor-pointer" onClick={(e) => openUpdateInstanceModal(instance_name, instance_id, e)} />
+            <Edit
+              className="h-4 w-4 text-grey cursor-pointer"
+              onClick={(e) =>
+                openUpdateInstanceModal(instance_name, instance_id, e)
+              }
+            />
             <AlertDialog>
               <AlertDialogTrigger onClick={(e) => e.stopPropagation()}>
                 <Trash className="h-4 w-4 text-red-500" />
@@ -141,8 +156,15 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel onClick={(e) => e.stopPropagation()}>Cancel</AlertDialogCancel>
-                  <AlertDialogAction className="bg-[#FF2E00]" onClick={(e) => deleteInstance(e)}>Continue</AlertDialogAction>
+                  <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
+                    Cancel
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-[#FF2E00]"
+                    onClick={(e) => deleteInstance(e)}
+                  >
+                    Continue
+                  </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
@@ -152,15 +174,18 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
     },
   ];
 
-
   const updateInstance = async () => {
     try {
-      const data = await putData('api/v1/instance', {
-        id: instanceId,
-        name: instance,
-        "data_id": null,
-        "video_id": null
-      }, "hirello");
+      const data = await putData(
+        "api/v1/instance",
+        {
+          id: instanceId,
+          name: instance,
+          data_id: null,
+          video_id: null,
+        },
+        "hirello"
+      );
       if (data.code != 200) {
         toast({
           variant: "destructive",
@@ -170,13 +195,12 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
         toast({
           description: "Instence Updated successfully",
         });
-        setInstance("")
-
+        setInstance("");
       }
     } catch (error) {
-      console.log(error, '===========error')
+      console.log(error, "===========error");
     }
-  }
+  };
 
   const table = useReactTable({
     data: allInstances,
@@ -198,41 +222,42 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
   });
   const getVideo = async (e, row) => {
     try {
-      const data = await fetchData(`api/v1/file/${row.original.id}`, {}, "hirello");
-      console.log(data, 'datafile')
+      const data = await fetchData(
+        `api/v1/file/${row.original.id}`,
+        {},
+        "hirello"
+      );
+      console.log(data, "datafile");
       if (data.code == 200) {
-        router.push(`/video/preview?id=${row.original.id}`)
+        router.push(`/video/preview?id=${row.original.id}`);
       }
     } catch (error) {
-      console.log(error, '=========error')
-      handleUploadvideo()
+      console.log(error, "=========error");
+      handleUploadvideo();
     }
-
-  }
-  useEffect(
-    () => {
-      getAllInstance()
-    }, []
-  )
+  };
+  useEffect(() => {
+    getAllInstance();
+  }, []);
   const handleSendFile = async () => {
     try {
       if (selectedFile) {
         const formData = new FormData();
-        formData.append('file', selectedFile);
-        setShowLoader(true)
+        formData.append("file", selectedFile);
+        setShowLoader(true);
         const data = await postData(`api/v1/file/${id}`, formData, "hirello");
         if (data.code == 200) {
           setUploadFileModal(false);
-          setShowLoader(false)
-          setId("")
-          router.push(`/video/preview?id=${id}`)
+          setShowLoader(false);
+          setId("");
+          router.push(`/video/preview?id=${id}`);
         }
       }
     } catch (error) {
-      setShowLoader(false)
-      console.log(error, '==========error')
+      setShowLoader(false);
+      console.log(error, "==========error");
     }
-  }
+  };
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -243,14 +268,12 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
         fileInput.value = null; // Reset the input if the same file is selected again
         setSelectedFile(selectedFile);
       }
-    };
-  }
+    }
+  };
 
-  console.log('allInstances', allInstances)
+  console.log("allInstances", allInstances);
   return (
     <>
-
-
       <div className="w-full">
         <Button
           className="flex justify-end ml-auto text-black mb-2 gap-2"
@@ -261,14 +284,13 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
           <span>Create Instance</span>
         </Button>
 
-        <Dialog open={uploadFileModal} onOpenChange={setUploadFileModal} >
+        <Dialog open={uploadFileModal} onOpenChange={setUploadFileModal}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Upload Video</DialogTitle>
             </DialogHeader>
 
             <div className="gap-4 border-dashed justify-center flex flex-col m-4 items-center">
-
               {showLoader && (
                 <div className="flex absolute w-full top-0 bottom-0 justify-center bg-gray-300 bg-opacity-50 ">
                   <Image
@@ -280,19 +302,20 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
                 </div>
               )}
 
-
-
               <div>
                 {/* Hidden file input */}
                 <input
                   type="file"
                   ref={fileInputRef}
                   onChange={handleFileChange}
-                  style={{ display: 'none' }} // Hide the input
+                  style={{ display: "none" }} // Hide the input
                   id="file-upload" // Add an ID to associate with the label
                 />
                 {/* Label styled as a button */}
-                <label htmlFor="file-upload" className="bg-gray-200 p-2 border-dashed border-2 rounded cursor-pointer">
+                <label
+                  htmlFor="file-upload"
+                  className="bg-gray-200 p-2 border-dashed border-2 rounded cursor-pointer"
+                >
                   Choose a file
                 </label>
               </div>
@@ -304,7 +327,7 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
                 variant="outline"
                 onClick={() => {
                   setUploadFileModal(false);
-                  setShowLoader(false)
+                  setShowLoader(false);
                   setSelectedFile(null);
                 }}
               >
@@ -322,23 +345,31 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
           </DialogContent>
         </Dialog>
 
-
         <Dialog open={fileModal} onOpenChange={setFileModal}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Create Instance
-              </DialogTitle>
+              <DialogTitle>Create Instance</DialogTitle>
             </DialogHeader>
             <div className="gap-4 border-dashed justify-center flex flex-col m-4 items-center">
               <div className="flex flex-col space-y-1.5 w-[400px]">
-                <input className="h-10 rounded-md pl-3" type="text" value={instance} onChange={(e) => { setInstance(e.target.value); }} />
+                <input
+                  className="h-10 rounded-md pl-3"
+                  type="text"
+                  value={instance}
+                  onChange={(e) => {
+                    setInstance(e.target.value);
+                  }}
+                />
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => {
-                setFileModal(false)
-                setInstance("")
-              }}>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setFileModal(false);
+                  setInstance("");
+                }}
+              >
                 Cancel
               </Button>
               <Button
@@ -354,19 +385,31 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
             </DialogFooter>
           </DialogContent>
         </Dialog>
-        <Dialog open={updateInstanceModal} onOpenChange={setupdateInstanceModal}>
+        <Dialog
+          open={updateInstanceModal}
+          onOpenChange={setupdateInstanceModal}
+        >
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Update Instance
-              </DialogTitle>
+              <DialogTitle>Update Instance</DialogTitle>
             </DialogHeader>
             <div className="gap-4 border-dashed justify-center flex flex-col m-4 items-center">
               <div className="flex flex-col space-y-1.5 w-[400px]">
-                <input className="h-10 rounded-md" type="text" value={instance} onChange={(e) => { setInstance(e.target.value); }} />
+                <input
+                  className="h-10 rounded-md"
+                  type="text"
+                  value={instance}
+                  onChange={(e) => {
+                    setInstance(e.target.value);
+                  }}
+                />
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setupdateInstanceModal(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setupdateInstanceModal(false)}
+              >
                 Cancel
               </Button>
               <Button
@@ -385,25 +428,29 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
 
         <Table>
           <TableHeader>
-            {table.getHeaderGroups().map(headerGroup => (
+            {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
+                {headerGroup.headers.map((header) => (
                   <TableHead key={header.id}>
-                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
                   </TableHead>
                 ))}
               </TableRow>
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows.map(row => (
-              <TableRow className="cursor-pointer" key={row.id} onClick={
-                (e) => {
-                  setId(row?.original?.id),
-                    getVideo(e, row)
-                }
-              }>
-                {row.getVisibleCells().map(cell => (
+            {table.getRowModel().rows.map((row) => (
+              <TableRow
+                className="cursor-pointer"
+                key={row.id}
+                onClick={(e) => {
+                  setId(row?.original?.id), getVideo(e, row);
+                }}
+              >
+                {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
@@ -412,7 +459,8 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
             ))}
           </TableBody>
         </Table>
-      </div><div className="flex items-center justify-end space-x-2 py-4">
+      </div>
+      <div className="flex items-center justify-end space-x-2 py-4">
         <div className="space-x-2">
           <Button
             variant="outline"
@@ -431,8 +479,9 @@ const Dashboard = ({ instance, setInstance, allInstances, createInstance, getAll
             Next
           </Button>
         </div>
-      </div></>
-  )
-}
+      </div>
+    </>
+  );
+};
 
-export default Dashboard
+export default Dashboard;
