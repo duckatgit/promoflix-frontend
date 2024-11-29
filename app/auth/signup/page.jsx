@@ -60,11 +60,16 @@ const Sign_up = () => {
           type: "success",
           description: "OTP sent to your email successfully.",
         })
-        router.push('/auth/otp'); // Redirect to the success page
-      } // handle response data
+        router.push('/auth/otp');
+      }
     } catch (error) {
       setLoading(false);
-      alert(error.message)
+      console.log('error.message', error.message)
+      toast({
+        type: "error",
+        title: "Uh oh! Something went wrong.",
+        description: error?.message?.result,
+      })
 
     }
   }
