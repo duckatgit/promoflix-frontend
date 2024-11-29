@@ -15,7 +15,7 @@ const Plans = () => {
   const [userId, setUserId] = useState("");
   const [quota, setQuota] = useState("");
   const [usedQuota, setUsedQuota] = useState(null);
- 
+
   const [showLoader, setShowLoader] = useState(false);
 
   console.log(usedQuota, "oioioiioi");
@@ -105,7 +105,7 @@ const Plans = () => {
 
   const cancelPlan = async () => {
     try {
-      const data = await deleteData("api/plan", {}, );
+      const data = await deleteData("api/plan", {},);
       if (data.code != 200) {
         toast({
           type: "error",
@@ -132,7 +132,7 @@ const Plans = () => {
     if (matchingPlan) {
       // If a match is found, update usedQuota with used_quota1
       setUsedQuota(quota.used_quota1);
-   
+
     }
   }, [plansData, quota]);
   return (
@@ -157,9 +157,9 @@ const Plans = () => {
         </p>
         <div className="flex flex-wrap justify-center gap-3">
           {plansData.map((plan, id) => {
-            const isHighlighted = plan.id === quota.plan_id; // Check if the plan should be highlighted
+            const isHighlighted = plan.id === quota.plan_id;
             return (
-              <>
+              <div key={id}>
                 {" "}
                 <PlansCard
                   key={id}
@@ -175,9 +175,9 @@ const Plans = () => {
                   userId={userId}
                   highlighted={isHighlighted}
                   cancelPlan={cancelPlan} // Updated spelling
-                
+
                 />
-              </>
+              </div>
             );
           })}
         </div>
