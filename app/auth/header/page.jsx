@@ -73,7 +73,7 @@ const Header = () => {
           // onChange={handleInputChange}  
           />
         </div>
-        <DropdownMenu>
+        {/* <DropdownMenu>
           <DropdownMenuTrigger>
             <NameLogo name={name} />
           </DropdownMenuTrigger>
@@ -82,7 +82,7 @@ const Header = () => {
             <DropdownMenuItem style={{ cursor: "pointer" }} onClick={() => fetchBillingHistory()}>Billing History</DropdownMenuItem>
             <DropdownMenuItem style={{ cursor: "pointer" }} onClick={logOutUser}>Log out</DropdownMenuItem>
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu> */}
       </div>
     </div>
   );
