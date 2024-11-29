@@ -41,10 +41,7 @@ const Plans = () => {
         try {
             setLoading(true);
             setUserId(id);
-            const baseUrl =
-                process.env.NODE_ENV === "development"
-                    ? "http://localhost:3000"
-                    : AUTH_URL;
+            const baseUrl = 'https://promoflix-frontend-seven.vercel.app'
 
             const response = await postData("api/plan/plan_checkout", {
                 cancel_url: baseUrl,

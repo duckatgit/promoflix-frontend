@@ -36,9 +36,7 @@ const Header = () => {
 
   const fetchBillingHistory = async () => {
     try {
-      const baseUrl = process.env.NODE_ENV === "development"
-        ? "http://localhost:3000"
-        : AUTH_URL;
+      const baseUrl = 'https://promoflix-frontend-seven.vercel.app'
       const response = await fetchData('api/plan/customer_portal', { return_url: `${baseUrl}/home/instance` })
       if (response.code != 200) {
         alert("failed to fetch Billing History")

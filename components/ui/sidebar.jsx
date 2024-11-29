@@ -169,10 +169,8 @@ const Sidebar = () => {
 
   const fetchBillingHistory = async () => {
     try {
-      const baseUrl =
-        process.env.NODE_ENV === "development"
-          ? "http://localhost:3000"
-          : AUTH_URL;
+      const baseUrl = 'https://promoflix-frontend-seven.vercel.app'
+
       const response = await fetchData("api/plan/customer_portal", {
         return_url: baseUrl,
       });
@@ -188,9 +186,8 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`max-w-[30%] bg-white transition-all duration-300 flex flex-col items-start relative rounded-lg ${
-        isCollapsed ? "w-[60px] collapsed" : ""
-      }`}
+      className={`max-w-[30%] bg-white transition-all duration-300 flex flex-col items-start relative rounded-lg ${isCollapsed ? "w-[60px] collapsed" : ""
+        }`}
     >
       <div
         className="sidebar-icon"
@@ -207,9 +204,8 @@ const Sidebar = () => {
       <div className="sidebar-content">
         <div className="p-2">
           <div
-            className={`menu-item ${
-              pathname === "/home/instance" ? "menu-item-active" : ""
-            }`}
+            className={`menu-item ${pathname === "/home/instance" ? "menu-item-active" : ""
+              }`}
             onClick={() => router.push("/home/instance")}
           >
             <span className="icon">
@@ -222,9 +218,8 @@ const Sidebar = () => {
             <span className="text">Instance</span>
           </div>
           <div
-            className={`menu-item ${
-              pathname === "/home/plan" ? "menu-item-active" : ""
-            }`}
+            className={`menu-item ${pathname === "/home/plan" ? "menu-item-active" : ""
+              }`}
             onClick={() => router.push("/home/plan")}
           >
             <span className="icon">
@@ -237,15 +232,14 @@ const Sidebar = () => {
             <span className="text">Pricing Plans</span>
           </div>
           <div
-            className={`menu-item ${
-              pathname === "/home/billing-history" ? "menu-item-active" : ""
-            }`}
+            className={`menu-item ${pathname === "/home/billing-history" ? "menu-item-active" : ""
+              }`}
             onClick={() => fetchBillingHistory()}
           >
             <span className="icon">
-            {pathname === "/home/billing-history" ? (
-              <img src="/assets/orange-billing.svg" alt="Billing History Icon" />
-        
+              {pathname === "/home/billing-history" ? (
+                <img src="/assets/orange-billing.svg" alt="Billing History Icon" />
+
               ) : (
                 <img src="/assets/billing-icon.png" alt="Billing History Icon" />
 
@@ -259,9 +253,8 @@ const Sidebar = () => {
         <div className="p-4">
           <div className="user-info ">
             <span
-              className={`avatar rounded-[50%] bg-white border-[3px] border-[#f1c40f] text-center font-sans text-[18px] font-bold text-[#333] flex justify-center items-center ${
-                isCollapsed ? "w-full h-[30px]" : "w-[35px] h-[35px]"
-              }`}
+              className={`avatar rounded-[50%] bg-white border-[3px] border-[#f1c40f] text-center font-sans text-[18px] font-bold text-[#333] flex justify-center items-center ${isCollapsed ? "w-full h-[30px]" : "w-[35px] h-[35px]"
+                }`}
             >
               {name?.charAt(0)}
             </span>
