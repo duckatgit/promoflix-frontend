@@ -45,6 +45,7 @@ import Header from "@/app/auth/header/page";
 import { fetchData, postData, deleteData } from "@/utils/api";
 import { getContrastingColor, getRandomColor } from "@/lib/getRandomColor";
 import { LoadingSpinner } from "@/components/ui/spinner";
+import Stepper from "@/components/ui/stepper";
 
 const whisperxSocker = process.env.NEXT_PUBLIC_VIDEO_WHISPERX_SOCKET;
 const hirelloSocket = process.env.NEXT_PUBLIC_VIDEO_HIRELLO_SOCKET;
@@ -101,7 +102,7 @@ const Preview_video = () => {
   const [receivedMessages, setReceivedMessages] = useState([]);
   const [showAll, setShowAll] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const [activeStep, setActiveStep] = useState(0);
 
   const toggleShowAll = () => {
     setShowAll(!showAll);
@@ -220,8 +221,6 @@ const Preview_video = () => {
 
 
   const handleSendFile = async () => {
-    console.log(selectedFile, "jjjj");
-
     try {
       if (selectedFile) {
         const formData = new FormData();
@@ -232,8 +231,9 @@ const Preview_video = () => {
             type: "success",
             description: "Csv file uploaded sucessfully",
           });
-          getFile();
+          await getFile();
           setSelectedFile(null);
+          handleNext()
         }
       }
     } catch (error) {
@@ -245,8 +245,16 @@ const Preview_video = () => {
     }
   };
   const handleFileChange = (event) => {
-    console.log("csv handleFileChange");
     const file = event.target.files[0];
+    const maxFileSize = 50 * 1024 * 1024; // 50MB in bytes
+    if (file.size > maxFileSize) {
+      toast({
+        type: "warning",
+        description: "File size exceeds 50MB. Please choose a smaller file."
+      });
+      fileInputRef.current.value = "";
+      return;
+    }
     if (file && file.type.startsWith("image/")) {
       toast({
         type: "warning",
@@ -291,14 +299,12 @@ const Preview_video = () => {
   };
   useEffect(() => {
     if (selectedFile) {
-      console.log(selectedFile, "selectedFile inside useeefect");
       handleSendFile()
     }
   }, [selectedFile])
 
   useEffect(() => {
     if (thumbnailFile) {
-      console.log(thumbnailFile, "thumbnailFile inside useeefect");
       uploadNewThumb()
     }
   }, [thumbnailFile])
@@ -401,6 +407,7 @@ const Preview_video = () => {
     findWords(index);
   };
   const handleTickClick = async () => {
+
     try {
       let highlight_si;
       let highlight_ei;
@@ -418,7 +425,6 @@ const Preview_video = () => {
           segments = segments + item.word;
         }
       }
-
       let cal_startTime = startTime - 0.1;
       let cal_endTime = endTime + 0.1;
       const responseData = await postData(
@@ -442,7 +448,8 @@ const Preview_video = () => {
           description: "Segment added SuccessfullY",
         });
 
-        getAllSegment();
+        await getAllSegment();
+
       }
       console.log("API Response:", responseData);
     } catch (error) {
@@ -617,12 +624,29 @@ const Preview_video = () => {
       // connectWebSocket();
     }
   }, [id]);
+
   const video_url = videoUrl;
   let arr = [];
   if (segmentData) {
     arr = segmentData;
   }
 
+  useEffect(() => {
+    if (segmentData.length > 0 && segmentData.length < 2) {
+      handleNext()
+    }
+  }, [segmentData]);
+  const steps = [
+    { title: "Step 1", icon: "icon1" },
+    { title: "Step 2", icon: "icon2" },
+    { title: "Step 3", icon: "icon3" },
+  ];
+
+  const handleNext = () => {
+    if (activeStep < steps.length - 1) {
+      setActiveStep((prev) => prev + 1);
+    }
+  };
   function cleanAndSplit(text) {
     // Step 1: Find and capture the special characters at the end of the string
     const removedChars = text.match(/[^a-zA-Z0-9\s]+$/);
@@ -637,9 +661,11 @@ const Preview_video = () => {
     };
   }
 
+  console.log(activeStep, hasFile, "jjjj");
 
   return (
     <div className=" h-[100%] overflow-y-auto w-full">
+      <Stepper activeStep={activeStep} setActiveStep={setActiveStep} segmentArray={arr} hasFile={hasFile} steps={steps} />
       {/* first section */}
       <div className="flex justify-between h-[452px] gap-4">
         {/* left section */}
@@ -659,16 +685,18 @@ const Preview_video = () => {
 
           <div className="flex flex-wrap gap-2 p-4  border-b border-gray-300 mb-4">
             {arr?.map((i, index) => {
-              const bgColor = getRandomColor();
-              const textColor = getContrastingColor(bgColor);
+              // const bgColor = getRandomColor();
+              // const textColor = getContrastingColor(bgColor);
 
               return (
                 <div
                   className={`justify-between bg-[#333333] text-white px-3 py-1 rounded-xl flex gap-1 `}
-                  style={{ backgroundColor: bgColor }}
+                  // style={{ backgroundColor: bgColor }}
                   key={index}
                 >
-                  <p className="truncate" style={{ color: textColor }}> {i.name}</p>
+                  <p className="truncate"
+                  // style={{ color: textColor }}
+                  > {i.name}</p>
                   <X
                     className="cursor-pointer"
                     onClick={() => {
@@ -799,165 +827,187 @@ const Preview_video = () => {
         </div>
       </div>
       {/* second section */}
+
       <div className="flex gap-4 w-full   mt-4 ">
         {/* left section */}
-        <div class="w-[30%] shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px]  bg-white">
+        {(activeStep == 1 || activeStep == 2) && (
+          <div class="w-[30%] shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px]  bg-white">
 
-          <p className="font-semibold text-[16px] p-[10px] border-b border-gray-200">Upload Data From Document</p>
-          <div className="p-4">
-            <div class=" relative border-2 border-dashed border-gray-300 rounded-[10px] h-[205px] px-[26px] py-[42px] text-center"
-              onClick={() => {
-                fileInputRef.current.click();
-              }}
-            >
-              <div class="flex flex-col items-center justify-center space-y-2">
-                <div class="text-orange-500 text-4xl">
-                  <img src="/assets/bx_image-add.png" alt="upload icon" />
-                </div>
-                {/* <!-- Upload Instructions --> */}
-                <p class="text-sm font-medium text-gray-700">
-                  Upload Data, or <span class="text-orange-500 cursor-pointer">Browse</span>
-                </p>
-                <p class="text-xs text-gray-500">Maximum File size is 50 mb</p>
-              </div>
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                id="file-upload"
-                style={{ display: "none" }}
-                className="w-28 absolute right-[65px] top-[50px]"
-              />
-            </div>
-
-            {/* <!-- Separator --> */}
-            <div class="flex items-center justify-center my-4">
-              <span class="text-gray-400 text-sm">or</span>
-            </div>
-
-            <div>
-              <input
-                type="text"
-                placeholder="Paste Spreadsheet URL"
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-orange-200 text-sm text-gray-700"
-              />
-              <p class="text-xs text-gray-500 mt-2">
-                File must be .xls, .xlsx, .xlsm, .xlt, .xltx, (Excel or Google Sheets).
-              </p>
-            </div>
-            {hasFile && (
-              <div class="mt-6 p-3 bg-gray-50 border border-gray-200 rounded-md flex items-center justify-between">
-                <div className="flex justify-between">
-                  <div className="flex">
-                    <File className="mt-2" />
-                    <p className="p-2"> File.csv</p>
-                  </div>
-                  <div className="flex">
-                    <EyeIcon
-                      onClick={() => {
-                        setFilePreviewPopUp(true);
-                      }}
-                      className="text-neutral-400 border-2 rounded-3xl size-10 border-neutral-400 p-2 mr-2 cursor-pointer"
-                    />
-                    <Trash
-                      onClick={() => {
-                        setDeleteFilePopUp(true);
-                      }}
-                      className="text-red-600 border-2 rounded-3xl size-10 border-red-600 p-2 cursor-pointer"
-                    />
-                  </div>
-                </div>
-
-              </div>
-            )}
-          </div>
-        </div>
-        {/* right section */}
-        <div className="w-[70%]  bg-white shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px]">
-          <p className="font-semibold text-[16px] p-[10px] border-b border-gray-200">Video Thumbnail</p>
-          <div className="p-4 ">
-            <div className="flex gap-4 mb-[20px]">
-              <div className="w-1/2 ">
-                <div className="w-full relative h-[200px]">
-                  {videoThumb &&
-                    <Image
-                      layout="fill"
-                      className="rounded-2xl   object-cover"
-                      src={videoThumb}
-                      alt=""
-                    />
-                  }
-
-                </div>
-              </div>
-              <div class=" relative w-1/2 flex flex-col items-center justify-center bg-[#FFF5F0] border-2 border-dashed border-orange-400 rounded-md"
+            <p className="font-semibold text-[16px] p-[10px] border-b border-gray-200">Upload Data From Document</p>
+            <div className="p-4">
+              <div class=" relative border-2 border-dashed border-gray-300 rounded-[10px] h-[205px] px-[26px] py-[42px] text-center"
                 onClick={() => {
-                  fileInputRef2.current.click();
+                  fileInputRef.current.click();
                 }}
               >
-                <div class="text-orange-500 text-4xl">
-                  <img src="/assets/bx_image-add.png" alt="upload icon" />
+                <div class="flex flex-col items-center justify-center space-y-2">
+                  <div class="text-orange-500 text-4xl">
+                    <img src="/assets/bx_image-add.png" alt="upload icon" />
+                  </div>
+                  {/* <!-- Upload Instructions --> */}
+                  <p class="text-sm font-medium text-gray-700">
+                    Upload Data, or <span class="text-orange-500 cursor-pointer">Browse</span>
+                  </p>
+                  <p class="text-xs text-gray-500">Maximum File size is 50 mb</p>
                 </div>
-                <p class=" mt-2 text-orange-500 text-sm font-medium">Upload New Thumbnail</p>
                 <input
                   type="file"
-                  ref={fileInputRef2}
-                  onChange={handleThumbnailFileChange}
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
                   id="file-upload"
-                  // accept="image/*"
                   style={{ display: "none" }}
-                  className="w-28 absolute right-[65px] top-[55px]"
+                  className="w-28 absolute right-[65px] top-[50px]"
                 />
               </div>
-            </div>
-            <div className="  border border-[#B4B4B4] rounded-[10px]">
-              <div className="  border-b border-[#B4B4B4]">
-                <div className="p-4">
-                  <p className="text-[16px] leading-[24px] text-left">Create Thumbnail Message. Use the merge fields on the right to insert your message.</p>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-2 p-4 ">
-                {arr?.map((i, index) => {
-                  const bgColor = getRandomColor();
-                  const textColor = getContrastingColor(bgColor);
-                  return (
-                    <div
 
-                      className={`justify-between bg-[#333333] text-white px-3 py-1 rounded-xl flex gap-1 `}
-                      style={{ backgroundColor: bgColor }}
-                      key={index}
-                    >
-                      <p className="truncate" style={{ color: textColor }}> {i.name}</p>
-                      <X
-                        className="cursor-pointer"
+              {/* <!-- Separator --> */}
+              <div class="flex items-center justify-center my-4">
+                <span class="text-gray-400 text-sm">or</span>
+              </div>
+
+              <div>
+                <input
+                  type="text"
+                  placeholder="Paste Spreadsheet URL"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-orange-200 text-sm text-gray-700"
+                />
+                <p class="text-xs text-gray-500 mt-2">
+                  File must be .xls, .xlsx, .xlsm, .xlt, .xltx, (Excel or Google Sheets).
+                </p>
+              </div>
+              {hasFile && (
+                <div class="mt-6 p-3 bg-gray-50 border border-gray-200 rounded-md flex items-center justify-between">
+                  <div className="flex justify-between">
+                    <div className="flex">
+                      <File className="mt-2" />
+                      <p className="p-2"> File.csv</p>
+                    </div>
+                    <div className="flex">
+                      <EyeIcon
                         onClick={() => {
-                          {
-                            setDeletePopUp(true);
-                            setSegmentID(i.id);
-                          }
+                          setFilePreviewPopUp(true);
                         }}
+                        className="text-neutral-400 border-2 rounded-3xl size-10 border-neutral-400 p-2 mr-2 cursor-pointer"
+                      />
+                      <Trash
+                        onClick={() => {
+                          setDeleteFilePopUp(true);
+                        }}
+                        className="text-red-600 border-2 rounded-3xl size-10 border-red-600 p-2 cursor-pointer"
                       />
                     </div>
-                  );
-                })}
-              </div>
+                  </div>
 
-            </div>
-            <div className="flex gap-2 p-4 ">
-              <Button className=" text-white" style={{ backgroundColor: "#333333" }} onClick={() => { sendMessage() }}>
-                {loading ? (
-                  <>
-                    Merge Video <LoadingSpinner className="ml-2 text-white" />
-                  </>
-                ) : (
-                  "Merge Video"
-                )}
-              </Button>
-              <Button className=" text-white" style={{ backgroundColor: "#333333" }} >Reset All</Button>
+                </div>
+              )}
             </div>
           </div>
-        </div>
+        )}
+        {/* right section */}
+        {activeStep == 2 && (
+          <div className="w-[70%]  bg-white shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px]">
+            <p className="font-semibold text-[16px] p-[10px] border-b border-gray-200">Video Thumbnail</p>
+            <div className="p-4 ">
+              <div className="flex gap-4 mb-[20px]">
+                <div className="w-1/2 ">
+                  <div className="w-full relative h-[200px]">
+                    {videoThumb &&
+                      <Image
+                        layout="fill"
+                        className="rounded-2xl   object-cover"
+                        src={videoThumb}
+                        alt=""
+                      />
+                    }
+
+                  </div>
+                </div>
+                <div class=" relative w-1/2 flex flex-col items-center justify-center bg-[#FFF5F0] border-2 border-dashed border-orange-400 rounded-md"
+                  onClick={() => {
+                    fileInputRef2.current.click();
+                  }}
+                >
+                  <div class="text-orange-500 text-4xl">
+                    <img src="/assets/bx_image-add.png" alt="upload icon" />
+                  </div>
+                  <p class=" mt-2 text-orange-500 text-sm font-medium">Upload New Thumbnail</p>
+                  <input
+                    type="file"
+                    ref={fileInputRef2}
+                    onChange={handleThumbnailFileChange}
+                    id="file-upload"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    className="w-28 absolute right-[65px] top-[55px]"
+                  />
+                </div>
+              </div>
+              <div className="  border border-[#B4B4B4] rounded-[10px]">
+                <div className="  border-b border-[#B4B4B4]">
+                  <div className="p-4">
+                    <p className="text-[16px] leading-[24px] text-left">Create Thumbnail Message. Use the merge fields on the right to insert your message.</p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2 p-4 ">
+                  {arr?.map((i, index) => {
+                    // const bgColor = getRandomColor();
+                    // const textColor = getContrastingColor(bgColor);
+                    return (
+                      <div
+
+                        className={`justify-between bg-[#333333] text-white px-3 py-1 rounded-xl flex gap-1 `}
+                        // style={{ backgroundColor: bgColor }}
+                        key={index}
+                      >
+                        <p className="truncate"
+                        // style={{ color: textColor }}
+                        > {i.name}</p>
+                        <X
+                          className="cursor-pointer"
+                          onClick={() => {
+                            {
+                              setDeletePopUp(true);
+                              setSegmentID(i.id);
+                            }
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+
+              </div>
+              <div className="flex gap-2 p-4 ">
+                <Button className=" text-white" style={{ backgroundColor: "#333333" }} onClick={() => { sendMessage() }}>
+                  {loading ? (
+                    <>
+                      Merge Video <LoadingSpinner className="ml-2 text-white" />
+                    </>
+                  ) : (
+                    "Merge Video"
+                  )}
+                </Button>
+                <Button className=" text-white" style={{ backgroundColor: "#333333" }} >Reset All</Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
+
+
+      {/* third section */}
+      {/* <div className=" h-[452px]  mt-4 bg-white">
+        <h1 className="font-semibold leading-6 p-[10px] border-b border-b-[#D9D9D9]">Send Email</h1>
+        <div className="flex gap-4 w-full shadow-[0px_6px_16px_0px_#0000000F]">
+          left section
+          <div class="w-[30%] shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px]  bg-white border-2 border-red-500">
+
+          </div>
+          right section
+          <div className="w-[70%]  bg-white shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px] border-2 border-red-500">
+          </div></div>
+      </div> */}
+
 
       {/* <h1 className="m-4">Upload Data From Document</h1> */}
       {/* {!hasFile ? (
