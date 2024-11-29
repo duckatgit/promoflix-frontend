@@ -1,3 +1,4 @@
+/* eslint-disable-next-line react/jsx-key */
 "use client";
 import PlansCard from "@/components/ui/plans-card";
 import { useToast } from "@/hooks/use-toast";
