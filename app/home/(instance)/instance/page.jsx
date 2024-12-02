@@ -105,7 +105,7 @@ const InstancePage = () => {
   const handleModalFileChange = (event) => {
     const file = event.target.files[0];
 
-    const maxFileSize = 50 * 1024 * 1024; // 50 MB in bytes
+    const maxFileSize = 100 * 1024 * 1024; // 100 MB in bytes
 
     if (file) {
       if (file.size > maxFileSize) {
@@ -115,7 +115,7 @@ const InstancePage = () => {
           variant: "destructive",
           title: "File too large",
           description:
-            "The maximum file size is 50 MB. Please select a smaller file.",
+            "The maximum file size is 100 MB. Please select a smaller file.",
         });
         return;
       }
@@ -556,7 +556,7 @@ const InstancePage = () => {
                   </span>
                 </p>
                 <p className="text-xs text-gray-500">
-                  Maximum File size is 50 mb
+                  Maximum File size is 100 mb
                 </p>
               </div>
             </div>
