@@ -13,8 +13,12 @@ import { useToast } from "@/hooks/use-toast";
 import { fetchData } from "@/utils/api";
 import { Input } from "@/components/ui/input";
 import { IoSearchOutline } from "react-icons/io5";
+import { searchAtom } from "@/utils/atom";
+import { useAtom } from "jotai";
+
 
 const Header = () => {
+  const [search, setSearch] = useAtom(searchAtom)
   const [name, setname] = useState("John Doe");
   const router = useRouter();
   const { toast } = useToast()
@@ -66,7 +70,8 @@ const Header = () => {
           <input
             id="search"
             placeholder="Search"
-            value=""
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-2 outline-none border-none bg-transparent"
           // onChange={handleInputChange}  
           />

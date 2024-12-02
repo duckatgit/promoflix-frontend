@@ -27,6 +27,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { searchAtom } from "@/utils/atom";
+import { useAtom } from "jotai";
 const InstancePage = () => {
   const { toast } = useToast();
   const router = useRouter();
@@ -48,18 +50,39 @@ const InstancePage = () => {
   const [uploadFileModal, setUploadFileModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null); // State to store the selected file
   const [deletePopUp, setDeletePopUp] = useState(false);
+  const [search, setSearch] = useAtom(searchAtom)
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
 
-  const getAllInstance = async () => {
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [search]);
+
+  useEffect(() => {
+    if (debouncedSearch) {
+      getAllInstance(debouncedSearch)
+    }
+    else {
+      getAllInstance()
+    }
+  }, [debouncedSearch]);
+
+  const getAllInstance = async (searchInstance) => {
     try {
       setShowUploadeVideoLoader(true);
       const queryParams = {
         page: 0,
         limit: 100,
+        filter: searchInstance || ""
       };
       const result = await fetchData("api/v1/instance", queryParams, "hirello");
       if (result.code != 200) {
         setShowUploadeVideoLoader(false);
-
         toast({
           type: "error",
 
@@ -191,7 +214,7 @@ const InstancePage = () => {
   //   }
   // }, [instance]);
 
-  const handleSendFile = async (file , id ) => {
+  const handleSendFile = async (file, id) => {
     try {
       setShowLoader(true);
       const formData = new FormData();
@@ -231,9 +254,9 @@ const InstancePage = () => {
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     const maxFileSize = 50 * 1024 * 1024; // 50 MB in bytes
-  
+
     if (!file) return;
-  
+
     // Validate file size
     if (file.size > maxFileSize) {
       toast({
@@ -244,24 +267,24 @@ const InstancePage = () => {
       });
       return;
     }
-  
+
     try {
       if (id) {
         // If `id` already exists, directly call `handleSendFile`
-        await handleSendFile(file , id );
+        await handleSendFile(file, id);
       } else {
         // Create a new instance before uploading the file
         const response = await postData("api/v1/instance", { name: "Untitled" }, "hirello");
         console.log(response, "gggggggggg")
-  
+
         if (response?.code === 200) {
           // If instance creation is successful, save the ID and proceed to upload the file
           setId(response?.result?.id);
-     
-            await handleSendFile(file , response?.result?.id);
-      
-      
-  
+
+          await handleSendFile(file, response?.result?.id);
+
+
+
           toast({
             type: "success",
             description: "Instance added successfully, and file uploaded.",
@@ -287,7 +310,7 @@ const InstancePage = () => {
       });
     }
   };
-  
+
   const deleteInstance = async (instanceId) => {
     try {
       const queryParams = {
@@ -493,7 +516,7 @@ const InstancePage = () => {
                 fileInputRef.current.click(); // Only trigger the click if `id` is present
                 // }
               }}
-              // title={!id ? "First create an instance, then upload video." : ""}
+            // title={!id ? "First create an instance, then upload video." : ""}
             >
               {showLoader && (
                 <div className="absolute top-0 left-0 flex justify-center items-center w-full h-full bg-[#62666917]">
@@ -522,12 +545,12 @@ const InstancePage = () => {
                 <p className="text-sm font-medium text-gray-700">
                   Upload Data, or{" "}
                   <span
-                  className="text-orange-500 cursor-pointer"
-                    // className={`${
-                    //   id
-                    //     ? "text-orange-500 cursor-pointer"
-                    //     : "text-gray-500 cursor-no-drop"
-                    // }`}
+                    className="text-orange-500 cursor-pointer"
+                  // className={`${
+                  //   id
+                  //     ? "text-orange-500 cursor-pointer"
+                  //     : "text-gray-500 cursor-no-drop"
+                  // }`}
                   >
                     Browse
                   </span>
@@ -543,20 +566,27 @@ const InstancePage = () => {
           className="flex flex-wrap gap-4 "
           style={{ alignContent: "baseline" }}
         >
-          {allInstances?.map((ele, index) => (
-            <div key={index}>
-              <VideoTitleCard
-                title={ele?.name}
-                id={ele?.id}
-                getVideo={getVideo}
-                deleteInstance={deleteInstanceFunction}
-                updateInstance={setUpdatedInstance}
-                setupdateInstanceModal={setupdateInstanceModal}
-                setUpdatedInstanceID={setUpdatedInstanceID}
-                locked={ele.locked}
-              />
-            </div>
-          ))}
+          {allInstances.length > 0 ? (<>
+            {allInstances?.map((ele, index) => (
+              <div key={index}>
+                <VideoTitleCard
+                  title={ele?.name}
+                  id={ele?.id}
+                  getVideo={getVideo}
+                  deleteInstance={deleteInstanceFunction}
+                  updateInstance={setUpdatedInstance}
+                  setupdateInstanceModal={setupdateInstanceModal}
+                  setUpdatedInstanceID={setUpdatedInstanceID}
+                  locked={ele.locked}
+                />
+              </div>
+            ))}
+          </>
+          ) : (<>
+            {debouncedSearch && (<p>Instance not found...</p>)}
+          </>
+          )}
+
         </div>
       </div>
       <AlertDialog open={deletePopUp}>
