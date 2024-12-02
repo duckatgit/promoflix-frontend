@@ -3,27 +3,27 @@ import React, { useState } from "react";
 
 const Stepper = ({ activeStep, setActiveStep, steps }) => {
     const { toast } = useToast();
-    //     const steps = [
-    //         { title: "Step 1", icon: "icon1" },
-    //         { title: "Step 2", icon: "icon2" },
-    //         { title: "Step 3", icon: "icon3" },
-    //     ];
+    // const steps = [
+    //     { title: "Step 1", icon: "icon1" },
+    //     { title: "Step 2", icon: "icon2" },
+    //     { title: "Step 3", icon: "icon3" },
+    // ];
 
-    //     const handleNext = () => {
+    // const handleNext = () => {
 
-    //         if ((segmentArray?.length == 0 && activeStep == 0) || (!hasFile && activeStep == 1)) {
-    //             toast({
-    //                 type: "warning",
-    //                 description: activeStep == 0 ? "before going to next step Please choose segment!" : "before going to next step Please choose file",
-    //             });
+    //     if ((segmentArray?.length == 0 && activeStep == 0) || (!hasFile && activeStep == 1)) {
+    //         toast({
+    //             type: "warning",
+    //             description: activeStep == 0 ? "before going to next step Please choose segment!" : "before going to next step Please choose file",
+    //         });
+    //     }
+    //     else {
+    //         if (activeStep < steps.length - 1) {
+    //             setActiveStep((prev) => prev + 1);
     //         }
-    //         else {
-    //             if (activeStep < steps.length - 1) {
-    //                 setActiveStep((prev) => prev + 1);
-    //             }
-    //         }
+    //     }
 
-    //     };
+    // };
 
     //     const handlePrev = () => {
     //         if (activeStep > 0) {
@@ -76,7 +76,6 @@ const Stepper = ({ activeStep, setActiveStep, steps }) => {
             </div>
 
             {/* Navigation Buttons */}
-
             {/* <div className="flex justify-between mt-32">
                 <button
                     className={`select-none rounded-lg py-3 px-6 text-center font-bold uppercase shadow-md transition-all ${activeStep === 0
