@@ -55,8 +55,6 @@ const Preview_video = () => {
   const searchParams = useSearchParams();
   // console.log('searchParams', searchParams.get('id'))
   const id = searchParams.get("id");
-
-  console.log('id', id)
   const token = safeLocalStorage.getItem("token");
   const router = useRouter();
   const [videoUrl, setVideoUrl] = useState();
@@ -74,7 +72,6 @@ const Preview_video = () => {
   const [thumbnailFile, setThumbnailFile] = useState(null); // State to store the selected file
 
   const [hasFile, setHasFile] = useState(false);
-  console.log(hasFile, "ghggghggh")
   const [deleteFilePopUp, setDeleteFilePopUp] = useState(false);
   const [filePreviewPopUp, setFilePreviewPopUp] = useState(false);
   const [fileData, setFileData] = useState({});
@@ -84,6 +81,8 @@ const Preview_video = () => {
   const [csvUrlInput, setCsvUrlInput] = useState('')
   const [data, setData] = useState([]);
   const [segmentData, setSegmentData] = useState([]);
+  console.log(segmentData, "iiiii");
+
   const [transcriptSteps, setTranscriptSteps] = useState('Loading...')
   const fileInputRef = useRef(null);
   const fileInputRef2 = useRef(null);
@@ -104,6 +103,13 @@ const Preview_video = () => {
   const [showAll, setShowAll] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
+  const [allInstances, setAllInstances] = useState([]);
+  const [plansData, setPlansData] = useState([]);
+  const [quota, setQuota] = useState([]);
+  const [usedQuota, setUsedQuota] = useState(null);
+  console.log(quota, "hhhh");
+
+  const hasCalledNext = useRef(false);
 
   const toggleShowAll = () => {
     setShowAll(!showAll);
@@ -149,8 +155,10 @@ const Preview_video = () => {
 
     if (hasFile) {
       try {
+        handleNext(4)
         const data = await postData(`api/v1/generate/${id}`, {}, "hirello");
         if (data.code == 200) {
+
           setLoading(false);
           console.log(data)
           setVideoArray(data.result);
@@ -232,9 +240,10 @@ const Preview_video = () => {
             type: "success",
             description: "Csv file uploaded sucessfully",
           });
+          handleNext(3)
           await getFile();
           setSelectedFile(null);
-          handleNext()
+
         }
       }
     } catch (error) {
@@ -278,7 +287,6 @@ const Preview_video = () => {
     }
   };
   const handleThumbnailFileChange = (event) => {
-    console.log("thumb handleThumbnailFileChange ");
     const file = event.target.files[0];
     if (file && file.type.startsWith("image/")) {
       setThumbnailFile(file); // Store the selected file in state
@@ -317,6 +325,9 @@ const Preview_video = () => {
       const result = await fetchData("api/v1/segment", queryParams, "hirello");
       if (result.code == 200) {
         setSegmentData(result?.result);
+        if (result?.result.length > 0 && activeStep == 1) {
+          handleNext(2)
+        }
         if (result?.result?.length > 0) {
           let selected = {};
           for (let item of result?.result) {
@@ -334,12 +345,13 @@ const Preview_video = () => {
       return error;
     }
   };
- 
+
   const getFile = async () => {
     try {
       const result = await fetchData(`api/csv/${id}`, {}, "csv");
       console.log(result, "=========resultfile");
       if (result.code == 200) {
+        handleNext(3)
         setHasFile(true);
         setCsvData(result.result)
         setFileData(result.result);
@@ -443,7 +455,6 @@ const Preview_video = () => {
         },
         "hirello"
       );
-
       if (responseData.code == 200) {
         toast({
           type: "success",
@@ -455,6 +466,7 @@ const Preview_video = () => {
       }
       console.log("API Response:", responseData);
     } catch (error) {
+      console.log(error, "tttt");
       toast({
         type: "error",
         description: error?.message,
@@ -536,7 +548,11 @@ const Preview_video = () => {
           } else {
             setTranscriptSteps(() => data?.step)
           }
+          if (activeStep === 0 && newWords.length > 0) {
+            handleNext(1)
+          }
           setData(() => [...newWords]);
+
         };
 
         socket.onerror = (error) => {
@@ -618,14 +634,97 @@ const Preview_video = () => {
       console.log(error, "========error");
     }
   };
+  const getAllInstance = async (instanceID) => {
+    try {
+      const queryParams = {
+        page: 0,
+        limit: 100,
+      };
+      const result = await fetchData("api/v1/instance", queryParams, "hirello");
+      if (result.code != 200) {
+        toast({
+          type: "error",
+
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: data.result,
+        });
+      } else {
+        const data = result.result.instances;
+        setAllInstances(data.filter((ele) => ele.id === instanceID));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchPlansApi = async () => {
+    try {
+      const response = await fetchData("api/plan");
+      if (response.code != 200) {
+        toast({
+          type: "error",
+          title: "Uh oh! Something went wrong.",
+          description: response.result,
+        });
+      } else {
+        setPlansData(response.result);
+      }
+    } catch (error) {
+      toast({
+        type: "error",
+        title: "Uh oh! Something went wrong.",
+        description: error?.result,
+      });
+    }
+  };
+  const fetchPlanQuata = async () => {
+    try {
+      const response = await fetchData("api/quota");
+      if (response.code != 200) {
+        toast({
+          type: "error",
+          title: "Uh oh! Something went wrong.",
+          description: response.result,
+        });
+      } else {
+        setQuota(response.result);
+      }
+    } catch (error) {
+      toast({
+        type: "error",
+        title: "Uh oh! Something went wrong.",
+        description: error?.result,
+      });
+    }
+  };
+
+  useEffect(() => {
+    // Check if plan_id matches any id in the plans array
+    const matchingPlan = plansData.find((plan) => plan.id === quota.plan_id);
+    if (matchingPlan) {
+      // If a match is found, update usedQuota with used_quota1
+      setUsedQuota(quota.used_quota2);
+
+    }
+  }, [plansData, quota]);
   useEffect(() => {
     if (id) {
-      myfunction(id);
-      getAllSegment();
-      getFile()
+      getAllInstance(id)
+      fetchPlanQuata()
+      fetchPlansApi();
+      if (activeStep === 0) {
+        myfunction(id);
+      }
+      if (activeStep === 1) {
+        getAllSegment();
+      }
+      if (activeStep === 2) {
+        getFile()
+      }
       // connectWebSocket();
     }
-  }, [id]);
+  }, [id, activeStep]);
 
   const video_url = videoUrl;
   let arr = [];
@@ -633,20 +732,28 @@ const Preview_video = () => {
     arr = segmentData;
   }
 
-  useEffect(() => {
-    if (segmentData.length > 0 && segmentData.length < 2) {
-      handleNext()
-    }
-  }, [segmentData]);
+  // useEffect(() => {
+  //   if (data && data.length > 0 && activeStep == 0) {
+  //     handleNext(1)
+  //   }
+  // }, [data]);
+  // useEffect(() => {
+  //   if (segmentData.length > 0 && segmentData.length < 2) {
+  //     handleNext(2)
+  //   }
+  // }, [segmentData]);
   const steps = [
-    { title: "Step 1", icon: "icon1" },
-    { title: "Step 2", icon: "icon2" },
-    { title: "Step 3", icon: "icon3" },
+    { title: "Video ", icon: "icon1" },
+    { title: "Transcript ", icon: "icon2" },
+    { title: "Add Variable", icon: "icon3" },
+    { title: " Upload CSV", icon: "icon4" },
+    { title: "Generate", icon: "icon5" },
   ];
-
-  const handleNext = () => {
-    if (activeStep < steps.length - 1) {
-      setActiveStep((prev) => prev + 1);
+  console.log(activeStep, hasFile, "jjjj");
+  const handleNext = (num) => {
+    // alert(num)
+    if (num < steps.length - 1) {
+      setActiveStep(num);
     }
   };
   function cleanAndSplit(text) {
@@ -663,11 +770,22 @@ const Preview_video = () => {
     };
   }
 
-  console.log(activeStep, hasFile, "jjjj");
+  function getData() {
+    const dateString = allInstances[0]?.created_at;
+    const date = new Date(dateString);
+    const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+    console.log(formattedDate, "uuuu");
+    return formattedDate
+
+  }
+
 
   return (
     <div className=" h-[100%] overflow-y-auto w-full">
-      <Stepper activeStep={activeStep} setActiveStep={setActiveStep} segmentArray={arr} hasFile={hasFile} steps={steps} />
+      {allInstances.length > 0 && !allInstances[0]?.locked && (
+        <Stepper activeStep={activeStep} setActiveStep={setActiveStep} segmentArray={arr} hasFile={hasFile} steps={steps} />
+
+      )}
       {/* first section */}
       <div className="flex justify-between h-[452px] gap-4">
         {/* left section */}
@@ -679,44 +797,52 @@ const Preview_video = () => {
                 Your browser does not support the video tag.
               </video>
             )}
-            <p className="mt-4 mb-2 text-[20px] leading-[30px] ">Video Title</p>
+            {allInstances.length > 0 && (<>
+              <p className="mt-4  text-[20px] leading-[30px] ">{`Video Title:- ${allInstances[0]?.name}`}</p>
+              <p className="  text-[20px] leading-[30px] ">{`Uploaded date  :- ${getData()}`}</p>
+            </>
+            )}
+
           </div>
         </div>
         {/* right section */}
         <div className="w-1/2 bg-white rounded-[10px] ">
 
-          <div className="flex flex-wrap gap-2 p-4  border-b border-gray-300 mb-4">
-            {arr?.map((i, index) => {
-              // const bgColor = getRandomColor();
-              // const textColor = getContrastingColor(bgColor);
+          <div className="flex justify-between p-4  border-b border-gray-300 mb-4">
+            <div className="flex flex-wrap gap-2">
+              {arr?.map((i, index) => {
+                // const bgColor = getRandomColor();
+                // const textColor = getContrastingColor(bgColor);
 
-              return (
-                <div
-                  className={`justify-between bg-[#333333] text-white px-3 py-1 rounded-xl flex gap-1 `}
-                  // style={{ backgroundColor: bgColor }}
-                  key={index}
-                >
-                  <p className="truncate"
-                  // style={{ color: textColor }}
-                  > {i.name}</p>
-                  <X
-                    className="cursor-pointer"
-                    onClick={() => {
-                      {
-                        setDeletePopUp(true);
-                        setSegmentID(i.id);
-                      }
-                    }}
-                  />
-                </div>
-              );
-            })}
+                return (
+                  <div
+                    className={`justify-between items-center bg-[#333333] text-white px-3 py-1 rounded-xl flex gap-1 `}
+                    // style={{ backgroundColor: bgColor }}
+                    key={index}
+                  >
+                    <p className="truncate"
+                    // style={{ color: textColor }}
+                    > {i.name}</p>
+                    <X
+                      className="cursor-pointer"
+                      size={16}
+                      onClick={() => {
+                        {
+                          setDeletePopUp(true);
+                          setSegmentID(i.id);
+                        }
+                      }}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+            <div>
+              {arr.length > 0 && (
+                <span>{`${usedQuota}/${quota?.quota2}`}</span>
+              )}
+            </div>
           </div>
-
-          {/* <div className="grid grid-cols-4 gap-2 p-4  border-b border-gray-300 mb-4">
-          
-            <Button className="w-full text-white" style={{ backgroundColor: "#333333" }} >First name</Button>
-          </div> */}
 
           <div className={`p-4 pt-0 text-[16px] leading-[24px] text-justify max-h-[316px] ${showAll ? "overflow-y-auto" : ""}`} >
             {data && data.length > 0 ?
@@ -832,14 +958,16 @@ const Preview_video = () => {
 
       <div className="flex gap-4 w-full   mt-4 ">
         {/* left section */}
-        {(activeStep == 1 || activeStep == 2) && (
+        {(activeStep == 2 || activeStep == 3) && (
           <div class="w-[30%] shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px]  bg-white">
 
             <p className="font-semibold text-[16px] p-[10px] border-b border-gray-200">Upload Data From Document</p>
             <div className="p-4">
-              <div class=" relative border-2 border-dashed border-gray-300 rounded-[10px] h-[205px] px-[26px] py-[42px] text-center"
+              <div class={`${allInstances[0]?.locked ? "cursor-no-drop" : "cursor-pointer"} relative border-2 border-dashed border-gray-300 rounded-[10px] h-[205px] px-[26px] py-[42px] text-center`}
                 onClick={() => {
-                  fileInputRef.current.click();
+                  if (!allInstances[0]?.locked) {
+                    fileInputRef.current.click();
+                  }
                 }}
               >
                 <div class="flex flex-col items-center justify-center space-y-2">
@@ -848,7 +976,7 @@ const Preview_video = () => {
                   </div>
                   {/* <!-- Upload Instructions --> */}
                   <p class="text-sm font-medium text-gray-700">
-                    Upload Data, or <span class="text-orange-500 cursor-pointer">Browse</span>
+                    Upload Data, or <span class="text-orange-500">Browse</span>
                   </p>
                   <p class="text-xs text-gray-500">Maximum File size is 50 mb</p>
                 </div>
@@ -856,6 +984,7 @@ const Preview_video = () => {
                   type="file"
                   ref={fileInputRef}
                   onChange={handleFileChange}
+                  accept=".csv"
                   id="file-upload"
                   style={{ display: "none" }}
                   className="w-28 absolute right-[65px] top-[50px]"
@@ -893,9 +1022,11 @@ const Preview_video = () => {
                       />
                       <Trash
                         onClick={() => {
-                          setDeleteFilePopUp(true);
+                          if (!allInstances[0]?.locked) {
+                            setDeleteFilePopUp(true);
+                          }
                         }}
-                        className="text-red-600 border-2 rounded-3xl size-10 border-red-600 p-2 cursor-pointer"
+                        className={`${allInstances[0]?.locked ? ' cursor-not-allowed' : 'cursor-pointer'} text-red-600 border-2 rounded-3xl size-10 border-red-600 p-2 `}
                       />
                     </div>
                   </div>
@@ -906,7 +1037,7 @@ const Preview_video = () => {
           </div>
         )}
         {/* right section */}
-        {activeStep == 2 && (
+        {activeStep == 3 && (
           <div className="w-[70%]  bg-white shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px]">
             <p className="font-semibold text-[16px] p-[10px] border-b border-gray-200">Video Thumbnail</p>
             <div className="p-4 ">
@@ -924,9 +1055,11 @@ const Preview_video = () => {
 
                   </div>
                 </div>
-                <div class=" relative w-1/2 flex flex-col items-center justify-center bg-[#FFF5F0] border-2 border-dashed border-orange-400 rounded-md"
+                <div class={`${allInstances[0]?.locked ? "cursor-no-drop" : "cursor-pointer"} relative w-1/2 flex flex-col items-center justify-center bg-[#FFF5F0] border-2 border-dashed border-orange-400 rounded-md`}
                   onClick={() => {
-                    fileInputRef2.current.click();
+                    if (!allInstances[0]?.locked) {
+                      fileInputRef2.current.click();
+                    }
                   }}
                 >
                   <div class="text-orange-500 text-4xl">
@@ -980,15 +1113,17 @@ const Preview_video = () => {
 
               </div>
               <div className="flex gap-2 p-4 ">
-                <Button className=" text-white" style={{ backgroundColor: "#333333" }} onClick={() => { sendMessage() }}>
-                  {loading ? (
-                    <>
-                      Merge Video <LoadingSpinner className="ml-2 text-white" />
-                    </>
-                  ) : (
-                    "Merge Video"
-                  )}
-                </Button>
+                {!allInstances[0]?.locked && (
+                  <Button className=" text-white" style={{ backgroundColor: "#333333", cursor: "pointer" }} onClick={() => { sendMessage() }}>
+                    {loading ? (
+                      <>
+                        Merge Video <LoadingSpinner className="ml-2 text-white" />
+                      </>
+                    ) : (
+                      "Merge Video"
+                    )}
+                  </Button>
+                )}
                 <Button className=" text-white" style={{ backgroundColor: "#333333" }} >Reset All</Button>
               </div>
             </div>
