@@ -11,7 +11,8 @@ import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
-import { fetchData } from "@/utils/api";
+import { fetchData, putData } from "@/utils/api";
+import { safeLocalStorage } from "@/lib/safelocastorage";
 
 function UserProfile() {
   const { toast } = useToast();
@@ -22,14 +23,16 @@ function UserProfile() {
   const [userDeta, setUserDeta] = useState("");
   const [plansData, setPlansData] = useState([]);
   const [planName, setPlanName] = useState("");
-  console.log(planName)
-  
+  console.log(planName);
+
   function getData() {
     const dateString = userDeta.user?.created_at;
     const date = new Date(dateString);
-    const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+    const formattedDate = `${date.getDate()}/${
+      date.getMonth() + 1
+    }/${date.getFullYear()}`;
     console.log(formattedDate, "uuuu");
-    return formattedDate
+    return formattedDate;
   }
   const profile = async () => {
     try {
@@ -51,7 +54,12 @@ function UserProfile() {
 
         const data = result;
         console.log(data, "oioioioi");
-        setUserDeta(data.result)
+        setUserDeta(data.result);
+        setUserName(data.result.user.name);
+
+        safeLocalStorage.setItem("name", data?.result?.user.name);
+        safeLocalStorage.setItem("email", data?.result?.user.email);
+
         // setAllInstances(data);
       }
     } catch (error) {
@@ -62,7 +70,6 @@ function UserProfile() {
   };
   const fetchPlansApi = async () => {
     try {
-  
       const response = await fetchData("api/plan");
       if (response.code != 200) {
         toast({
@@ -70,19 +77,42 @@ function UserProfile() {
           title: "Uh oh! Something went wrong.",
           description: response.result,
         });
-      
       } else {
         setPlansData(response.result);
-    
       }
     } catch (error) {
- 
-
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
         description: error?.result,
       });
+    }
+  };
+  const updateProfile = async () => {
+    try {
+      const data = await putData(
+        "api/user",
+        {
+          name: userName,
+        },
+        ""
+      );
+      if (data.code != 200) {
+        toast({
+          type: "error",
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+        });
+      } else {
+        toast({
+          type: "success",
+          description: "Name Updated successfully",
+        });
+        profile();
+        setUpdateName(false);
+      }
+    } catch (error) {
+      console.log(error, "===========error");
     }
   };
   useEffect(() => {
@@ -95,7 +125,6 @@ function UserProfile() {
   //   const matchingPlan = plansData.find((plan) => plan.id === userDeta?.quota?.plan_id);
   //   if (matchingPlan) {
 
-    
   //     setPlanName(plansData.name)
 
   //   }
@@ -103,10 +132,12 @@ function UserProfile() {
 
   useEffect(() => {
     // Match plan_id from userState1 with id in userState2
-    const matchingPlan = plansData.find((plan) => plan.id === userDeta?.quota?.plan_id);
+    const matchingPlan = plansData.find(
+      (plan) => plan.id === userDeta?.quota?.plan_id
+    );
 
     if (matchingPlan) {
-      console.log(matchingPlan, "match")
+      console.log(matchingPlan, "match");
       setPlanName(matchingPlan.name); // Store the matched name in state
     } else {
       setPlanName("No matching plan found"); // Handle case where no match is found
@@ -141,22 +172,19 @@ function UserProfile() {
 
         <div className=" mb-4">
           <p className="text-black font-semibold ">User email </p>
-            <p>{userDeta?.user?.email}</p>
-         
+          <p>{userDeta?.user?.email}</p>
         </div>
 
         <div className="mb-4">
           <p className="text-black font-semibold ">User sign up date </p>
-    
-          <p>{getData()}</p>
 
+          <p>{getData()}</p>
         </div>
-        
+
         <div className="">
           <p className="text-black font-semibold ">User subscription </p>
-    
-          <p>{planName}</p>
 
+          <p>{planName}</p>
         </div>
       </div>
       <Dialog open={updateName} onOpenChange={setUpdateName}>
@@ -183,7 +211,7 @@ function UserProfile() {
             <Button
               className="bg-[#FFC000] text-black"
               onClick={() => {
-                setUpdateName(false);
+                updateProfile();
               }}
             >
               Update
