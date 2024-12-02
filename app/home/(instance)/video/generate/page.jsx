@@ -26,6 +26,7 @@ const Generate_video = () => {
   const [videoArray, setVideoArray] = useAtom(videoArrayAtom);
   const [csvData, setCsvData] = useAtom(csvDataAtom);
 
+
   const connectWebSocket = () => {
     if (!socket) {
       const ws = new WebSocket(`${hirelloSocket}/${token}`); // Using the token in the URL
@@ -140,15 +141,20 @@ const Generate_video = () => {
 
   return (
     <div className="w-full h-full bg-white rounded-[10px]">
-      <div className="  p-[10px] flex items-center justify-between border-b border-gray-300">
-        <p className="text-black font-semibold text-base">Generated Videos</p>
+      <div className="flex items-center justify-between mt-4  mx-4">
+        <Button
+          className="py-2 px-3  cursor-pointer border w-[60px] "
+          onClick={() => router.push(`/home/video/preview?id=${id}`)}
+        >
+          Back
+        </Button>
 
         {csvData && (
           <CSVLink
             className="py-2 m-0 cursor-pointer "
             filename={`${id}.csv`}
-            data={csvData.records}
-            headers={csvData.headers}
+            data={csvData?.records}
+            headers={csvData?.headers}
           >
             <Button className="py-2 px-3 cursor-pointer rounded-[8px] text-base">
               <Image
@@ -162,6 +168,10 @@ const Generate_video = () => {
             </Button>
           </CSVLink>
         )}
+      </div>
+
+      <div className="  p-[10px]  border-b border-gray-300">
+        <p className="text-black font-semibold text-base">Generated Videos </p>
       </div>
       <div className="h-[88%] p-[10px] overflow-y-auto flex flex-wrap content-baseline gap-4 mt-4">
         {videoArray && videoArray.length > 0 ? (

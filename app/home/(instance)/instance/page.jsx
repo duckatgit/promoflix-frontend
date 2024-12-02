@@ -16,13 +16,23 @@ import {
 
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 const InstancePage = () => {
   const { toast } = useToast();
   const router = useRouter();
   const [allInstances, setAllInstances] = useState([]);
   const [id, setId] = useState("");
-  console.log(id, "id id id")
+  console.log(id, "id id id");
   const [updateInstanceModal, setupdateInstanceModal] = useState(false);
   const [updatedInstance, setUpdatedInstance] = useState("");
   const [updatedInstanceId, setUpdatedInstanceID] = useState();
@@ -37,6 +47,7 @@ const InstancePage = () => {
 
   const [uploadFileModal, setUploadFileModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null); // State to store the selected file
+  const [deletePopUp, setDeletePopUp] = useState(false);
 
   const getAllInstance = async () => {
     try {
@@ -108,7 +119,7 @@ const InstancePage = () => {
       }
     } catch (error) {
       console.log(error, "=========error");
-      setId(id)
+      setId(id);
       handleUploadvideo();
     }
   };
@@ -180,7 +191,7 @@ const InstancePage = () => {
   //   }
   // }, [instance]);
 
-  const handleSendFile = async (file) => {
+  const handleSendFile = async (file , id ) => {
     try {
       setShowLoader(true);
       const formData = new FormData();
@@ -217,27 +228,66 @@ const InstancePage = () => {
     }
   };
 
-  const handleFileChange = (event) => {
+  const handleFileChange = async (event) => {
     const file = event.target.files[0];
     const maxFileSize = 50 * 1024 * 1024; // 50 MB in bytes
-
-    if (file) {
-      if (file.size > maxFileSize) {
-        toast({
-          type: "error",
-
-          variant: "destructive",
-          title: "File too large",
-          description:
-            "The maximum file size is 50 MB. Please select a smaller file.",
-        });
-        return;
+  
+    if (!file) return;
+  
+    // Validate file size
+    if (file.size > maxFileSize) {
+      toast({
+        type: "error",
+        variant: "destructive",
+        title: "File too large",
+        description: "The maximum file size is 50 MB. Please select a smaller file.",
+      });
+      return;
+    }
+  
+    try {
+      if (id) {
+        // If `id` already exists, directly call `handleSendFile`
+        await handleSendFile(file , id );
+      } else {
+        // Create a new instance before uploading the file
+        const response = await postData("api/v1/instance", { name: "Untitled" }, "hirello");
+        console.log(response, "gggggggggg")
+  
+        if (response?.code === 200) {
+          // If instance creation is successful, save the ID and proceed to upload the file
+          setId(response?.result?.id);
+     
+            await handleSendFile(file , response?.result?.id);
+      
+      
+  
+          toast({
+            type: "success",
+            description: "Instance added successfully, and file uploaded.",
+          });
+        } else {
+          // Handle instance creation failure
+          toast({
+            type: "error",
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: response?.message || "Unexpected error occurred.",
+          });
+        }
       }
-
-      handleSendFile(file); // Process the file if the size is valid
+    } catch (error) {
+      // Handle any errors during instance creation or file upload
+      console.error(error);
+      toast({
+        type: "error",
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error.message || "An unexpected error occurred.",
+      });
     }
   };
-
+  
   const deleteInstance = async (instanceId) => {
     try {
       const queryParams = {
@@ -258,10 +308,16 @@ const InstancePage = () => {
         });
         setId("");
         getAllInstance();
+        setDeletePopUp(false);
       }
     } catch (error) {
       console.log(error);
     }
+  };
+  const deleteInstanceFunction = async (id) => {
+    setDeletePopUp(true);
+    setId(id);
+    // await deleteInstance(id);
   };
   const updateInstance = async () => {
     try {
@@ -427,16 +483,17 @@ const InstancePage = () => {
               />
             </div>
             {/* Upload Section */}
-
+            {/* // ${id ? "cursor-pointer" : "cursor-no-drop" */}
             <div
-              className={`relative ${id ? "cursor-pointer" : "cursor-no-drop"
-                } border-2 border-dashed border-gray-300 rounded-[10px] px-[16px] py-[20px] text-center `}
+              className={`relative 
+            
+              cursor-pointer border-2 border-dashed border-gray-300 rounded-[10px] px-[16px] py-[20px] text-center `}
               onClick={() => {
-                if (id) {
-                  fileInputRef.current.click(); // Only trigger the click if `id` is present
-                }
+                // if (id) {
+                fileInputRef.current.click(); // Only trigger the click if `id` is present
+                // }
               }}
-              title={!id ? "First create an instance, then upload video." : ""}
+              // title={!id ? "First create an instance, then upload video." : ""}
             >
               {showLoader && (
                 <div className="absolute top-0 left-0 flex justify-center items-center w-full h-full bg-[#62666917]">
@@ -465,10 +522,12 @@ const InstancePage = () => {
                 <p className="text-sm font-medium text-gray-700">
                   Upload Data, or{" "}
                   <span
-                    className={`${id
-                      ? "text-orange-500 cursor-pointer"
-                      : "text-gray-500 cursor-no-drop"
-                      }`}
+                  className="text-orange-500 cursor-pointer"
+                    // className={`${
+                    //   id
+                    //     ? "text-orange-500 cursor-pointer"
+                    //     : "text-gray-500 cursor-no-drop"
+                    // }`}
                   >
                     Browse
                   </span>
@@ -490,15 +549,42 @@ const InstancePage = () => {
                 title={ele?.name}
                 id={ele?.id}
                 getVideo={getVideo}
-                deleteInstance={deleteInstance}
+                deleteInstance={deleteInstanceFunction}
                 updateInstance={setUpdatedInstance}
                 setupdateInstanceModal={setupdateInstanceModal}
                 setUpdatedInstanceID={setUpdatedInstanceID}
+                locked={ele.locked}
               />
             </div>
           ))}
         </div>
       </div>
+      <AlertDialog open={deletePopUp}>
+        <AlertDialogTrigger></AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete </AlertDialogTitle>
+            <AlertDialogDescription>
+              Do you really want to delete this item?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              onClick={() => {
+                setDeletePopUp(false);
+              }}
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-[#FF2E00]"
+              onClick={() => deleteInstance(id)}
+            >
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

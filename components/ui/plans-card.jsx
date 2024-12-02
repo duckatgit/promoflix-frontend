@@ -14,6 +14,8 @@ const PlansCard = ({
   userId,
   highlighted,
   cancelPlan,
+  usedQuota2,
+  quantity2
 }) => {
   const handleButtonClick = () => {
     if (highlighted) {
@@ -26,43 +28,63 @@ const PlansCard = ({
 
   return (
     <div
-      className={`w-[270px] border rounded-[10px] ${
+      className={` flex flex-col justify-between items-center w-[270px] border rounded-[10px] h-full ${
         highlighted ? "border-[#E7680F]" : "border-[#D9D9D9]"
       }`}
     >
-      <div className="bg-[#FFFAF6] p-4 m-4">
-        <p className="text-center text-[24px] font-medium mb-4">{name}</p>
-        <p className="text-[#B3B3B3] ">
-          <span className="text-4xl text-black font-bold">
-            <sup className="text-[22px] text-black">$</sup> {price}
-          </span>{" "}
-          / <span> {billing_period} </span>
-        </p>
-        <p className="text-[#B3B3B3] my-4">
-          {highlighted ? usedQuota : 0}/{quantity} used{" "}
-        </p>
-        {highlighted &&
-          <div className="my-4">
-       
-          <div className="w-full h-2 bg-[#F5F5F5] rounded-full relative">
-            <div
-              className="h-4 bg-[#E7680F] rounded-full"
-              style={{
-                width: `${highlighted ? (usedQuota / quantity) * 100 : 0}%`,
-              }}
-            ></div>
-          </div>
+      <div>
+        <div className="bg-[#FFFAF6] p-4 m-4">
+          <p className="text-center text-[24px] font-medium mb-4">{name}</p>
+          <p className="text-[#B3B3B3] ">
+            <span className="text-4xl text-black font-bold">
+              <sup className="text-[22px] text-black">$</sup> {price}
+            </span>{" "}
+            / <span> {billing_period} </span>
+          </p>
+          <p className="text-[#B3B3B3] my-4">
+            {highlighted ? usedQuota : 0}/{quantity} used{" "}
+          </p>
+
+          {highlighted && (
+            <div className="my-4">
+              <div className="w-full h-2 bg-[#F5F5F5] rounded-full relative">
+                <div
+                  className="h-2 bg-[#E7680F] rounded-full"
+                  style={{
+                    width: `${highlighted ? (usedQuota / quantity) * 100 : 0}%`,
+                  }}
+                ></div>
+              </div>
+            </div>
+          )}
+
+          <p className="text-[#B3B3B3] my-4">
+            {highlighted ? usedQuota2 : 0}/{quantity2} Varable used{" "}
+          </p>
+
+          {highlighted && (
+            <div className="my-4">
+              <div className="w-full h-2 bg-[#F5F5F5] rounded-full relative">
+                <div
+                  className="h-2 bg-[#E7680F] rounded-full"
+                  style={{
+                    width: `${highlighted ? (usedQuota2 / quantity2) * 100 : 0}%`,
+                  }}
+                ></div>
+              </div>
+            </div>
+          )}
         </div>
-        }
-       
+
+        <div className="p-4 mx-8">
+          <ul className="list-disc text-[#757575]">
+            <li>Clone your face & voice</li>
+            <li>{`${quantity} videos a month`}</li>
+            <li>{`${extra_videos_cost}$ per extra video`}</li>
+          </ul>
+        </div>
       </div>
-      <div className="p-4 mx-8">
-        <ul className="list-disc text-[#757575]">
-          <li>Clone your face & voice</li>
-          <li>{`${quantity} videos a month`}</li>
-          <li>{`${extra_videos_cost}$ per extra video`}</li>
-        </ul>
-      </div>
+
       <div className="text-center p-4">
         <Button
           className={`py-2 px-3 cursor-pointer rounded-[8px] text-base w-[204px] ${
