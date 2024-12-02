@@ -77,7 +77,7 @@ const InstancePage = () => {
       setShowUploadeVideoLoader(true);
       const queryParams = {
         page: 0,
-        limit: 100,
+        limit: 10,
         filter: searchInstance || ""
       };
       const result = await fetchData("api/v1/instance", queryParams, "hirello");
@@ -253,7 +253,7 @@ const InstancePage = () => {
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
-    const maxFileSize = 50 * 1024 * 1024; // 50 MB in bytes
+    const maxFileSize = 100 * 1024 * 1024; // 100 MB in bytes
 
     if (!file) return;
 
@@ -263,7 +263,7 @@ const InstancePage = () => {
         type: "error",
         variant: "destructive",
         title: "File too large",
-        description: "The maximum file size is 50 MB. Please select a smaller file.",
+        description: "The maximum file size is 100 MB. Please select a smaller file.",
       });
       return;
     }

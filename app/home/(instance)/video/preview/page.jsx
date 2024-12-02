@@ -256,7 +256,7 @@ const Preview_video = () => {
   };
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    const maxFileSize = 50 * 1024 * 1024; // 50MB in bytes
+    const maxFileSize = 100 * 1024 * 1024; // 50MB in bytes
     if (file.size > maxFileSize) {
       toast({
         type: "warning",
@@ -638,7 +638,7 @@ const Preview_video = () => {
     try {
       const queryParams = {
         page: 0,
-        limit: 100,
+        limit: 10,
       };
       const result = await fetchData("api/v1/instance", queryParams, "hirello");
       if (result.code != 200) {
@@ -978,7 +978,7 @@ const Preview_video = () => {
                   <p class="text-sm font-medium text-gray-700">
                     Upload Data, or <span class="text-orange-500">Browse</span>
                   </p>
-                  <p class="text-xs text-gray-500">Maximum File size is 50 mb</p>
+                  <p class="text-xs text-gray-500">Maximum File size is 100 mb</p>
                 </div>
                 <input
                   type="file"

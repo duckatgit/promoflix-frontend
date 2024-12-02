@@ -17,7 +17,7 @@ const DataTableDemo = () => {
     try {
       const queryParams = {
         page: 0,
-        limit: 100
+        limit: 10
       };
       const result = await fetchData('api/v1/instance', queryParams, "hirello");
       if (result.code != 200) {
