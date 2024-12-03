@@ -53,7 +53,7 @@ const InstancePage = () => {
   const [search, setSearch] = useAtom(searchAtom);
   const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [page, setPage] = useState(0);
-  const [lotal , setTotal] = useState(null)
+  const [tolat , setTotal] = useState(null)
 const limit = 10;
 
   useEffect(() => {
@@ -576,7 +576,7 @@ const limit = 10;
           </div>
 
           <div>
-            <div className=" h-[88%] overflow-y-auto">
+            <div className= {`overflow-y-auto ${limit >= tolat ? "h-[98%]":"h-[88%]"}`}>
               <div
                 className="flex flex-wrap gap-4 "
                 style={{ alignContent: "baseline" }}
@@ -606,8 +606,8 @@ const limit = 10;
               </div>
             </div>
             {/* <Pagination totalItems={100} setLimit ={setLimit} setpage= {setPage} /> */}
-       {lotal && limit &&
-        <Pagination totalItems={lotal} setPage={setPage} limit={limit} />
+       {tolat && limit &&
+        <Pagination totalItems={tolat} setPage={setPage} limit={limit} />
        
        }
 
