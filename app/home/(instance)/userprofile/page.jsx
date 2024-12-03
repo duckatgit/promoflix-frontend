@@ -15,6 +15,7 @@ import { fetchData, putData } from "@/utils/api";
 import { safeLocalStorage } from "@/lib/safelocastorage";
 import { useAtom } from "jotai";
 import { updatedNameAtom } from "@/utils/atom";
+import { getFormatedDate } from "@/lib/utils";
 
 function UserProfile() {
   const { toast } = useToast();
@@ -28,6 +29,8 @@ function UserProfile() {
 
   const [plansData, setPlansData] = useState([]);
   const [planName, setPlanName] = useState("");
+  const [subscriptionDate, setSubscriptionDate] = useState("");
+
   const [isDate, setIsDate] = useState("");
 
   console.log(planName);
@@ -149,7 +152,9 @@ function UserProfile() {
 
     if (matchingPlan) {
       console.log(matchingPlan, "match");
-      setPlanName(matchingPlan.name); // Store the matched name in state
+      setPlanName(matchingPlan.name); 
+      setSubscriptionDate(matchingPlan.created_at)
+      // Store the matched name in state
     } else {
       setPlanName("No matching plan found"); // Handle case where no match is found
     }
@@ -191,11 +196,18 @@ function UserProfile() {
 
             <p>{isDate ? isDate : ""}</p>
           </div>
-
-          <div className="">
+          
+          <div className="mb-2">
             <p className="text-black font-semibold ">User subscription </p>
 
             <p>{planName}</p>
+            
+          </div>
+          <div className="">
+            <p className="text-black font-semibold ">User subscription date</p>
+
+            <p>{getFormatedDate(subscriptionDate)}</p>
+            
           </div>
         </div>
       )}

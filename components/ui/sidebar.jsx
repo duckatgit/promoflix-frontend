@@ -165,14 +165,14 @@ const Sidebar = () => {
           <div className="p-4">
             <div className="user-info ">
               <span
-                className={` rounded-[50%] bg-white border-[3px] border-[#f1c40f] text-center font-sans text-[16px] font-bold text-[#333]  ${
+                className={` rounded-[50%] bg-white border-[3px] border-[#f1c40f] text-center font-sans text-[14px] font-bold text-[#333]  ${
                   isCollapsed ? "w-full h-[26px]" : "w-[35px] h-[35px]"
                 }`}
               >
                 <span
                   className={`relative`}
                   style={{
-                    top: isCollapsed ? "-4px " : "0px",
+                    top: isCollapsed ? "-2px " : "2px",
                   }}
                 >
                   {updatedName?.charAt(0)}

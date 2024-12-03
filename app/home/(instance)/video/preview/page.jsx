@@ -158,7 +158,6 @@ const Preview_video = () => {
 
     if (hasFile) {
       try {
-       
         const data = await postData(`api/v1/generate/${id}`, {}, "hirello");
         if (data.code == 200) {
           setLoading(false);
@@ -242,7 +241,7 @@ const Preview_video = () => {
             type: "success",
             description: "Csv file uploaded sucessfully",
           });
-        
+
           await getFile();
           setSelectedFile(null);
         }
@@ -317,7 +316,7 @@ const Preview_video = () => {
     }
   }, [thumbnailFile]);
   const getAllSegment = async () => {
-    console.log("my getAllSegment step 2")
+    console.log("my getAllSegment step 2");
     try {
       const queryParams = {
         instance_id: id,
@@ -351,8 +350,8 @@ const Preview_video = () => {
   };
 
   const getFile = async () => {
-    console.log("getFile step 3");
-    
+    console.log("getFile step 2");
+
     try {
       const result = await fetchData(`api/csv/${id}`, {}, "csv");
       console.log(result, "=========resultfile");
@@ -470,7 +469,7 @@ const Preview_video = () => {
       }
       console.log("API Response:", responseData);
     } catch (error) {
-     console.log(error?.response?.data.result, "kjkjkjkjkj")
+      console.log(error?.response?.data.result, "kjkjkjkjkj");
       toast({
         type: "error",
         description: error?.response?.data?.result,
@@ -517,7 +516,7 @@ const Preview_video = () => {
     }
   };
   const myfunction = async (id) => {
-    console.log("my function step 1")
+    console.log("my function step 1");
     try {
       const video_result = await fetchData(`api/v1/file/${id}`, {}, "hirello");
       if (video_result.code == 200) {
@@ -552,8 +551,9 @@ const Preview_video = () => {
           } else {
             setTranscriptSteps(() => data?.step);
           }
-          if (activeStep === 0 && newWords.length > 0) {
-            handleNext(1);
+          if (hasCalledNext.current == false && newWords.length > 0) {
+            hasCalledNext.current = true;
+            handleNext(1)
           }
           setData(() => [...newWords]);
         };
@@ -638,7 +638,6 @@ const Preview_video = () => {
     }
   };
   const getAllInstance = async (instanceID) => {
-    
     try {
       const queryParams = {
         page: 0,
@@ -727,11 +726,10 @@ const Preview_video = () => {
     }
   }, [id, activeStep]);
 
-  useEffect(()=>{
-
+  useEffect(() => {
     fetchPlanQuata();
     fetchPlansApi();
-  },[])
+  }, []);
 
   const video_url = videoUrl;
   let arr = [];
@@ -795,7 +793,10 @@ const Preview_video = () => {
       {/* first section */}
       <div className="flex justify-between h-[452px] gap-4">
         {/* left section */}
-        <div className="w-1/2 p-4 bg-white rounded-[10px]" style={{height:"fit-content"}}>
+        <div
+          className="w-1/2 p-4 bg-white rounded-[10px]"
+          style={{ height: "fit-content" }}
+        >
           <div>
             {videoUrl && (
               <video width="600" controls className="w-full">
@@ -1209,7 +1210,7 @@ const Preview_video = () => {
                 </div> */}
               </div>
               <div className="flex gap-2 p-4 ">
-                <Button
+                {/* <Button
                   className=" text-white"
                   style={{ backgroundColor: "#333333", cursor: "pointer" }}
                   onClick={() => {
@@ -1221,6 +1222,28 @@ const Preview_video = () => {
                   }}
                 >
                   {loading ? (
+                    <>
+                      Merge Video <LoadingSpinner className="ml-2 text-white" />
+                    </>
+                  ) : (
+                    "Merge Video"
+                  )}
+                </Button> */}
+
+                <Button
+                  className="text-white"
+                  style={{ backgroundColor: "#333333", cursor: "pointer" }}
+                  onClick={() => {
+                    if (allInstances[0]?.locked) {
+                      router.push(`/home/video/generate?id=${id}`);
+                    } else {
+                      sendMessage();
+                    }
+                  }}
+                >
+                  {allInstances[0]?.locked ? (
+                    "Generate Page"
+                  ) : loading ? (
                     <>
                       Merge Video <LoadingSpinner className="ml-2 text-white" />
                     </>
