@@ -158,7 +158,7 @@ const Preview_video = () => {
 
     if (hasFile) {
       try {
-        handleNext(4);
+       
         const data = await postData(`api/v1/generate/${id}`, {}, "hirello");
         if (data.code == 200) {
           setLoading(false);
@@ -242,7 +242,7 @@ const Preview_video = () => {
             type: "success",
             description: "Csv file uploaded sucessfully",
           });
-          handleNext(3);
+        
           await getFile();
           setSelectedFile(null);
         }
@@ -317,6 +317,7 @@ const Preview_video = () => {
     }
   }, [thumbnailFile]);
   const getAllSegment = async () => {
+    console.log("my getAllSegment step 2")
     try {
       const queryParams = {
         instance_id: id,
@@ -350,6 +351,8 @@ const Preview_video = () => {
   };
 
   const getFile = async () => {
+    console.log("getFile step 3");
+    
     try {
       const result = await fetchData(`api/csv/${id}`, {}, "csv");
       console.log(result, "=========resultfile");
@@ -514,6 +517,7 @@ const Preview_video = () => {
     }
   };
   const myfunction = async (id) => {
+    console.log("my function step 1")
     try {
       const video_result = await fetchData(`api/v1/file/${id}`, {}, "hirello");
       if (video_result.code == 200) {
@@ -634,6 +638,7 @@ const Preview_video = () => {
     }
   };
   const getAllInstance = async (instanceID) => {
+    
     try {
       const queryParams = {
         page: 0,
@@ -709,8 +714,6 @@ const Preview_video = () => {
   useEffect(() => {
     if (id) {
       getAllInstance(id);
-      fetchPlanQuata();
-      fetchPlansApi();
       if (activeStep === 0) {
         myfunction(id);
       }
@@ -723,6 +726,12 @@ const Preview_video = () => {
       // connectWebSocket();
     }
   }, [id, activeStep]);
+
+  useEffect(()=>{
+
+    fetchPlanQuata();
+    fetchPlansApi();
+  },[])
 
   const video_url = videoUrl;
   let arr = [];
@@ -786,7 +795,7 @@ const Preview_video = () => {
       {/* first section */}
       <div className="flex justify-between h-[452px] gap-4">
         {/* left section */}
-        <div className="w-1/2 p-4 bg-white rounded-[10px]">
+        <div className="w-1/2 p-4 bg-white rounded-[10px]" style={{height:"fit-content"}}>
           <div>
             {videoUrl && (
               <video width="600" controls className="w-full">

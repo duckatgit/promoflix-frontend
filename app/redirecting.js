@@ -17,6 +17,6 @@ export default function CheckRedirecting() {
     }
 
     setIsRedirecting(false); // After redirect logic, stop blocking content
-  }, [router]);
+  }, []);
 
 }
