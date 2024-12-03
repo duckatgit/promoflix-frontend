@@ -80,6 +80,7 @@ function VideoTitleCard({
             height={100}
             className="rounded-[8px] mt-2"
             style={{ height: "130px", objectFit: "cover" }}
+            alt="thumbnail"
           />
         )}
         {thumbnail === null && (

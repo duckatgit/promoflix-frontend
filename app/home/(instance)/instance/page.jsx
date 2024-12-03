@@ -52,10 +52,10 @@ const InstancePage = () => {
   const [deletePopUp, setDeletePopUp] = useState(false);
   const [search, setSearch] = useAtom(searchAtom);
   const [debouncedSearch, setDebouncedSearch] = useState(search);
-  const [page , setPage] = useState(0)
-  const [limit , setLimit] = useState(10)
+  const [page, setPage] = useState(0);
+  const [lotal , setTotal] = useState(null)
+const limit = 10;
 
-console.log(page, limit, "jkjkjkjkjkj")
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(search);
@@ -98,6 +98,7 @@ console.log(page, limit, "jkjkjkjkjkj")
 
         const data = result.result.instances;
         setAllInstances(data);
+        setTotal(result?.result?.total)
       }
     } catch (error) {
       setShowUploadeVideoLoader(false);
@@ -152,6 +153,9 @@ console.log(page, limit, "jkjkjkjkjkj")
   useEffect(() => {
     getAllInstance();
   }, []);
+  useEffect(() => {
+    getAllInstance();
+  }, [page]);
 
   const createInstance = async () => {
     if (!instance) return; // Exit early if no instance is provided
@@ -572,7 +576,7 @@ console.log(page, limit, "jkjkjkjkjkj")
           </div>
 
           <div>
-            <div className=" h-[98%] overflow-y-auto">
+            <div className=" h-[88%] overflow-y-auto">
               <div
                 className="flex flex-wrap gap-4 "
                 style={{ alignContent: "baseline" }}
@@ -602,6 +606,11 @@ console.log(page, limit, "jkjkjkjkjkj")
               </div>
             </div>
             {/* <Pagination totalItems={100} setLimit ={setLimit} setpage= {setPage} /> */}
+       {lotal && limit &&
+        <Pagination totalItems={lotal} setPage={setPage} limit={limit} />
+       
+       }
+
           </div>
         </div>
       </div>

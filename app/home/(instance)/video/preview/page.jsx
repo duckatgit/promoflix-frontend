@@ -1125,7 +1125,7 @@ const Preview_video = () => {
                         layout="fill"
                         className="rounded-2xl   object-cover"
                         src={videoThumb}
-                        alt=""
+                        alt="logo"
                       />
                     )}
                   </div>
