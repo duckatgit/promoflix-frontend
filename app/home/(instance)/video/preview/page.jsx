@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import {
   Dialog,
   DialogContent,
@@ -46,6 +46,7 @@ import { fetchData, postData, deleteData } from "@/utils/api";
 import { getContrastingColor, getRandomColor } from "@/lib/getRandomColor";
 import { LoadingSpinner } from "@/components/ui/spinner";
 import Stepper from "@/components/ui/stepper";
+import { getFormatedDate } from "@/lib/utils";
 
 const whisperxSocker = process.env.NEXT_PUBLIC_VIDEO_WHISPERX_SOCKET;
 const hirelloSocket = process.env.NEXT_PUBLIC_VIDEO_HIRELLO_SOCKET;
@@ -78,12 +79,12 @@ const Preview_video = () => {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [inputValue, setInputValue] = useState("");
-  const [csvUrlInput, setCsvUrlInput] = useState('')
+  const [csvUrlInput, setCsvUrlInput] = useState("");
   const [data, setData] = useState([]);
   const [segmentData, setSegmentData] = useState([]);
   console.log(segmentData, "iiiii");
 
-  const [transcriptSteps, setTranscriptSteps] = useState('Loading...')
+  const [transcriptSteps, setTranscriptSteps] = useState("Loading...");
   const fileInputRef = useRef(null);
   const fileInputRef2 = useRef(null);
   const [isHighlighted, setIsHighlighted] = useState({});
@@ -148,19 +149,18 @@ const Preview_video = () => {
         type: "error",
         title: "",
         description: "Please upload csv file or Spreadsheet url",
-      })
+      });
       setLoading(false);
       return;
     }
 
     if (hasFile) {
       try {
-        handleNext(4)
+        handleNext(4);
         const data = await postData(`api/v1/generate/${id}`, {}, "hirello");
         if (data.code == 200) {
-
           setLoading(false);
-          console.log(data)
+          console.log(data);
           setVideoArray(data.result);
           router.push(`/home/video/generate?id=${id}`);
         }
@@ -171,10 +171,10 @@ const Preview_video = () => {
         toast({
           type: "error",
           description: error?.message,
-        })
+        });
       }
     } else {
-      let googleSheetId = ''
+      let googleSheetId = "";
 
       const regex = /\/d\/([a-zA-Z0-9-_]+)/;
       const match = csvUrlInput.match(regex);
@@ -185,13 +185,17 @@ const Preview_video = () => {
           variant: "destructive",
           title: "",
           description: "Invalid url",
-        })
+        });
         return;
       }
 
-      const data = await postData(`api/googlesheet/${id}/${googleSheetId}`, {}, "csv");
+      const data = await postData(
+        `api/googlesheet/${id}/${googleSheetId}`,
+        {},
+        "csv"
+      );
       if (data.code == 200) {
-        let newVidArr = []
+        let newVidArr = [];
         if (data.result?.records) {
           for (let i = 0; i < data.result?.records; i++) {
             newVidArr.push({
@@ -202,13 +206,11 @@ const Preview_video = () => {
               thumbnail: null,
               gif: null,
               status: "queued",
-              texts: [
-                "up"
-              ],
+              texts: ["up"],
               message: "Video generation has started.",
               created_at: "2024-11-13T12:25:46.963",
-              updated_at: "2024-11-13T12:25:46.963"
-            })
+              updated_at: "2024-11-13T12:25:46.963",
+            });
           }
         }
 
@@ -216,7 +218,6 @@ const Preview_video = () => {
         router.push(`/home/video/generate?id=${id}`);
       }
     }
-
 
     let message = {
       GetVideo: {
@@ -227,7 +228,6 @@ const Preview_video = () => {
       socket.send(JSON.stringify(message));
     }
   };
-
 
   const handleSendFile = async () => {
     try {
@@ -240,10 +240,9 @@ const Preview_video = () => {
             type: "success",
             description: "Csv file uploaded sucessfully",
           });
-          handleNext(3)
+          handleNext(3);
           await getFile();
           setSelectedFile(null);
-
         }
       }
     } catch (error) {
@@ -260,7 +259,7 @@ const Preview_video = () => {
     if (file.size > maxFileSize) {
       toast({
         type: "warning",
-        description: "File size exceeds 50MB. Please choose a smaller file."
+        description: "File size exceeds 50MB. Please choose a smaller file.",
       });
       fileInputRef.current.value = "";
       return;
@@ -272,8 +271,7 @@ const Preview_video = () => {
       });
       const fileInput = event.target;
       fileInput.value = null;
-    }
-    else {
+    } else {
       if (file) {
         setFileName(file?.name);
         setSelectedFile(file); // Store the selected file in state
@@ -296,8 +294,7 @@ const Preview_video = () => {
         fileInput.value = null; // Reset the input if the same file is selected again
         setThumbnailFile(selectedFile);
       }
-    }
-    else {
+    } else {
       toast({
         type: "warning",
         description: "Please select a valid image file.",
@@ -308,15 +305,15 @@ const Preview_video = () => {
   };
   useEffect(() => {
     if (selectedFile) {
-      handleSendFile()
+      handleSendFile();
     }
-  }, [selectedFile])
+  }, [selectedFile]);
 
   useEffect(() => {
     if (thumbnailFile) {
-      uploadNewThumb()
+      uploadNewThumb();
     }
-  }, [thumbnailFile])
+  }, [thumbnailFile]);
   const getAllSegment = async () => {
     try {
       const queryParams = {
@@ -326,14 +323,18 @@ const Preview_video = () => {
       if (result.code == 200) {
         setSegmentData(result?.result);
         if (result?.result.length > 0 && activeStep == 1) {
-          handleNext(2)
+          handleNext(2);
         }
         if (result?.result?.length > 0) {
           let selected = {};
           for (let item of result?.result) {
             const word = item.highlight?.toLowerCase();
             // selected[word] = true;
-            selected[word] = { start_time: item?.start_time, end_time: item?.end_time, highlight: true }
+            selected[word] = {
+              start_time: item?.start_time,
+              end_time: item?.end_time,
+              highlight: true,
+            };
           }
           setIsHighlighted(selected);
         } else {
@@ -351,9 +352,9 @@ const Preview_video = () => {
       const result = await fetchData(`api/csv/${id}`, {}, "csv");
       console.log(result, "=========resultfile");
       if (result.code == 200) {
-        handleNext(3)
+        handleNext(3);
         setHasFile(true);
-        setCsvData(result.result)
+        setCsvData(result.result);
         setFileData(result.result);
       }
     } catch (error) {
@@ -369,7 +370,7 @@ const Preview_video = () => {
           description: "Csv file deleted sucessfully",
         });
         setHasFile(false);
-        setCsvData(null)
+        setCsvData(null);
         setDeleteFilePopUp(false);
       }
     } catch (error) {
@@ -421,7 +422,6 @@ const Preview_video = () => {
     findWords(index);
   };
   const handleTickClick = async () => {
-
     try {
       let highlight_si;
       let highlight_ei;
@@ -462,7 +462,6 @@ const Preview_video = () => {
         });
 
         await getAllSegment();
-
       }
       console.log("API Response:", responseData);
     } catch (error) {
@@ -543,16 +542,14 @@ const Preview_video = () => {
                 });
               }
             });
-            setTranscriptSteps(() => 'Loading...')
-
+            setTranscriptSteps(() => "Loading...");
           } else {
-            setTranscriptSteps(() => data?.step)
+            setTranscriptSteps(() => data?.step);
           }
           if (activeStep === 0 && newWords.length > 0) {
-            handleNext(1)
+            handleNext(1);
           }
           setData(() => [...newWords]);
-
         };
 
         socket.onerror = (error) => {
@@ -705,13 +702,12 @@ const Preview_video = () => {
     if (matchingPlan) {
       // If a match is found, update usedQuota with used_quota1
       setUsedQuota(quota.used_quota2);
-
     }
   }, [plansData, quota]);
   useEffect(() => {
     if (id) {
-      getAllInstance(id)
-      fetchPlanQuata()
+      getAllInstance(id);
+      fetchPlanQuata();
       fetchPlansApi();
       if (activeStep === 0) {
         myfunction(id);
@@ -720,7 +716,7 @@ const Preview_video = () => {
         getAllSegment();
       }
       if (activeStep === 2) {
-        getFile()
+        getFile();
       }
       // connectWebSocket();
     }
@@ -761,53 +757,50 @@ const Preview_video = () => {
     const removedChars = text.match(/[^a-zA-Z0-9\s]+$/);
 
     // Step 2: Remove the special characters from the end of the string
-    const cleanedText = text.replace(/[^a-zA-Z0-9\s]+$/, '');
+    const cleanedText = text.replace(/[^a-zA-Z0-9\s]+$/, "");
 
     // Step 3: Return an object with the cleaned word and the removed special characters
     return {
       newWord: cleanedText,
-      removedChar: removedChars ? removedChars[0] : ''
+      removedChar: removedChars ? removedChars[0] : "",
     };
   }
 
-  function getData() {
-    const dateString = allInstances[0]?.created_at;
-    const date = new Date(dateString);
-    const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-    console.log(formattedDate, "uuuu");
-    return formattedDate
-
-  }
 
 
   return (
     <div className=" h-[100%] overflow-y-auto w-full">
       {allInstances.length > 0 && !allInstances[0]?.locked && (
-        <Stepper activeStep={activeStep} setActiveStep={setActiveStep} segmentArray={arr} hasFile={hasFile} steps={steps} />
-
+        <Stepper
+          activeStep={activeStep}
+          setActiveStep={setActiveStep}
+          segmentArray={arr}
+          hasFile={hasFile}
+          steps={steps}
+        />
       )}
       {/* first section */}
       <div className="flex justify-between h-[452px] gap-4">
         {/* left section */}
         <div className="w-1/2 p-4 bg-white rounded-[10px]">
-          <div >
+          <div>
             {videoUrl && (
               <video width="600" controls className="w-full">
                 <source src={videoUrl} type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
             )}
-            {allInstances.length > 0 && (<>
-              <p className="mt-4  text-[20px] leading-[30px] ">{`Video Title:- ${allInstances[0]?.name}`}</p>
-              <p className="  text-[20px] leading-[30px] ">{`Uploaded date  :- ${getData()}`}</p>
-            </>
+            {allInstances.length > 0 && (
+              <>
+                <p className="mt-4">{`Video Title : ${allInstances[0]?.name}`}</p>
+                <p>{`Uploaded date : ${getFormatedDate(allInstances[0]?.created_at)}`}</p>
+                <p>{`Updated at : ${getFormatedDate(allInstances[0]?.updated_at)}`}</p>
+              </>
             )}
-
           </div>
         </div>
         {/* right section */}
         <div className="w-1/2 bg-white rounded-[10px] ">
-
           <div className="flex justify-between p-4  border-b border-gray-300 mb-4">
             <div className="flex flex-wrap gap-2">
               {arr?.map((i, index) => {
@@ -820,9 +813,13 @@ const Preview_video = () => {
                     // style={{ backgroundColor: bgColor }}
                     key={index}
                   >
-                    <p className="truncate"
-                    // style={{ color: textColor }}
-                    > {i.name}</p>
+                    <p
+                      className="truncate mb-[2px]"
+                      // style={{ color: textColor }}
+                    >
+                      {" "}
+                      {i.name}
+                    </p>
                     <X
                       className="cursor-pointer"
                       size={16}
@@ -838,119 +835,134 @@ const Preview_video = () => {
               })}
             </div>
             <div>
-              {arr.length > 0 && (
-                <span>{`${usedQuota}/${quota?.quota2}`}</span>
-              )}
+              {arr.length > 0 && <span>{`${usedQuota}/${quota?.quota2}`}</span>}
             </div>
           </div>
 
-          <div className={`p-4 pt-0 text-[16px] leading-[24px] text-justify max-h-[316px] ${showAll ? "overflow-y-auto" : ""}`} >
-            {data && data.length > 0 ?
+          <div
+            className={`p-4 pt-0 text-[16px] leading-[24px] text-justify max-h-[316px] ${
+              showAll ? "overflow-y-auto" : ""
+            }`}
+          >
+            {data && data.length > 0 ? (
               <>
                 <p>
-                  {data?.slice(0, showAll ? data.length : 150)?.map((i, index) => {
-                    const word = i?.word?.trim()?.toLowerCase();
-                    const value = inputValue.trim().toLowerCase();
-                    let isYellow = i.start >= isHighlighted[word]?.start_time && i.end <= isHighlighted[word]?.end_time ? true : false;
-                    // let isYellow = isHighlighted[word]?.highlight && i.id === isHighlighted[word].id;
-                    const { newWord, removedChar } = cleanAndSplit(i.word)
-                    return (
-                      <React.Fragment key={index}>
-                        {isYellow ? (
-                          <>
+                  {data
+                    ?.slice(0, showAll ? data.length : 150)
+                    ?.map((i, index) => {
+                      const word = i?.word?.trim()?.toLowerCase();
+                      const value = inputValue.trim().toLowerCase();
+                      let isYellow =
+                        i.start >= isHighlighted[word]?.start_time &&
+                        i.end <= isHighlighted[word]?.end_time
+                          ? true
+                          : false;
+                      // let isYellow = isHighlighted[word]?.highlight && i.id === isHighlighted[word].id;
+                      const { newWord, removedChar } = cleanAndSplit(i.word);
+                      return (
+                        <React.Fragment key={index}>
+                          {isYellow ? (
+                            <>
+                              <span
+                                className={`my-2 ${
+                                  isYellow ? "bg-[#FEF08A]" : ""
+                                }`}
+                                onMouseDown={() => handleMouseDown(index)}
+                                onMouseUp={() => handleMouseUp(index)}
+                                key={index} // Added key for list items
+                              >
+                                {newWord}
+                              </span>
+                              <span
+                                className={`my-2 }`}
+                                onMouseDown={() => handleMouseDown(index)}
+                                onMouseUp={() => handleMouseUp(index)}
+                                key={`${index}dup`} // Added key for list items
+                              >
+                                {removedChar}
+                              </span>
+                            </>
+                          ) : (
                             <span
-                              className={`my-2 ${isYellow ? "bg-[#FEF08A]" : ""}`}
+                              className={`my-2 ${
+                                isYellow ? "bg-[#FEF08A]" : ""
+                              }`}
                               onMouseDown={() => handleMouseDown(index)}
                               onMouseUp={() => handleMouseUp(index)}
                               key={index} // Added key for list items
                             >
-                              {newWord}
+                              {i.word}
                             </span>
-                            <span
-                              className={`my-2 }`}
-                              onMouseDown={() => handleMouseDown(index)}
-                              onMouseUp={() => handleMouseUp(index)}
-                              key={`${index}dup`} // Added key for list items
-                            >
-                              {removedChar}
-                            </span>
-                          </>
-                        ) : (
-                          <span
-                            className={`my-2 ${isYellow ? "bg-[#FEF08A]" : ""}`}
-                            onMouseDown={() => handleMouseDown(index)}
-                            onMouseUp={() => handleMouseUp(index)}
-                            key={index} // Added key for list items
-                          >
-                            {i.word}
-                          </span>
-                        )
-                        }
+                          )}
 
-                        {editingWordIndex !== null && indexToVisible == index && (
-                          <div
-                            className="w-auto absolute"
-                            style={{
-                              display: "flex",
-                              backgroundColor: "#fff",
-                              padding: "10px",
-                              borderRadius: "8px",
-                              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
-                              zIndex: 10,
-                            }}
-                          >
-                            <Input
-                              value={inputValue}
-                              onChange={handleInputChange}
-                            />
-                            <div className="flex justify-between ">
+                          {editingWordIndex !== null &&
+                            indexToVisible == index && (
                               <div
-                                className="bg-gray-300 p-2 mx-2 my-1 text-gray-600"
-                                onClick={handleTickClick}
+                                className="w-auto absolute"
                                 style={{
-                                  cursor: "pointer",
-                                  borderRadius: "10px",
+                                  display: "flex",
+                                  backgroundColor: "#fff",
+                                  padding: "10px",
+                                  borderRadius: "8px",
+                                  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
+                                  zIndex: 10,
                                 }}
                               >
-                                <Check />
+                                <Input
+                                  value={inputValue}
+                                  onChange={handleInputChange}
+                                />
+                                <div className="flex justify-between ">
+                                  <div
+                                    className="bg-gray-300 p-2 mr-2 ml-3 text-gray-600"
+                                    onClick={handleTickClick}
+                                    style={{
+                                      cursor: "pointer",
+                                      borderRadius: "10px",
+                                    }}
+                                  >
+                                    <Check />
+                                  </div>
+                                  <div
+                                    className="bg-gray-300 p-2  mr-2  text-gray-600"
+                                    onClick={handleCrossClick}
+                                    style={{
+                                      cursor: "pointer",
+                                      borderRadius: "10px",
+                                    }}
+                                  >
+                                    <X />
+                                  </div>
+                                </div>
                               </div>
-                              <div
-                                className="bg-gray-300 p-2  mx-2 my-1 text-gray-600"
-                                onClick={handleCrossClick}
-                                style={{
-                                  cursor: "pointer",
-                                  borderRadius: "10px",
-                                }}
-                              >
-                                <X />
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </React.Fragment>
-                    );
-                  })
-                  }
+                            )}
+                        </React.Fragment>
+                      );
+                    })}
                 </p>
                 {data.length > 150 && ( // Show "Read More" if data exceeds 200 words
                   <div className="text-end mt-4 mb-4">
-                    <Button className="text-white rounded-[6px] px-[10px] py-[5px]" style={{ backgroundColor: "#333333" }} onClick={toggleShowAll}>{showAll ? "Show Less" : "Read more"}</Button>
+                    <Button
+                      className="text-white rounded-[6px] px-[10px] py-[5px]"
+                      style={{ backgroundColor: "#333333" }}
+                      onClick={toggleShowAll}
+                    >
+                      {showAll ? "Show Less" : "Read more"}
+                    </Button>
                   </div>
                 )}
               </>
-              : (
-                <div className="flex flex-col w-full h-[300px] justify-center items-center ">
-                  <Image
-                    src="/assets/tube-spinner.svg"
-                    alt="Logo"
-                    width={50}
-                    height={50}
-                  />
-                  <p>{transcriptSteps}</p>
-
-                </div>
-              )}
-
+            ) : (
+              <div className="flex flex-col w-full h-[300px] justify-center items-center ">
+                <Image
+                  src="/assets/tube-spinner.svg"
+                  alt="Logo"
+                  width={50}
+                  height={50}
+                />
+                <p>{transcriptSteps}</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -960,10 +972,14 @@ const Preview_video = () => {
         {/* left section */}
         {(activeStep == 2 || activeStep == 3) && (
           <div class="w-[30%] shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px]  bg-white">
-
-            <p className="font-semibold text-[16px] p-[10px] border-b border-gray-200">Upload Data From Document</p>
+            <p className="font-semibold text-[16px] p-[10px] border-b border-gray-200">
+              Upload Data From Document
+            </p>
             <div className="p-4">
-              <div class={`${allInstances[0]?.locked ? "cursor-no-drop" : "cursor-pointer"} relative border-2 border-dashed border-gray-300 rounded-[10px] h-[205px] px-[26px] py-[42px] text-center`}
+              <div
+                class={`${
+                  allInstances[0]?.locked ? "cursor-no-drop" : "cursor-pointer"
+                } relative border-2 border-dashed border-gray-300 rounded-[10px] h-[205px] px-[26px] py-[42px] text-center`}
                 onClick={() => {
                   if (!allInstances[0]?.locked) {
                     fileInputRef.current.click();
@@ -978,7 +994,9 @@ const Preview_video = () => {
                   <p class="text-sm font-medium text-gray-700">
                     Upload Data, or <span class="text-orange-500">Browse</span>
                   </p>
-                  <p class="text-xs text-gray-500">Maximum File size is 100 mb</p>
+                  <p class="text-xs text-gray-500">
+                    Maximum File size is 100 mb
+                  </p>
                 </div>
                 <input
                   type="file"
@@ -1003,7 +1021,8 @@ const Preview_video = () => {
                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-orange-200 text-sm text-gray-700"
                 />
                 <p class="text-xs text-gray-500 mt-2">
-                  File must be .xls, .xlsx, .xlsm, .xlt, .xltx, (Excel or Google Sheets).
+                  File must be .xls, .xlsx, .xlsm, .xlt, .xltx, (Excel or Google
+                  Sheets).
                 </p>
               </div>
               {hasFile && (
@@ -1020,17 +1039,20 @@ const Preview_video = () => {
                         }}
                         className="text-neutral-400 border-2 rounded-3xl size-10 border-neutral-400 p-2 mr-2 cursor-pointer"
                       />
-                      <Trash
-                        onClick={() => {
-                          if (!allInstances[0]?.locked) {
+                      {!allInstances[0]?.locked && (
+                        <Trash
+                          onClick={() => {
                             setDeleteFilePopUp(true);
-                          }
-                        }}
-                        className={`${allInstances[0]?.locked ? ' cursor-not-allowed' : 'cursor-pointer'} text-red-600 border-2 rounded-3xl size-10 border-red-600 p-2 `}
-                      />
+                          }}
+                          className={`${
+                            allInstances[0]?.locked
+                              ? " cursor-not-allowed"
+                              : "cursor-pointer"
+                          } text-red-600 border-2 rounded-3xl size-10 border-red-600 p-2 `}
+                        />
+                      )}
                     </div>
                   </div>
-
                 </div>
               )}
             </div>
@@ -1039,23 +1061,29 @@ const Preview_video = () => {
         {/* right section */}
         {activeStep == 3 && (
           <div className="w-[70%]  bg-white shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px]">
-            <p className="font-semibold text-[16px] p-[10px] border-b border-gray-200">Video Thumbnail</p>
+            <p className="font-semibold text-[16px] p-[10px] border-b border-gray-200">
+              Video Thumbnail
+            </p>
             <div className="p-4 ">
               <div className="flex gap-4 mb-[20px]">
                 <div className="w-1/2 ">
                   <div className="w-full relative h-[200px]">
-                    {videoThumb &&
+                    {videoThumb && (
                       <Image
                         layout="fill"
                         className="rounded-2xl   object-cover"
                         src={videoThumb}
                         alt=""
                       />
-                    }
-
+                    )}
                   </div>
                 </div>
-                <div class={`${allInstances[0]?.locked ? "cursor-no-drop" : "cursor-pointer"} relative w-1/2 flex flex-col items-center justify-center bg-[#FFF5F0] border-2 border-dashed border-orange-400 rounded-md`}
+                <div
+                  class={`${
+                    allInstances[0]?.locked
+                      ? "cursor-no-drop"
+                      : "cursor-pointer"
+                  } relative w-1/2 flex flex-col items-center justify-center bg-[#FFF5F0] border-2 border-dashed border-orange-400 rounded-md`}
                   onClick={() => {
                     if (!allInstances[0]?.locked) {
                       fileInputRef2.current.click();
@@ -1065,7 +1093,9 @@ const Preview_video = () => {
                   <div class="text-orange-500 text-4xl">
                     <img src="/assets/bx_image-add.png" alt="upload icon" />
                   </div>
-                  <p class=" mt-2 text-orange-500 text-sm font-medium">Upload New Thumbnail</p>
+                  <p class=" mt-2 text-orange-500 text-sm font-medium">
+                    Upload New Thumbnail
+                  </p>
                   <input
                     type="file"
                     ref={fileInputRef2}
@@ -1080,23 +1110,29 @@ const Preview_video = () => {
               <div className="  border border-[#B4B4B4] rounded-[10px]">
                 <div className="  border-b border-[#B4B4B4]">
                   <div className="p-4">
-                    <p className="text-[16px] leading-[24px] text-left">Create Thumbnail Message. Use the merge fields on the right to insert your message.</p>
+                    <p className="text-[16px] leading-[24px] text-left">
+                      Create Thumbnail Message. Use the merge fields on the
+                      right to insert your message.
+                    </p>
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-2 p-4 ">
+                {/* <div className="flex flex-wrap gap-2 p-4 ">
                   {arr?.map((i, index) => {
                     // const bgColor = getRandomColor();
                     // const textColor = getContrastingColor(bgColor);
                     return (
                       <div
-
                         className={`justify-between bg-[#333333] text-white px-3 py-1 rounded-xl flex gap-1 `}
                         // style={{ backgroundColor: bgColor }}
                         key={index}
                       >
-                        <p className="truncate"
-                        // style={{ color: textColor }}
-                        > {i.name}</p>
+                        <p
+                          className="truncate "
+                          // style={{ color: textColor }}
+                        >
+                          {" "}
+                          {i.name}
+                        </p>
                         <X
                           className="cursor-pointer"
                           onClick={() => {
@@ -1109,28 +1145,43 @@ const Preview_video = () => {
                       </div>
                     );
                   })}
-                </div>
-
+                </div> */}
               </div>
               <div className="flex gap-2 p-4 ">
-                {!allInstances[0]?.locked && (
-                  <Button className=" text-white" style={{ backgroundColor: "#333333", cursor: "pointer" }} onClick={() => { sendMessage() }}>
+               
+                  <Button
+                    className=" text-white"
+                    style={{ backgroundColor: "#333333", cursor: "pointer" }}
+                    onClick={() => {
+                      if(allInstances[0]?.locked){
+                        router.push(`/home/video/generate?id=${id}`);
+                      }else{
+                        sendMessage();
+                      }
+                      
+                    }}
+                  >
                     {loading ? (
                       <>
-                        Merge Video <LoadingSpinner className="ml-2 text-white" />
+                        Merge Video{" "}
+                        <LoadingSpinner className="ml-2 text-white" />
                       </>
                     ) : (
                       "Merge Video"
                     )}
                   </Button>
-                )}
-                <Button className=" text-white" style={{ backgroundColor: "#333333" }} >Reset All</Button>
+            
+                {/* <Button
+                  className=" text-white"
+                  style={{ backgroundColor: "#333333" }}
+                >
+                  Reset All
+                </Button> */}
               </div>
             </div>
           </div>
         )}
       </div>
-
 
       {/* third section */}
       {/* <div className=" h-[452px]  mt-4 bg-white">
@@ -1144,7 +1195,6 @@ const Preview_video = () => {
           <div className="w-[70%]  bg-white shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px] border-2 border-red-500">
           </div></div>
       </div> */}
-
 
       {/* <h1 className="m-4">Upload Data From Document</h1> */}
       {/* {!hasFile ? (
@@ -1379,7 +1429,6 @@ const Preview_video = () => {
             </div>
           </div>
         </div> */}
-
 
       <AlertDialog open={deleteFilePopUp}>
         <AlertDialogTrigger></AlertDialogTrigger>

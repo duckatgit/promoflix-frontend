@@ -58,7 +58,7 @@ const PlansCard = ({
             </div>
           )}
 
-          <p className="text-[#B3B3B3] my-4">
+          {/* <p className="text-[#B3B3B3] my-4">
             {highlighted ? usedQuota2 : 0}/{quantity2} Varable used{" "}
           </p>
 
@@ -73,7 +73,7 @@ const PlansCard = ({
                 ></div>
               </div>
             </div>
-          )}
+          )} */}
         </div>
 
         <div className="p-4 mx-8">
@@ -81,6 +81,7 @@ const PlansCard = ({
             <li>Clone your face & voice</li>
             <li>{`${quantity} videos a month`}</li>
             <li>{`${extra_videos_cost}$ per extra video`}</li>
+            <li>{`${quantity2} variable quota`}</li>
           </ul>
         </div>
       </div>

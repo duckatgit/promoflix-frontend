@@ -29,12 +29,12 @@ import {
 } from "@/components/ui/alert-dialog";
 import { searchAtom } from "@/utils/atom";
 import { useAtom } from "jotai";
+import Pagination from "./Pagination";
 const InstancePage = () => {
   const { toast } = useToast();
   const router = useRouter();
   const [allInstances, setAllInstances] = useState([]);
   const [id, setId] = useState("");
-  console.log(id, "id id id");
   const [updateInstanceModal, setupdateInstanceModal] = useState(false);
   const [updatedInstance, setUpdatedInstance] = useState("");
   const [updatedInstanceId, setUpdatedInstanceID] = useState();
@@ -50,9 +50,12 @@ const InstancePage = () => {
   const [uploadFileModal, setUploadFileModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null); // State to store the selected file
   const [deletePopUp, setDeletePopUp] = useState(false);
-  const [search, setSearch] = useAtom(searchAtom)
+  const [search, setSearch] = useAtom(searchAtom);
   const [debouncedSearch, setDebouncedSearch] = useState(search);
+  const [page , setPage] = useState(0)
+  const [limit , setLimit] = useState(10)
 
+console.log(page, limit, "jkjkjkjkjkj")
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(search);
@@ -65,10 +68,10 @@ const InstancePage = () => {
 
   useEffect(() => {
     if (debouncedSearch) {
-      getAllInstance(debouncedSearch)
-    }
-    else {
-      getAllInstance()
+      setPage(0)
+      getAllInstance(debouncedSearch);
+    } else {
+      getAllInstance();
     }
   }, [debouncedSearch]);
 
@@ -76,9 +79,9 @@ const InstancePage = () => {
     try {
       setShowUploadeVideoLoader(true);
       const queryParams = {
-        page: 0,
-        limit: 10,
-        filter: searchInstance || ""
+        page: page,
+        limit: limit,
+        filter: searchInstance || "",
       };
       const result = await fetchData("api/v1/instance", queryParams, "hirello");
       if (result.code != 200) {
@@ -136,7 +139,7 @@ const InstancePage = () => {
   const getVideo = async (id) => {
     try {
       const data = await fetchData(`api/v1/file/${id}`, {}, "hirello");
-      console.log(data, "datafile");
+   
       if (data.code == 200) {
         router.push(`/home/video/preview?id=${id}`);
       }
@@ -159,7 +162,7 @@ const InstancePage = () => {
         { name: instance },
         "hirello"
       );
-      console.log(response, "ppppppp");
+ 
       // Clear input regardless of the response
 
       if (response?.code === 200) {
@@ -263,7 +266,8 @@ const InstancePage = () => {
         type: "error",
         variant: "destructive",
         title: "File too large",
-        description: "The maximum file size is 100 MB. Please select a smaller file.",
+        description:
+          "The maximum file size is 100 MB. Please select a smaller file.",
       });
       return;
     }
@@ -274,16 +278,18 @@ const InstancePage = () => {
         await handleSendFile(file, id);
       } else {
         // Create a new instance before uploading the file
-        const response = await postData("api/v1/instance", { name: "Untitled" }, "hirello");
-        console.log(response, "gggggggggg")
+        const response = await postData(
+          "api/v1/instance",
+          { name: "Untitled" },
+          "hirello"
+        );
+
 
         if (response?.code === 200) {
           // If instance creation is successful, save the ID and proceed to upload the file
           setId(response?.result?.id);
 
           await handleSendFile(file, response?.result?.id);
-
-
 
           toast({
             type: "success",
@@ -371,6 +377,7 @@ const InstancePage = () => {
       console.log(error, "===========error");
     }
   };
+
   return (
     <>
       {showUploadeVideoLoader && (
@@ -484,109 +491,118 @@ const InstancePage = () => {
         </DialogContent>
       </Dialog>
 
-      <div className="flex gap-5 h-full overflow-y-auto">
-        <div
-          style={{ height: "fit-content" }}
-          className="  shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px] bg-white min-w-[300px]"
-        >
-          <div className="flex text-start p-2 border border-b-1">
-            <h1 className="text-lg font-semibold text-gray-700">Upload File</h1>
-          </div>
+      <div>
+        <div className="flex gap-5 h-full">
+          <div
+            style={{ height: "fit-content" }}
+            className="  shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px] bg-white min-w-[300px]"
+          >
+            <div className="flex text-start p-2 border border-b-1">
+              <h1 className="text-lg font-semibold text-gray-700">
+                Upload File
+              </h1>
+            </div>
 
-          <div className="flex flex-col p-4 gap-3">
-            {/* Video Title Input */}
-            <div>
-              <Input
-                id="video-title"
-                placeholder="Video Title"
-                value={instance}
-                className="w-full  border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-orange-500"
-                onChange={(e) => handleChange(e)}
-                onBlur={(e) => handleBlur(e)}
-              />
-            </div>
-            {/* Upload Section */}
-            {/* // ${id ? "cursor-pointer" : "cursor-no-drop" */}
-            <div
-              className={`relative 
-            
-              cursor-pointer border-2 border-dashed border-gray-300 rounded-[10px] px-[16px] py-[20px] text-center `}
-              onClick={() => {
-                // if (id) {
-                fileInputRef.current.click(); // Only trigger the click if `id` is present
-                // }
-              }}
-            // title={!id ? "First create an instance, then upload video." : ""}
-            >
-              {showLoader && (
-                <div className="absolute top-0 left-0 flex justify-center items-center w-full h-full bg-[#62666917]">
-                  <Image
-                    src="/assets/tube-spinner.svg"
-                    alt="Logo"
-                    width={50}
-                    height={50}
-                  />
-                </div>
-              )}
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                id="file-upload"
-                className="w-28 absolute right-[20px] top-[48px]"
-                style={{ display: "none" }}
-                accept="video/*" // Restrict file type to video
-              />
-              <div className="flex flex-col items-center justify-center space-y-2">
-                <div className="text-orange-500 text-4xl">
-                  <img src="/assets/bx_image-add.png" alt="upload icon" />
-                </div>
-                {/* Upload Instructions */}
-                <p className="text-sm font-medium text-gray-700">
-                  Upload Data, or{" "}
-                  <span
-                    className="text-orange-500 cursor-pointer"
-                  // className={`${
-                  //   id
-                  //     ? "text-orange-500 cursor-pointer"
-                  //     : "text-gray-500 cursor-no-drop"
-                  // }`}
-                  >
-                    Browse
-                  </span>
-                </p>
-                <p className="text-xs text-gray-500">
-                  Maximum File size is 100 mb
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          className="flex flex-wrap gap-4 "
-          style={{ alignContent: "baseline" }}
-        >
-          {allInstances.length > 0 ? (<>
-            {allInstances?.map((ele, index) => (
-              <div key={index}>
-                <VideoTitleCard
-                  title={ele?.name}
-                  id={ele?.id}
-                  getVideo={getVideo}
-                  deleteInstance={deleteInstanceFunction}
-                  updateInstance={setUpdatedInstance}
-                  setupdateInstanceModal={setupdateInstanceModal}
-                  setUpdatedInstanceID={setUpdatedInstanceID}
-                  locked={ele.locked}
+            <div className="flex flex-col p-4 gap-3">
+              {/* Video Title Input */}
+              <div>
+                <Input
+                  id="video-title"
+                  placeholder="Video Title"
+                  value={instance}
+                  className="w-full  border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-orange-500"
+                  onChange={(e) => handleChange(e)}
+                  onBlur={(e) => handleBlur(e)}
                 />
               </div>
-            ))}
-          </>
-          ) : (<>
-            {debouncedSearch && (<p>Instance not found...</p>)}
-          </>
-          )}
+              {/* Upload Section */}
+              {/* // ${id ? "cursor-pointer" : "cursor-no-drop" */}
+              <div
+                className={`relative  cursor-pointer border-2 border-dashed border-gray-300 rounded-[10px] px-[16px] py-[20px] text-center `}
+                onClick={() => {
+                  // if (id) {
+                  fileInputRef.current.click(); // Only trigger the click if `id` is present
+                  // }
+                }}
+                // title={!id ? "First create an instance, then upload video." : ""}
+              >
+                {showLoader && (
+                  <div className="absolute top-0 left-0 flex justify-center items-center w-full h-full bg-[#62666917]">
+                    <Image
+                      src="/assets/tube-spinner.svg"
+                      alt="Logo"
+                      width={50}
+                      height={50}
+                    />
+                  </div>
+                )}
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  id="file-upload"
+                  className="w-28 absolute right-[20px] top-[48px]"
+                  style={{ display: "none" }}
+                  accept="video/*" // Restrict file type to video
+                />
+                <div className="flex flex-col items-center justify-center space-y-2">
+                  <div className="text-orange-500 text-4xl">
+                    <img src="/assets/bx_image-add.png" alt="upload icon" />
+                  </div>
+                  {/* Upload Instructions */}
+                  <p className="text-sm font-medium text-gray-700">
+                    Upload Data, or{" "}
+                    <span
+                      className="text-orange-500 cursor-pointer"
+                      // className={`${
+                      //   id
+                      //     ? "text-orange-500 cursor-pointer"
+                      //     : "text-gray-500 cursor-no-drop"
+                      // }`}
+                    >
+                      Browse
+                    </span>
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    Maximum File size is 100 mb
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
 
+          <div>
+            <div className=" h-[98%] overflow-y-auto">
+              <div
+                className="flex flex-wrap gap-4 "
+                style={{ alignContent: "baseline" }}
+              >
+                {allInstances.length > 0 ? (
+                  <>
+                    {allInstances?.map((ele, index) => (
+                      <div key={index}>
+                        <VideoTitleCard
+                          title={ele?.name}
+                          id={ele?.id}
+                          getVideo={getVideo}
+                          deleteInstance={deleteInstanceFunction}
+                          updateInstance={setUpdatedInstance}
+                          setupdateInstanceModal={setupdateInstanceModal}
+                          setUpdatedInstanceID={setUpdatedInstanceID}
+                          locked={ele.locked}
+                          thumbnail={ele.thumbnail}
+                          created_at={ele.created_at}
+                        />
+                      </div>
+                    ))}
+                  </>
+                ) : (
+                  <>{debouncedSearch && <p>Instance not found...</p>}</>
+                )}
+              </div>
+            </div>
+            {/* <Pagination totalItems={100} setLimit ={setLimit} setpage= {setPage} /> */}
+          </div>
         </div>
       </div>
       <AlertDialog open={deletePopUp}>
