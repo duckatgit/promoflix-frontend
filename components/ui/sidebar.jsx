@@ -56,6 +56,23 @@ const Sidebar = () => {
     }
   };
 
+  const profile = async () => {
+    try {
+      const result = await fetchData("api/user", {}, "");
+      if (result.code != 200) {
+        toast({
+          type: "error",
+          title: "Uh oh! Something went wrong.",
+          description: data.result,
+        });
+      } else {
+        const data = result;
+        setUpdatedName(data.result.user.name);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
       <div
