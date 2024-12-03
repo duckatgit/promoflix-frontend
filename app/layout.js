@@ -1,6 +1,7 @@
 import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster"
+import CheckRedirecting from "./redirecting";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -23,6 +24,7 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <CheckRedirecting/>
         {children}
         <Toaster />
    

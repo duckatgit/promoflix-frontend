@@ -108,7 +108,9 @@ const Preview_video = () => {
   const [plansData, setPlansData] = useState([]);
   const [quota, setQuota] = useState([]);
   const [usedQuota, setUsedQuota] = useState(null);
-  console.log(quota, "hhhh");
+  const [countQuota, setCountQuota] = useState(0);
+
+  console.log(countQuota, "hhhh");
 
   const hasCalledNext = useRef(false);
 
@@ -465,10 +467,10 @@ const Preview_video = () => {
       }
       console.log("API Response:", responseData);
     } catch (error) {
-      console.log(error, "tttt");
+     console.log(error?.response?.data.result, "kjkjkjkjkj")
       toast({
         type: "error",
-        description: error?.message,
+        description: error?.response?.data?.result,
       });
       console.error("Error in API call:", error);
     }
@@ -724,6 +726,10 @@ const Preview_video = () => {
 
   const video_url = videoUrl;
   let arr = [];
+
+  useEffect(() => {
+    setCountQuota(segmentData.length);
+  }, [segmentData]);
   if (segmentData) {
     arr = segmentData;
   }
@@ -765,9 +771,7 @@ const Preview_video = () => {
       removedChar: removedChars ? removedChars[0] : "",
     };
   }
-
-
-
+  console.log(countQuota <= quota?.quota2, "klkkkkkllk");
   return (
     <div className=" h-[100%] overflow-y-auto w-full">
       {allInstances.length > 0 && !allInstances[0]?.locked && (
@@ -793,8 +797,12 @@ const Preview_video = () => {
             {allInstances.length > 0 && (
               <>
                 <p className="mt-4">{`Video Title : ${allInstances[0]?.name}`}</p>
-                <p>{`Uploaded date : ${getFormatedDate(allInstances[0]?.created_at)}`}</p>
-                <p>{`Updated at : ${getFormatedDate(allInstances[0]?.updated_at)}`}</p>
+                <p>{`Uploaded date : ${getFormatedDate(
+                  allInstances[0]?.created_at
+                )}`}</p>
+                <p>{`Updated at : ${getFormatedDate(
+                  allInstances[0]?.updated_at
+                )}`}</p>
               </>
             )}
           </div>
@@ -835,7 +843,9 @@ const Preview_video = () => {
               })}
             </div>
             <div>
-              {arr.length > 0 && <span>{`${usedQuota}/${quota?.quota2}`}</span>}
+              {arr.length > 0 && (
+                <span>{`${countQuota}/${quota?.quota2}`}</span>
+              )}
             </div>
           </div>
 
@@ -863,16 +873,58 @@ const Preview_video = () => {
                         <React.Fragment key={index}>
                           {isYellow ? (
                             <>
+                              {/* <span
+                                className={`my-2 ${
+                                  isYellow ? "bg-[#FEF08A]" : ""
+                                }`}
+                                onMouseDown={() =>
+                                
+                                {
+                                  if (countQuota < quota?.quota2) {
+                                    handleMouseDown(index)}
+                                  }
+                                  else if (countQuota === quota?.quota2) {
+                                    console.log("limit reached")
+                                   
+                                  }
+                                }
+                            
+                                onMouseUp={() => {
+                                  if (countQuota < quota?.quota2) {
+                                    handleMouseUp(index);
+                                  }
+                                  else  if (countQuota === quota?.quota2) {
+                                    console.log("limit reached")
+                                   
+                                  }
+                                }}
+                                key={index} // Added key for list items
+                              >
+                                {newWord}
+                              </span> */}
                               <span
                                 className={`my-2 ${
                                   isYellow ? "bg-[#FEF08A]" : ""
                                 }`}
-                                onMouseDown={() => handleMouseDown(index)}
-                                onMouseUp={() => handleMouseUp(index)}
+                                onMouseDown={() => {
+                                  if (countQuota < quota?.quota2) {
+                                    handleMouseDown(index);
+                                  } else {
+                                    console.log("limit reached");
+                                  }
+                                }}
+                                onMouseUp={() => {
+                                  if (countQuota < quota?.quota2) {
+                                    handleMouseUp(index);
+                                  } else {
+                                    console.log("limit reached");
+                                  }
+                                }}
                                 key={index} // Added key for list items
                               >
                                 {newWord}
                               </span>
+
                               <span
                                 className={`my-2 }`}
                                 onMouseDown={() => handleMouseDown(index)}
@@ -1148,29 +1200,26 @@ const Preview_video = () => {
                 </div> */}
               </div>
               <div className="flex gap-2 p-4 ">
-               
-                  <Button
-                    className=" text-white"
-                    style={{ backgroundColor: "#333333", cursor: "pointer" }}
-                    onClick={() => {
-                      if(allInstances[0]?.locked){
-                        router.push(`/home/video/generate?id=${id}`);
-                      }else{
-                        sendMessage();
-                      }
-                      
-                    }}
-                  >
-                    {loading ? (
-                      <>
-                        Merge Video{" "}
-                        <LoadingSpinner className="ml-2 text-white" />
-                      </>
-                    ) : (
-                      "Merge Video"
-                    )}
-                  </Button>
-            
+                <Button
+                  className=" text-white"
+                  style={{ backgroundColor: "#333333", cursor: "pointer" }}
+                  onClick={() => {
+                    if (allInstances[0]?.locked) {
+                      router.push(`/home/video/generate?id=${id}`);
+                    } else {
+                      sendMessage();
+                    }
+                  }}
+                >
+                  {loading ? (
+                    <>
+                      Merge Video <LoadingSpinner className="ml-2 text-white" />
+                    </>
+                  ) : (
+                    "Merge Video"
+                  )}
+                </Button>
+
                 {/* <Button
                   className=" text-white"
                   style={{ backgroundColor: "#333333" }}

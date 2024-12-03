@@ -28,16 +28,17 @@ function UserProfile() {
 
   const [plansData, setPlansData] = useState([]);
   const [planName, setPlanName] = useState("");
+  const [isDate, setIsDate] = useState("");
+
   console.log(planName);
 
-  function getData() {
+  function fetchDate() {
     const dateString = userDeta.user?.created_at;
     const date = new Date(dateString);
-    const formattedDate = `${date.getDate()}/${date.getMonth() + 1
-      }/${date.getFullYear()}`;
-    console.log(formattedDate, "uuuu");
-    return formattedDate;
+    const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+    setIsDate(formattedDate);
   }
+
   const profile = async () => {
     try {
       setShowLoader(true);
@@ -48,8 +49,6 @@ function UserProfile() {
 
         toast({
           type: "error",
-
-          variant: "destructive",
           title: "Uh oh! Something went wrong.",
           description: data.result,
         });
@@ -61,10 +60,8 @@ function UserProfile() {
         setUserDeta(data.result);
         setUserName(data.result.user.name);
         setUpdatedName(data.result.user.name)
-
         // safeLocalStorage.setItem("name", data?.result?.user.name);
         // safeLocalStorage.setItem("email", data?.result?.user.email);
-
         // setAllInstances(data);
       }
     } catch (error) {
@@ -73,12 +70,13 @@ function UserProfile() {
       console.log(error);
     }
   };
+
   const fetchPlansApi = async () => {
     try {
       const response = await fetchData("api/plan");
       if (response.code != 200) {
         toast({
-          variant: "destructive",
+          type: "error",
           title: "Uh oh! Something went wrong.",
           description: response.result,
         });
@@ -87,12 +85,13 @@ function UserProfile() {
       }
     } catch (error) {
       toast({
-        variant: "destructive",
+        type: "error",
         title: "Uh oh! Something went wrong.",
         description: error?.result,
       });
     }
   };
+
   const updateProfile = async () => {
     try {
       const data = await putData(
@@ -120,10 +119,17 @@ function UserProfile() {
       console.log(error, "===========error");
     }
   };
+
   useEffect(() => {
     profile();
     fetchPlansApi();
   }, []);
+
+  useEffect(() => {
+    if (userDeta) {
+      fetchDate();
+    }
+  }, [userDeta]);
   // useEffect(() => {
   //   // Check if plan_id matches any id in the plans array
   //   console.log(userDeta?.quota?.plan_id)
@@ -151,7 +157,7 @@ function UserProfile() {
 
   return (
     <>
-      {showLoader && (
+      {showLoader ? (
         <div className="flex left-0 absolute w-full top-0 bottom-0 justify-center bg-gray-300 bg-opacity-50 ">
           <Image
             src="/assets/tube-spinner.svg"
@@ -160,38 +166,40 @@ function UserProfile() {
             height={50}
           />
         </div>
-      )}
-      <div className="shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px] bg-white min-w-[300px] p-4">
-        <div className="mb-4 flex justify-between items-center">
-          <div>
-            <p className="text-black font-semibold ">User Name </p>
-            <p>{userDeta?.user?.name}</p>
+      ) : (
+        <div className="shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px] bg-white min-w-[300px] p-4">
+          <div className="mb-4 flex justify-between items-center">
+            <div>
+              <p className="text-black font-semibold ">User Name </p>
+              <p>{userDeta?.user?.name}</p>
+            </div>
+            <img
+              className=" cursor-pointer"
+              src="/assets/edit.svg"
+              alt="Instance Icon"
+              onClick={() => setUpdateName(true)}
+            />
           </div>
-          <img
-            className=" cursor-pointer"
-            src="/assets/edit.svg"
-            alt="Instance Icon"
-            onClick={() => setUpdateName(true)}
-          />
+
+          <div className=" mb-4">
+            <p className="text-black font-semibold ">User email </p>
+            <p>{userDeta?.user?.email}</p>
+          </div>
+
+          <div className="mb-4">
+            <p className="text-black font-semibold ">User sign up date </p>
+
+            <p>{isDate ? isDate : ""}</p>
+          </div>
+
+          <div className="">
+            <p className="text-black font-semibold ">User subscription </p>
+
+            <p>{planName}</p>
+          </div>
         </div>
+      )}
 
-        <div className=" mb-4">
-          <p className="text-black font-semibold ">User email </p>
-          <p>{userDeta?.user?.email}</p>
-        </div>
-
-        <div className="mb-4">
-          <p className="text-black font-semibold ">User sign up date </p>
-
-          <p>{getData()}</p>
-        </div>
-
-        <div className="">
-          <p className="text-black font-semibold ">User subscription </p>
-
-          <p>{planName}</p>
-        </div>
-      </div>
       <Dialog open={updateName} onOpenChange={setUpdateName}>
         <DialogContent>
           <DialogHeader>
