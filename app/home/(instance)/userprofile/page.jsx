@@ -13,6 +13,8 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { fetchData, putData } from "@/utils/api";
 import { safeLocalStorage } from "@/lib/safelocastorage";
+import { useAtom } from "jotai";
+import { updatedNameAtom } from "@/utils/atom";
 
 function UserProfile() {
   const { toast } = useToast();
@@ -21,6 +23,9 @@ function UserProfile() {
   const [showLoader, setShowLoader] = useState(false);
   const [userName, setUserName] = useState("");
   const [userDeta, setUserDeta] = useState("");
+  const [updatedName, setUpdatedName] = useAtom(updatedNameAtom);
+
+
   const [plansData, setPlansData] = useState([]);
   const [planName, setPlanName] = useState("");
   console.log(planName);
@@ -28,9 +33,8 @@ function UserProfile() {
   function getData() {
     const dateString = userDeta.user?.created_at;
     const date = new Date(dateString);
-    const formattedDate = `${date.getDate()}/${
-      date.getMonth() + 1
-    }/${date.getFullYear()}`;
+    const formattedDate = `${date.getDate()}/${date.getMonth() + 1
+      }/${date.getFullYear()}`;
     console.log(formattedDate, "uuuu");
     return formattedDate;
   }
@@ -56,9 +60,10 @@ function UserProfile() {
         console.log(data, "oioioioi");
         setUserDeta(data.result);
         setUserName(data.result.user.name);
+        setUpdatedName(data.result.user.name)
 
-        safeLocalStorage.setItem("name", data?.result?.user.name);
-        safeLocalStorage.setItem("email", data?.result?.user.email);
+        // safeLocalStorage.setItem("name", data?.result?.user.name);
+        // safeLocalStorage.setItem("email", data?.result?.user.email);
 
         // setAllInstances(data);
       }

@@ -7,6 +7,8 @@ import { useRouter, usePathname } from "next/navigation"; // usePathname to get 
 import { fetchData } from "@/utils/api";
 import { useToast } from "@/hooks/use-toast";
 import { safeLocalStorage } from "@/lib/safelocastorage";
+import { useAtom } from "jotai";
+import { updatedNameAtom } from "@/utils/atom";
 
 
 
@@ -17,7 +19,7 @@ const Sidebar = () => {
   const pathname = usePathname(); // Current route path
   const { toast } = useToast();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [updateName, setUpdateName] = useState(false);
+  const [updatedName, setUpdatedName] = useAtom(updatedNameAtom);
 
   useEffect(() => {
     const name = safeLocalStorage.getItem("name");
@@ -57,9 +59,8 @@ const Sidebar = () => {
   return (
     <>
       <div
-        className={`max-w-[30%] bg-white transition-all duration-300 flex flex-col items-start relative rounded-lg ${
-          isCollapsed ? "w-[60px] collapsed" : ""
-        }`}
+        className={`max-w-[30%] bg-white transition-all duration-300 flex flex-col items-start relative rounded-lg ${isCollapsed ? "w-[60px] collapsed" : ""
+          }`}
       >
         <div
           className="sidebar-icon"
@@ -76,9 +77,8 @@ const Sidebar = () => {
         <div className="sidebar-content">
           <div className="p-2">
             <div
-              className={`menu-item ${
-                pathname === "/home/instance" ? "menu-item-active" : ""
-              }`}
+              className={`menu-item ${pathname === "/home/instance" ? "menu-item-active" : ""
+                }`}
               onClick={() => router.push("/home/instance")}
             >
               <span className="icon">
@@ -91,9 +91,8 @@ const Sidebar = () => {
               <span className="text">Instance</span>
             </div>
             <div
-              className={`menu-item ${
-                pathname === "/home/plan" ? "menu-item-active" : ""
-              }`}
+              className={`menu-item ${pathname === "/home/plan" ? "menu-item-active" : ""
+                }`}
               onClick={() => router.push("/home/plan")}
             >
               <span className="icon">
@@ -106,9 +105,8 @@ const Sidebar = () => {
               <span className="text">Pricing Plans</span>
             </div>
             <div
-              className={`menu-item ${
-                pathname === "/home/billing-history" ? "menu-item-active" : ""
-              }`}
+              className={`menu-item ${pathname === "/home/billing-history" ? "menu-item-active" : ""
+                }`}
               onClick={() => fetchBillingHistory()}
             >
               <span className="icon">
@@ -128,9 +126,8 @@ const Sidebar = () => {
             </div>
 
             <div
-              className={`menu-item ${
-                pathname === "/home/userprofile" ? "menu-item-active" : ""
-              }`}
+              className={`menu-item ${pathname === "/home/userprofile" ? "menu-item-active" : ""
+                }`}
               onClick={() => router.push("/home/userprofile")}
             >
               <span className="icon">
@@ -148,9 +145,8 @@ const Sidebar = () => {
           <div className="p-4">
             <div className="user-info ">
               <span
-                className={` rounded-[50%] bg-white border-[3px] border-[#f1c40f] text-center font-sans text-[18px] font-bold text-[#333]  ${
-                  isCollapsed ? "w-full h-[30px]" : "w-[35px] h-[35px]"
-                }`}
+                className={` rounded-[50%] bg-white border-[3px] border-[#f1c40f] text-center font-sans text-[18px] font-bold text-[#333]  ${isCollapsed ? "w-full h-[30px]" : "w-[35px] h-[35px]"
+                  }`}
               >
                 <span
                   className={`relative`}
@@ -158,12 +154,12 @@ const Sidebar = () => {
                     top: isCollapsed ? "-3px " : "-1px",
                   }}
                 >
-                  {name?.charAt(0)}
+                  {updatedName?.charAt(0)}
                 </span>
               </span>
               <div className="text ml-2">
                 <p className="text-black font-semibold ">
-                  {name}
+                  {updatedName ? updatedName : <span className="text-slate-500">Loading...</span>}
                 </p>
                 {/* <p
                 className="font-[12px] text-[#757575] leading-[15.6px]"
@@ -186,11 +182,11 @@ const Sidebar = () => {
           <span className="text text-[#ff2f00]">Logout</span>
         </div>
         <div>
-        
+
         </div>
       </div>
 
-    
+
     </>
   );
   ``;
