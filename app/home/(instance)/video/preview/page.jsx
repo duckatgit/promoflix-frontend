@@ -822,24 +822,24 @@ const Preview_video = () => {
                   <tbody>
                     <tr>
                       <th className="px-4 py-2 text-black font-semibold">
-                        Video Title :
+                        Video Title 
                       </th>
-                      <td className="px-4 py-2">{allInstances[0]?.name}</td>
+                      <td className="px-4 py-2">: {allInstances[0]?.name}</td>
                     </tr>
                     <tr>
                       <th className="px-4 py-2 text-black font-semibold">
-                        Uploaded Date :
+                        Uploaded Date 
                       </th>
                       <td className="px-4 py-2">
-                        {getFormatedDate(allInstances[0]?.created_at)}
+                        : {getFormatedDate(allInstances[0]?.created_at)}
                       </td>
                     </tr>
                     <tr>
                       <th className="px-4 py-2 text-black font-semibold">
-                        Updated At :
+                        Updated At 
                       </th>
                       <td className="px-4 py-2">
-                        {getFormatedDate(allInstances[0]?.updated_at)}
+                        : {getFormatedDate(allInstances[0]?.updated_at)}
                       </td>
                     </tr>
                   </tbody>

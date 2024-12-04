@@ -54,6 +54,7 @@ function UserProfile() {
         setUserDeta(data.result);
         setUserName(data.result.user.name);
         setUpdatedName(data?.result?.user?.name);
+        setSubscriptionDate(data?.result?.quota?.created_at);
         safeLocalStorage.setItem("name", data?.result?.user.name);
         safeLocalStorage.setItem("email", data?.result?.user.email);
         // setAllInstances(data);
@@ -138,7 +139,7 @@ function UserProfile() {
 
     if (matchingPlan) {
       setPlanName(matchingPlan.name);
-      setSubscriptionDate(matchingPlan.created_at);
+      
       // Store the matched name in state
     } else {
       setPlanName("No matching plan found"); // Handle case where no match is found
@@ -166,9 +167,9 @@ function UserProfile() {
               <tbody>
                 <tr className="border-b">
                   <th className="px-4 py-2 text-black font-semibold">
-                    User Name :
+                    User Name 
                   </th>
-                  <td className="px-4 py-2">{userDeta?.user?.name}</td>
+                  <td className="px-4 py-2">: {userDeta?.user?.name}</td>
                   <td className="px-4 py-2 text-right">
                     <img
                       className="cursor-pointer inline-block"
@@ -180,36 +181,36 @@ function UserProfile() {
                 </tr>
                 <tr>
                   <th className="px-4 py-2 text-black font-semibold">
-                    User Email :
+                    User Email 
                   </th>
                   <td className="px-4 py-2" colSpan="2">
-                    {userDeta?.user?.email}
+                    : {userDeta?.user?.email}
                   </td>
                 </tr>
                 <tr>
                   <th className="px-4 py-2 text-black font-semibold">
-                    User Sign Up Date :
+                    User Sign Up Date 
                   </th>
                   <td className="px-4 py-2" colSpan="2">
                   
-                  {  getFormatedDate(userDeta.user?.created_at)}
+                  : {  getFormatedDate(userDeta.user?.created_at)}
                     
                   </td>
                 </tr>
                 <tr>
                   <th className="px-4 py-2 text-black font-semibold">
-                    User Subscription :
+                    User Subscription 
                   </th>
                   <td className="px-4 py-2" colSpan="2">
-                    {planName}
+                    : {planName}
                   </td>
                 </tr>
                 <tr>
                   <th className="px-4 py-2 text-black font-semibold">
-                    Subscription Date :
+                    Subscription Date 
                   </th>
                   <td className="px-4 py-2" colSpan="2">
-                    {getFormatedDate(subscriptionDate)}
+                    : {getFormatedDate(subscriptionDate)}
                   </td>
                 </tr>
               </tbody>

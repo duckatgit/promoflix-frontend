@@ -24,7 +24,7 @@ const PlansCard = ({
       handleCheckoutPlan(plan_id); // Call handleCheckoutPlan for other plans
     }
   };
-  console.log(name, "Gold");
+
 
   return (
     <div
