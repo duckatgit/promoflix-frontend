@@ -166,7 +166,7 @@ function UserProfile() {
               <tbody>
                 <tr className="border-b">
                   <th className="px-4 py-2 text-black font-semibold">
-                    User Name
+                    User Name :
                   </th>
                   <td className="px-4 py-2">{userDeta?.user?.name}</td>
                   <td className="px-4 py-2 text-right">
@@ -180,7 +180,7 @@ function UserProfile() {
                 </tr>
                 <tr>
                   <th className="px-4 py-2 text-black font-semibold">
-                    User Email
+                    User Email :
                   </th>
                   <td className="px-4 py-2" colSpan="2">
                     {userDeta?.user?.email}
@@ -188,7 +188,7 @@ function UserProfile() {
                 </tr>
                 <tr>
                   <th className="px-4 py-2 text-black font-semibold">
-                    User Sign Up Date
+                    User Sign Up Date :
                   </th>
                   <td className="px-4 py-2" colSpan="2">
                   
@@ -198,7 +198,7 @@ function UserProfile() {
                 </tr>
                 <tr>
                   <th className="px-4 py-2 text-black font-semibold">
-                    User Subscription
+                    User Subscription :
                   </th>
                   <td className="px-4 py-2" colSpan="2">
                     {planName}
@@ -206,7 +206,7 @@ function UserProfile() {
                 </tr>
                 <tr>
                   <th className="px-4 py-2 text-black font-semibold">
-                    Subscription Date
+                    Subscription Date :
                   </th>
                   <td className="px-4 py-2" colSpan="2">
                     {getFormatedDate(subscriptionDate)}
