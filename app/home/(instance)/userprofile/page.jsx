@@ -26,21 +26,13 @@ function UserProfile() {
   const [userDeta, setUserDeta] = useState("");
   const [updatedName, setUpdatedName] = useAtom(updatedNameAtom);
 
-
   const [plansData, setPlansData] = useState([]);
   const [planName, setPlanName] = useState("");
   const [subscriptionDate, setSubscriptionDate] = useState("");
 
   const [isDate, setIsDate] = useState("");
 
-  console.log(planName);
 
-  function fetchDate() {
-    const dateString = userDeta.user?.created_at;
-    const date = new Date(dateString);
-    const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-    setIsDate(formattedDate);
-  }
 
   const profile = async () => {
     try {
@@ -59,12 +51,11 @@ function UserProfile() {
         setShowLoader(false);
 
         const data = result;
-        console.log(data, "oioioioi");
         setUserDeta(data.result);
         setUserName(data.result.user.name);
-        setUpdatedName(data.result.user.name)
-        // safeLocalStorage.setItem("name", data?.result?.user.name);
-        // safeLocalStorage.setItem("email", data?.result?.user.email);
+        setUpdatedName(data?.result?.user?.name);
+        safeLocalStorage.setItem("name", data?.result?.user.name);
+        safeLocalStorage.setItem("email", data?.result?.user.email);
         // setAllInstances(data);
       }
     } catch (error) {
@@ -128,11 +119,6 @@ function UserProfile() {
     fetchPlansApi();
   }, []);
 
-  useEffect(() => {
-    if (userDeta) {
-      fetchDate();
-    }
-  }, [userDeta]);
   // useEffect(() => {
   //   // Check if plan_id matches any id in the plans array
   //   console.log(userDeta?.quota?.plan_id)
@@ -151,9 +137,8 @@ function UserProfile() {
     );
 
     if (matchingPlan) {
-      console.log(matchingPlan, "match");
-      setPlanName(matchingPlan.name); 
-      setSubscriptionDate(matchingPlan.created_at)
+      setPlanName(matchingPlan.name);
+      setSubscriptionDate(matchingPlan.created_at);
       // Store the matched name in state
     } else {
       setPlanName("No matching plan found"); // Handle case where no match is found
@@ -172,42 +157,63 @@ function UserProfile() {
           />
         </div>
       ) : (
-        <div className="shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px] bg-white min-w-[300px] p-4">
-          <div className="mb-4 flex justify-between items-center">
-            <div>
-              <p className="text-black font-semibold ">User Name </p>
-              <p>{userDeta?.user?.name}</p>
-            </div>
-            <img
-              className=" cursor-pointer"
-              src="/assets/edit.svg"
-              alt="Instance Icon"
-              onClick={() => setUpdateName(true)}
-            />
-          </div>
-
-          <div className=" mb-4">
-            <p className="text-black font-semibold ">User email </p>
-            <p>{userDeta?.user?.email}</p>
-          </div>
-
-          <div className="mb-4">
-            <p className="text-black font-semibold ">User sign up date </p>
-
-            <p>{isDate ? isDate : ""}</p>
-          </div>
-          
-          <div className="mb-2">
-            <p className="text-black font-semibold ">User subscription </p>
-
-            <p>{planName}</p>
-            
-          </div>
-          <div className="">
-            <p className="text-black font-semibold ">User subscription date</p>
-
-            <p>{getFormatedDate(subscriptionDate)}</p>
-            
+        <div
+          style={{ height: "min-content" }}
+          className="shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px] bg-white min-w-[300px] p-4"
+        >
+          <div className="w-full">
+            <table className="table-auto w-full text-left text-sm">
+              <tbody>
+                <tr className="border-b">
+                  <th className="px-4 py-2 text-black font-semibold">
+                    User Name
+                  </th>
+                  <td className="px-4 py-2">{userDeta?.user?.name}</td>
+                  <td className="px-4 py-2 text-right">
+                    <img
+                      className="cursor-pointer inline-block"
+                      src="/assets/edit.svg"
+                      alt="Edit Icon"
+                      onClick={() => setUpdateName(true)}
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <th className="px-4 py-2 text-black font-semibold">
+                    User Email
+                  </th>
+                  <td className="px-4 py-2" colSpan="2">
+                    {userDeta?.user?.email}
+                  </td>
+                </tr>
+                <tr>
+                  <th className="px-4 py-2 text-black font-semibold">
+                    User Sign Up Date
+                  </th>
+                  <td className="px-4 py-2" colSpan="2">
+                  
+                  {  getFormatedDate(userDeta.user?.created_at)}
+                    
+                  </td>
+                </tr>
+                <tr>
+                  <th className="px-4 py-2 text-black font-semibold">
+                    User Subscription
+                  </th>
+                  <td className="px-4 py-2" colSpan="2">
+                    {planName}
+                  </td>
+                </tr>
+                <tr>
+                  <th className="px-4 py-2 text-black font-semibold">
+                    Subscription Date
+                  </th>
+                  <td className="px-4 py-2" colSpan="2">
+                    {getFormatedDate(subscriptionDate)}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       )}

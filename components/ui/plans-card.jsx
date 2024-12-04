@@ -15,7 +15,7 @@ const PlansCard = ({
   highlighted,
   cancelPlan,
   usedQuota2,
-  quantity2
+  quantity2,
 }) => {
   const handleButtonClick = () => {
     if (highlighted) {
@@ -45,8 +45,8 @@ const PlansCard = ({
             {highlighted ? usedQuota : 0}/{quantity} used{" "}
           </p>
 
-          {highlighted && (
-            <div className="my-4">
+          <div className="my-4 h-4">
+            {highlighted && (
               <div className="w-full h-2 bg-[#F5F5F5] rounded-full relative">
                 <div
                   className="h-2 bg-[#E7680F] rounded-full"
@@ -55,8 +55,8 @@ const PlansCard = ({
                   }}
                 ></div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
           {/* <p className="text-[#B3B3B3] my-4">
             {highlighted ? usedQuota2 : 0}/{quantity2} Varable used{" "}

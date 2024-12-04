@@ -128,7 +128,9 @@ const Plans = () => {
   useEffect(() => {
     // Check if plan_id matches any id in the plans array
     const matchingPlan = plansData.find((plan) => plan.id === quota.plan_id);
+    
     if (matchingPlan) {
+     
       // If a match is found, update usedQuota with used_quota1
       setUsedQuota(quota.used_quota1);
       setUsedQuota2(quota.used_quota2);

@@ -553,7 +553,7 @@ const Preview_video = () => {
           }
           if (hasCalledNext.current == false && newWords.length > 0) {
             hasCalledNext.current = true;
-            handleNext(1)
+            handleNext(1);
           }
           setData(() => [...newWords]);
         };
@@ -799,12 +799,12 @@ const Preview_video = () => {
         >
           <div>
             {videoUrl && (
-              <video width="600" controls className="w-full">
+              <video width="600" controls className="w-full h-[300px]">
                 <source src={videoUrl} type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
             )}
-            {allInstances.length > 0 && (
+            {/* {allInstances.length > 0 && (
               <>
                 <p className="mt-4">{`Video Title : ${allInstances[0]?.name}`}</p>
                 <p>{`Uploaded date : ${getFormatedDate(
@@ -814,6 +814,37 @@ const Preview_video = () => {
                   allInstances[0]?.updated_at
                 )}`}</p>
               </>
+            )} */}
+
+            {allInstances.length > 0 && (
+              <div className="w-[230px] mt-4">
+                <table className="table-auto w-full text-left text-sm">
+                  <tbody>
+                    <tr>
+                      <th className="px-4 py-2 text-black font-semibold">
+                        Video Title
+                      </th>
+                      <td className="px-4 py-2">{allInstances[0]?.name}</td>
+                    </tr>
+                    <tr>
+                      <th className="px-4 py-2 text-black font-semibold">
+                        Uploaded Date
+                      </th>
+                      <td className="px-4 py-2">
+                        {getFormatedDate(allInstances[0]?.created_at)}
+                      </td>
+                    </tr>
+                    <tr>
+                      <th className="px-4 py-2 text-black font-semibold">
+                        Updated At
+                      </th>
+                      <td className="px-4 py-2">
+                        {getFormatedDate(allInstances[0]?.updated_at)}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
         </div>
@@ -860,9 +891,7 @@ const Preview_video = () => {
           </div>
 
           <div
-            className={`p-4 pt-0 text-[16px] leading-[24px] text-justify max-h-[316px] ${
-              showAll ? "overflow-y-auto" : ""
-            }`}
+            className={`p-4 pt-0 text-[16px] leading-[24px] text-justify max-h-[316px] overflow-y-auto `}
           >
             {data && data.length > 0 ? (
               <>

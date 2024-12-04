@@ -180,11 +180,7 @@ const Sidebar = () => {
               </span>
               <div className="text ml-2">
                 <p className="text-black font-semibold ">
-                  {updatedName ? (
-                    updatedName
-                  ) : (
-                    <span className="text-slate-500">Loading...</span>
-                  )}
+                  {updatedName ? updatedName : name }
                 </p>
                 {/* <p
                 className="font-[12px] text-[#757575] leading-[15.6px]"
