@@ -19,7 +19,7 @@ const Plans = () => {
   const [usedQuota2, setUsedQuota2] = useState(null);
 
   const [showLoader, setShowLoader] = useState(false);
-
+  const [isFree, setIsFree] = useState(false);
   console.log(usedQuota, "oioioiioi");
 
   const fetchPlansApi = async () => {
@@ -128,10 +128,11 @@ const Plans = () => {
   useEffect(() => {
     // Check if plan_id matches any id in the plans array
     const matchingPlan = plansData.find((plan) => plan.id === quota.plan_id);
-    
+    console.log(matchingPlan, "gggggggggg")
     if (matchingPlan) {
-     
+     console.log(quota, "kjkjkjkjkj")
       // If a match is found, update usedQuota with used_quota1
+      setIsFree(matchingPlan?.is_free)
       setUsedQuota(quota.used_quota1);
       setUsedQuota2(quota.used_quota2);
     }
@@ -179,6 +180,7 @@ const Plans = () => {
                   cancelPlan={cancelPlan}
                   usedQuota2={usedQuota2}
                   quantity2={plan?.quota2}
+                  isFree={isFree}
                 />
               </div>
             );

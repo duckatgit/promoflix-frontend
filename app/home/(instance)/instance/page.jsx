@@ -53,8 +53,8 @@ const InstancePage = () => {
   const [search, setSearch] = useAtom(searchAtom);
   const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [page, setPage] = useState(0);
-  const [tolat , setTotal] = useState(null)
-const limit = 10;
+  const [tolat, setTotal] = useState(null);
+  const limit = 10;
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -68,7 +68,7 @@ const limit = 10;
 
   useEffect(() => {
     if (debouncedSearch) {
-      setPage(0)
+      setPage(0);
       getAllInstance(debouncedSearch);
     } else {
       getAllInstance();
@@ -98,7 +98,7 @@ const limit = 10;
 
         const data = result.result.instances;
         setAllInstances(data);
-        setTotal(result?.result?.total)
+        setTotal(result?.result?.total);
       }
     } catch (error) {
       setShowUploadeVideoLoader(false);
@@ -140,7 +140,7 @@ const limit = 10;
   const getVideo = async (id) => {
     try {
       const data = await fetchData(`api/v1/file/${id}`, {}, "hirello");
-   
+
       if (data.code == 200) {
         router.push(`/home/video/preview?id=${id}`);
       }
@@ -166,7 +166,7 @@ const limit = 10;
         { name: instance },
         "hirello"
       );
- 
+
       // Clear input regardless of the response
 
       if (response?.code === 200) {
@@ -287,7 +287,6 @@ const limit = 10;
           { name: "Untitled" },
           "hirello"
         );
-
 
         if (response?.code === 200) {
           // If instance creation is successful, save the ID and proceed to upload the file
@@ -576,7 +575,11 @@ const limit = 10;
           </div>
 
           <div>
-            <div className= {`overflow-y-auto ${limit >= tolat ? "h-[98%]":"h-[88%]"}`}>
+            <div
+              className={`overflow-y-auto ${
+                limit >= tolat ? "h-[98%]" : "h-[88%]"
+              }`}
+            >
               <div
                 className="flex flex-wrap gap-4 "
                 style={{ alignContent: "baseline" }}
@@ -606,11 +609,9 @@ const limit = 10;
               </div>
             </div>
             {/* <Pagination totalItems={100} setLimit ={setLimit} setpage= {setPage} /> */}
-       {tolat && limit &&
-        <Pagination totalItems={tolat} setPage={setPage} limit={limit} />
-       
-       }
-
+            {tolat && limit && (
+              <Pagination totalItems={tolat} setPage={setPage} limit={limit} />
+            )}
           </div>
         </div>
       </div>

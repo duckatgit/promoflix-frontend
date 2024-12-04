@@ -85,6 +85,14 @@ const Preview_video = () => {
   console.log(segmentData, "iiiii");
 
   const [transcriptSteps, setTranscriptSteps] = useState("Loading...");
+
+  const stepMapping = {
+    queue: "1/5 Queue",
+    download: "2/5 Download",
+    decode: "3/5 Decode",
+    transcribe: "4/5 Transcribe",
+    align: "5/5 Align",
+  };
   const fileInputRef = useRef(null);
   const fileInputRef2 = useRef(null);
   const [isHighlighted, setIsHighlighted] = useState({});
@@ -110,7 +118,7 @@ const Preview_video = () => {
   const [usedQuota, setUsedQuota] = useState(null);
   const [countQuota, setCountQuota] = useState(0);
 
-  console.log(countQuota, "hhhh");
+
 
   const hasCalledNext = useRef(false);
 
@@ -161,7 +169,7 @@ const Preview_video = () => {
         const data = await postData(`api/v1/generate/${id}`, {}, "hirello");
         if (data.code == 200) {
           setLoading(false);
-          console.log(data);
+      
           setVideoArray(data.result);
           router.push(`/home/video/generate?id=${id}`);
         }
@@ -316,7 +324,7 @@ const Preview_video = () => {
     }
   }, [thumbnailFile]);
   const getAllSegment = async () => {
-    console.log("my getAllSegment step 2");
+
     try {
       const queryParams = {
         instance_id: id,
@@ -350,11 +358,11 @@ const Preview_video = () => {
   };
 
   const getFile = async () => {
-    console.log("getFile step 2");
+
 
     try {
       const result = await fetchData(`api/csv/${id}`, {}, "csv");
-      console.log(result, "=========resultfile");
+    
       if (result.code == 200) {
         handleNext(3);
         setHasFile(true);
@@ -467,7 +475,7 @@ const Preview_video = () => {
 
         await getAllSegment();
       }
-      console.log("API Response:", responseData);
+  
     } catch (error) {
       console.log(error?.response?.data.result, "kjkjkjkjkj");
       toast({
@@ -516,7 +524,7 @@ const Preview_video = () => {
     }
   };
   const myfunction = async (id) => {
-    console.log("my function step 1");
+
     try {
       const video_result = await fetchData(`api/v1/file/${id}`, {}, "hirello");
       if (video_result.code == 200) {
@@ -612,7 +620,7 @@ const Preview_video = () => {
 
   const uploadNewThumb = async () => {
     try {
-      console.log(thumbnailFile, "rrr");
+  
 
       if (thumbnailFile) {
         const formData = new FormData();
@@ -758,7 +766,7 @@ const Preview_video = () => {
     { title: " Upload CSV", icon: "icon4" },
     { title: "Generate", icon: "icon5" },
   ];
-  console.log(activeStep, hasFile, "jjjj");
+
   const handleNext = (num) => {
     // alert(num)
     if (num < steps.length - 1) {
@@ -778,7 +786,7 @@ const Preview_video = () => {
       removedChar: removedChars ? removedChars[0] : "",
     };
   }
-  console.log(countQuota <= quota?.quota2, "klkkkkkllk");
+
   return (
     <div className=" h-[100%] overflow-y-auto w-full">
       {allInstances.length > 0 && !allInstances[0]?.locked && (
@@ -1051,7 +1059,7 @@ const Preview_video = () => {
                   width={50}
                   height={50}
                 />
-                <p>{transcriptSteps}</p>
+               <p>{stepMapping[transcriptSteps]}</p>
               </div>
             )}
           </div>

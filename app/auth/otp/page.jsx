@@ -72,6 +72,7 @@ const OtpComponent = () => {
         email: email,
 
       });
+  
       if (response.code !== 200) {
         toast({
           variant: "destructive",
@@ -83,7 +84,10 @@ const OtpComponent = () => {
           type: "success",
           description: "Otp Matched Successfully",
         });
-        router.push('/auth/login'); // Redirect to the success page
+        localStorage.setItem("name", response?.result?.user?.name)
+        localStorage.setItem("token", response.result.token.access_token)
+        router.push('/home/instance'); // Redirect to the dashboard page
+        // router.push('/auth/login'); // Redirect to the success page
       }
     } catch (error) {
       console.log(error, '========error');

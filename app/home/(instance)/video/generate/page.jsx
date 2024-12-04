@@ -25,7 +25,7 @@ const Generate_video = () => {
   const [socket, setSocket] = useState(null);
   const [videoArray, setVideoArray] = useAtom(videoArrayAtom);
   const [csvData, setCsvData] = useAtom(csvDataAtom);
-
+console.log(videoArray , "video array")
 
   const connectWebSocket = () => {
     if (!socket) {
@@ -50,6 +50,7 @@ const Generate_video = () => {
               return data;
             });
           });
+       
           toast({
             description: updatedData[0].message,
           });
