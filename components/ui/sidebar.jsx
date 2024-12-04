@@ -65,7 +65,7 @@ const Sidebar = () => {
         });
       } else {
         const data = result;
-        setUpdatedName(data.result.user.name);
+        setUpdatedName(data?.result?.user?.name);
       }
     } catch (error) {
       console.log(error);
@@ -74,9 +74,8 @@ const Sidebar = () => {
   return (
     <>
       <div
-        className={` max-w-[30%] bg-white transition-all duration-300 flex flex-col items-start relative rounded-lg ${
-          isCollapsed ? "w-[60px] collapsed" : "min-w-[180px]"
-        }`}
+        className={` max-w-[30%] bg-white transition-all duration-300 flex flex-col items-start relative rounded-lg ${isCollapsed ? "w-[60px] collapsed" : "min-w-[180px]"
+          }`}
       >
         <div
           className="sidebar-icon"
@@ -93,9 +92,8 @@ const Sidebar = () => {
         <div className="sidebar-content">
           <div className="p-2">
             <div
-              className={`menu-item ${
-                pathname === "/home/instance" ? "menu-item-active" : ""
-              }`}
+              className={`menu-item ${pathname === "/home/instance" ? "menu-item-active" : ""
+                }`}
               onClick={() => router.push("/home/instance")}
             >
               <span className="icon">
@@ -108,9 +106,8 @@ const Sidebar = () => {
               <span className="text">Instance</span>
             </div>
             <div
-              className={`menu-item ${
-                pathname === "/home/plan" ? "menu-item-active" : ""
-              }`}
+              className={`menu-item ${pathname === "/home/plan" ? "menu-item-active" : ""
+                }`}
               onClick={() => router.push("/home/plan")}
             >
               <span className="icon">
@@ -123,9 +120,8 @@ const Sidebar = () => {
               <span className="text">Pricing Plans</span>
             </div>
             <div
-              className={`menu-item ${
-                pathname === "/home/billing-history" ? "menu-item-active" : ""
-              }`}
+              className={`menu-item ${pathname === "/home/billing-history" ? "menu-item-active" : ""
+                }`}
               onClick={() => fetchBillingHistory()}
             >
               <span className="icon">
@@ -145,9 +141,8 @@ const Sidebar = () => {
             </div>
 
             <div
-              className={`menu-item ${
-                pathname === "/home/userprofile" ? "menu-item-active" : ""
-              }`}
+              className={`menu-item ${pathname === "/home/userprofile" ? "menu-item-active" : ""
+                }`}
               onClick={() => router.push("/home/userprofile")}
             >
               <span className="icon">
@@ -165,9 +160,8 @@ const Sidebar = () => {
           <div className="p-4">
             <div className="user-info ">
               <span
-                className={` rounded-[50%] bg-white border-[3px] border-[#f1c40f] text-center font-sans text-[14px] font-bold text-[#333]  ${
-                  isCollapsed ? "w-full h-[26px]" : "w-[35px] h-[35px]"
-                }`}
+                className={` rounded-[50%] bg-white border-[3px] border-[#f1c40f] text-center font-sans text-[14px] font-bold text-[#333]  ${isCollapsed ? "w-full h-[26px]" : "w-[35px] h-[35px]"
+                  }`}
               >
                 <span
                   className={`relative`}
@@ -175,12 +169,12 @@ const Sidebar = () => {
                     top: isCollapsed ? "-2px " : "2px",
                   }}
                 >
-                  {updatedName?.charAt(0)}
+                  {updatedName ? updatedName?.charAt(0) : name?.charAt(0)}
                 </span>
               </span>
               <div className="text ml-2">
                 <p className="text-black font-semibold ">
-                  {updatedName ? updatedName : name }
+                  {updatedName ? updatedName : name}
                 </p>
                 {/* <p
                 className="font-[12px] text-[#757575] leading-[15.6px]"
