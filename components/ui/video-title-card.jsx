@@ -22,7 +22,7 @@ function VideoTitleCard({
   return (
     <>
       <div
-        className="max-w-sm cursor-pointer  min-w-[311px] bg-white border border-slate-200 rounded-lg p-4 h-[216px] "
+        className="max-w-sm cursor-pointer  min-w-[311px] bg-white border border-slate-200 rounded-lg p-4 h-[380px] "
         onClick={(e) => {
           e.stopPropagation();
           if (locked) {
@@ -59,27 +59,12 @@ function VideoTitleCard({
             )}
           </div>
         </div>
-        {/* <div className="flex justify-between items-center">
-        <h3 className="text-sm font-medium text-[#B4B4B4]">{title}</h3>
-      </div> */}
 
-        {/* <div className="mt-4 flex justify-between items-center">
-                <div className="flex gap-3">
-                    <h4 className="text-sm font-medium text-[#B4B4B4]">Variable<br /> Selected</h4>
-                    <p className="text-2xl font-normal text-[#333333]">28</p>
-                </div>
-                <div className="flex gap-3">
-                    <h4 className="text-sm font-medium text-[#B4B4B4]">No. Of<br /> Recipients</h4>
-                    <p className="text-2xl font-normal text-[#333333]">50</p>
-                </div>
-            </div> */}
         {thumbnail && (
-          <Image
+          <img
             src={thumbnail}
-            width={280}
-            height={100}
             className="rounded-[8px] mt-2"
-            style={{ height: "130px", objectFit: "cover" }}
+            style={{ height: "80%", width: "100%", objectFit: "cover" }}
             alt="thumbnail"
           />
         )}
