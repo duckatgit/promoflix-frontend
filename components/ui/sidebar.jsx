@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { safeLocalStorage } from "@/lib/safelocastorage";
 import { useAtom } from "jotai";
 import { updatedNameAtom } from "@/utils/atom";
+import Cookies from "js-cookie";
 
 const Sidebar = () => {
   const [name, setName] = useState("John Doe");
@@ -34,6 +35,7 @@ const Sidebar = () => {
     });
     safeLocalStorage.removeItem("token");
     safeLocalStorage.removeItem("name");
+    Cookies.remove('token')
     router.push("/auth/login");
   };
 

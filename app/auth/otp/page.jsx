@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from 'next/navigation';
 import { postData } from '@/utils/api'
+import Cookies from 'js-cookie'
 const OtpComponent = () => {
   const router = useRouter();
   const [value, setValue] = React.useState("")
@@ -86,6 +87,7 @@ const OtpComponent = () => {
         });
         localStorage.setItem("name", response?.result?.user?.name)
         localStorage.setItem("token", response.result.token.access_token)
+        Cookies.set('token', response.result.token.access_token)
         router.push('/home/instance'); // Redirect to the dashboard page
         // router.push('/auth/login'); // Redirect to the success page
       }

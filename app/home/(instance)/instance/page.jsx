@@ -30,6 +30,7 @@ import {
 import { searchAtom } from "@/utils/atom";
 import { useAtom } from "jotai";
 import Pagination from "./Pagination";
+import Cookies from "js-cookie";
 const InstancePage = () => {
   const { toast } = useToast();
   const router = useRouter();
@@ -152,6 +153,7 @@ const InstancePage = () => {
   };
   useEffect(() => {
     getAllInstance();
+  
   }, []);
   useEffect(() => {
     getAllInstance();

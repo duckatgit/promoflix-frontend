@@ -7,23 +7,23 @@ export default function Home() {
   const router = useRouter();
   const [isRedirecting, setIsRedirecting] = useState(true); // Track if redirect is happening
 
-  useEffect(() => {
-    // We use setTimeout to simulate redirect check only on client-side
-    const storedToken = localStorage.getItem("token");
+  // useEffect(() => {
+  //   // We use setTimeout to simulate redirect check only on client-side
+  //   const storedToken = localStorage.getItem("token");
 
-    if (storedToken) {
-      router.replace('/home/instance');
-    } else {
-      router.replace('/auth/login');
-    }
+  //   if (storedToken) {
+  //     router.replace('/home/instance');
+  //   } else {
+  //     router.replace('/auth/login');
+  //   }
 
-    setIsRedirecting(false); // After redirect logic, stop blocking content
-  }, [router]);
+  //   setIsRedirecting(false); // After redirect logic, stop blocking content
+  // }, [router]);
 
-  // Don't render content while redirection logic is in process
-  if (isRedirecting) {
-    return null; // Return nothing while redirecting, you can add a loading indicator here if you want
-  }
+  // // Don't render content while redirection logic is in process
+  // if (isRedirecting) {
+  //   return null; // Return nothing while redirecting, you can add a loading indicator here if you want
+  // }
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
