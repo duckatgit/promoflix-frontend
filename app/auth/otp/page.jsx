@@ -93,9 +93,20 @@ const OtpComponent = () => {
       }
     } catch (error) {
       console.log(error, '========error');
+      toast({
+        type: "error",
+        title: "Uh oh! Something went wrong.",
+        description: error.response.data.result,
+      })
     }
   };
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      router.push("/home/instance");
+    }
+  }, []);
   useEffect(() => {
     if (Number(value.length) === 4) {
       handle_otp_api()

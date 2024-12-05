@@ -11,13 +11,9 @@ export function middleware(request) {
   // If token exists, redirect to `/home/instance`
   if (token && request.nextUrl.pathname === "/") {
     return NextResponse.redirect(new URL("/home/instance", request.url));
-  }
-
-  if (ispublicPaths && token) {
+  } else if (ispublicPaths && token) {
     return NextResponse.redirect(new URL("/home/instance", request.url));
-  }
-
-  if (!token && !ispublicPaths) {
+  } else if (!token && !ispublicPaths) {
     return NextResponse.redirect(new URL("/auth/login", request.url));
   }
 

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { LoadingSpinner } from '@/components/ui/spinner';
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
@@ -27,6 +27,14 @@ const Login = () => {
     email: "",
     password: ""
   });
+
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      router.push("/home/instance");
+    }
+  }, []);
   const handleInput = (e) => {
     const { id, value } = e.target
     setForm((prevForm) => ({
@@ -69,7 +77,7 @@ const Login = () => {
         title: "Uh oh! Something went wrong.",
         description: error.message,
       })
-      alert(error.message)
+   
     }
   }
 

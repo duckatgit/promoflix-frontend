@@ -118,8 +118,6 @@ const Preview_video = () => {
   const [usedQuota, setUsedQuota] = useState(null);
   const [countQuota, setCountQuota] = useState(0);
 
-
-
   const hasCalledNext = useRef(false);
 
   const toggleShowAll = () => {
@@ -169,7 +167,7 @@ const Preview_video = () => {
         const data = await postData(`api/v1/generate/${id}`, {}, "hirello");
         if (data.code == 200) {
           setLoading(false);
-      
+
           setVideoArray(data.result);
           router.push(`/home/video/generate?id=${id}`);
         }
@@ -323,8 +321,14 @@ const Preview_video = () => {
       uploadNewThumb();
     }
   }, [thumbnailFile]);
-  const getAllSegment = async () => {
+  console.log(
+    hasFile,
+    csvDataAtom,
+    fileData,
+    "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii"
+  );
 
+  const getAllSegment = async () => {
     try {
       const queryParams = {
         instance_id: id,
@@ -358,11 +362,9 @@ const Preview_video = () => {
   };
 
   const getFile = async () => {
-
-
     try {
       const result = await fetchData(`api/csv/${id}`, {}, "csv");
-    
+
       if (result.code == 200) {
         handleNext(3);
         setHasFile(true);
@@ -475,7 +477,6 @@ const Preview_video = () => {
 
         await getAllSegment();
       }
-  
     } catch (error) {
       console.log(error?.response?.data.result, "kjkjkjkjkj");
       toast({
@@ -524,7 +525,6 @@ const Preview_video = () => {
     }
   };
   const myfunction = async (id) => {
-
     try {
       const video_result = await fetchData(`api/v1/file/${id}`, {}, "hirello");
       if (video_result.code == 200) {
@@ -620,8 +620,6 @@ const Preview_video = () => {
 
   const uploadNewThumb = async () => {
     try {
-  
-
       if (thumbnailFile) {
         const formData = new FormData();
         formData.append("thumb", thumbnailFile);
@@ -773,6 +771,11 @@ const Preview_video = () => {
       setActiveStep(num);
     }
   };
+  // useState(() => {
+  //   if (!hasFile) {
+  //     handleNext(2);
+  //   }
+  // }, [hasFile]);
   function cleanAndSplit(text) {
     // Step 1: Find and capture the special characters at the end of the string
     const removedChars = text.match(/[^a-zA-Z0-9\s]+$/);
@@ -830,13 +833,13 @@ const Preview_video = () => {
                   <tbody>
                     <tr>
                       <th className="px-4 py-2 text-black font-semibold">
-                        Video Title 
+                        Video Title
                       </th>
                       <td className="px-4 py-2">: {allInstances[0]?.name}</td>
                     </tr>
                     <tr>
                       <th className="px-4 py-2 text-black font-semibold">
-                        Uploaded Date 
+                        Uploaded Date
                       </th>
                       <td className="px-4 py-2">
                         : {getFormatedDate(allInstances[0]?.created_at)}
@@ -844,7 +847,7 @@ const Preview_video = () => {
                     </tr>
                     <tr>
                       <th className="px-4 py-2 text-black font-semibold">
-                        Updated At 
+                        Updated At
                       </th>
                       <td className="px-4 py-2">
                         : {getFormatedDate(allInstances[0]?.updated_at)}
@@ -1059,7 +1062,7 @@ const Preview_video = () => {
                   width={50}
                   height={50}
                 />
-               <p>{stepMapping[transcriptSteps]}</p>
+                <p>{stepMapping[transcriptSteps]}</p>
               </div>
             )}
           </div>
@@ -1091,7 +1094,8 @@ const Preview_video = () => {
                   </div>
                   {/* <!-- Upload Instructions --> */}
                   <p className="text-sm font-medium text-gray-700">
-                    Upload Data, or <span className="text-orange-500">Browse</span>
+                    Upload Data, or{" "}
+                    <span className="text-orange-500">Browse</span>
                   </p>
                   <p className="text-xs text-gray-500">
                     Maximum File size is 100 mb
