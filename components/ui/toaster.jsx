@@ -21,17 +21,17 @@ export function Toaster() {
     switch (type) {
       case "success":
         return {
-          icon: <Image src={SuccessIcon} alt="SuccessIcon" />,
+          icon: <Image src={SuccessIcon} alt="SuccessIcon" width={40}/>,
           style: "bg-green-100 border-l-4 border-green-500",
         };
       case "warning":
         return {
-          icon: <Image src={WarningIcon} alt="SuccessIcon" />,
+          icon: <Image src={WarningIcon} alt="SuccessIcon" width={40}/>,
           style: "bg-yellow-100 border-l-4 border-yellow-500",
         };
       case "error":
         return {
-          icon: <Image src={ErrorIcon} alt="SuccessIcon" />,
+          icon: <Image src={ErrorIcon} alt="SuccessIcon" width={40}/>,
           style: "bg-red-100 border-l-4 border-red-500",
         };
       default:

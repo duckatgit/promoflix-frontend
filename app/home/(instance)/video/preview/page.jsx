@@ -825,7 +825,7 @@ const Preview_video = () => {
             )} */}
 
             {allInstances.length > 0 && (
-              <div className="w-[250px] mt-4">
+              <div className="w-[260px] mt-4">
                 <table className="table-auto w-full text-left text-sm">
                   <tbody>
                     <tr>
@@ -1070,13 +1070,13 @@ const Preview_video = () => {
       <div className="flex gap-4 w-full   mt-4 ">
         {/* left section */}
         {(activeStep == 2 || activeStep == 3) && (
-          <div class="w-[30%] shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px]  bg-white">
+          <div className="w-[30%] shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px]  bg-white">
             <p className="font-semibold text-[16px] p-[10px] border-b border-gray-200">
               Upload Data From Document
             </p>
             <div className="p-4">
               <div
-                class={`${
+                className={`${
                   allInstances[0]?.locked ? "cursor-no-drop" : "cursor-pointer"
                 } relative border-2 border-dashed border-gray-300 rounded-[10px] h-[205px] px-[26px] py-[42px] text-center`}
                 onClick={() => {
@@ -1085,15 +1085,15 @@ const Preview_video = () => {
                   }
                 }}
               >
-                <div class="flex flex-col items-center justify-center space-y-2">
-                  <div class="text-orange-500 text-4xl">
+                <div className="flex flex-col items-center justify-center space-y-2">
+                  <div className="text-orange-500 text-4xl">
                     <img src="/assets/bx_image-add.png" alt="upload icon" />
                   </div>
                   {/* <!-- Upload Instructions --> */}
-                  <p class="text-sm font-medium text-gray-700">
-                    Upload Data, or <span class="text-orange-500">Browse</span>
+                  <p className="text-sm font-medium text-gray-700">
+                    Upload Data, or <span className="text-orange-500">Browse</span>
                   </p>
-                  <p class="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500">
                     Maximum File size is 100 mb
                   </p>
                 </div>
@@ -1109,23 +1109,23 @@ const Preview_video = () => {
               </div>
 
               {/* <!-- Separator --> */}
-              <div class="flex items-center justify-center my-4">
-                <span class="text-gray-400 text-sm">or</span>
+              <div className="flex items-center justify-center my-4">
+                <span className="text-gray-400 text-sm">or</span>
               </div>
 
               <div>
                 <input
                   type="text"
                   placeholder="Paste Spreadsheet URL"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-orange-200 text-sm text-gray-700"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-orange-200 text-sm text-gray-700"
                 />
-                <p class="text-xs text-gray-500 mt-2">
+                <p className="text-xs text-gray-500 mt-2">
                   File must be .xls, .xlsx, .xlsm, .xlt, .xltx, (Excel or Google
                   Sheets).
                 </p>
               </div>
               {hasFile && (
-                <div class="mt-6 p-3 bg-gray-50 border border-gray-200 rounded-md flex items-center justify-between">
+                <div className="mt-6 p-3 bg-gray-50 border border-gray-200 rounded-md flex items-center justify-between">
                   <div className="flex justify-between">
                     <div className="flex">
                       <File className="mt-2" />
@@ -1178,7 +1178,7 @@ const Preview_video = () => {
                   </div>
                 </div>
                 <div
-                  class={`${
+                  className={`${
                     allInstances[0]?.locked
                       ? "cursor-no-drop"
                       : "cursor-pointer"
@@ -1189,10 +1189,10 @@ const Preview_video = () => {
                     }
                   }}
                 >
-                  <div class="text-orange-500 text-4xl">
+                  <div className="text-orange-500 text-4xl">
                     <img src="/assets/bx_image-add.png" alt="upload icon" />
                   </div>
-                  <p class=" mt-2 text-orange-500 text-sm font-medium">
+                  <p className=" mt-2 text-orange-500 text-sm font-medium">
                     Upload New Thumbnail
                   </p>
                   <input
@@ -1306,7 +1306,7 @@ const Preview_video = () => {
         <h1 className="font-semibold leading-6 p-[10px] border-b border-b-[#D9D9D9]">Send Email</h1>
         <div className="flex gap-4 w-full shadow-[0px_6px_16px_0px_#0000000F]">
           left section
-          <div class="w-[30%] shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px]  bg-white border-2 border-red-500">
+          <div className="w-[30%] shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px]  bg-white border-2 border-red-500">
 
           </div>
           right section
