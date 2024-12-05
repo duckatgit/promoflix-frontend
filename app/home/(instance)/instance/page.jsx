@@ -107,6 +107,43 @@ const InstancePage = () => {
       console.log(error);
     }
   };
+
+  const getCloneInstance = async (id) => {
+    try {
+      setShowUploadeVideoLoader(true);
+      const queryParams = {
+        id: id,
+      
+      };
+      const result = await fetchData("api/v1/instance/clone", queryParams, "hirello");
+      if (result.code != 200) {
+        setShowUploadeVideoLoader(false);
+        toast({
+          type: "error",
+
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: data.result,
+        });
+      } else {
+        setShowUploadeVideoLoader(false);
+
+        const data = result;
+        console.log(data)
+        // setAllInstances(data);
+        // setTotal(result?.result?.total);
+        getAllInstance();
+        toast({
+          type: "success",
+          description: "Instance clone successfully.",
+        });
+      }
+    } catch (error) {
+      setShowUploadeVideoLoader(false);
+
+      console.log(error);
+    }
+  };
   const handleModalFileChange = (event) => {
     const file = event.target.files[0];
 
@@ -172,7 +209,7 @@ const InstancePage = () => {
       // Clear input regardless of the response
 
       if (response?.code === 200) {
-        setId(response?.result?.id);
+        // setId(response?.result?.id);
         toast({
           type: "success",
 
@@ -601,6 +638,7 @@ const InstancePage = () => {
                           locked={ele.locked}
                           thumbnail={ele.thumbnail}
                           created_at={ele.created_at}
+                          getCloneInstance={getCloneInstance}
                         />
                       </div>
                     ))}

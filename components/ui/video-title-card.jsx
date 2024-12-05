@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { TbEdit } from "react-icons/tb";
+import { FaRegClone } from "react-icons/fa6";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -16,13 +17,14 @@ function VideoTitleCard({
   locked,
   thumbnail,
   created_at,
+  getCloneInstance,
 }) {
   const router = useRouter();
 
   return (
     <>
       <div
-        className="max-w-sm cursor-pointer  min-w-[311px] bg-white border border-slate-200 rounded-lg p-4 h-[216px] "
+        className="max-w-sm cursor-pointer  min-w-[311px] bg-white border border-slate-200 rounded-lg p-4 h-[380px] "
         onClick={(e) => {
           e.stopPropagation();
           if (locked) {
@@ -32,11 +34,24 @@ function VideoTitleCard({
           }
         }}
       >
-        <div className="flex justify-between items-center ">
-          <p className=" text-lg font-semibold text-[#333333]">{title}</p>
+        <div className="flex justify-between items-center flex-wrap ">
+          <p className=" text-lg font-semibold text-[#333333] mb-[8px] mr-[14px]">{title}</p>
           <div>
+            {thumbnail && (
+              <button
+                className="text-[#B4B4B4] hover:text-gray-600 "
+                onClick={(e) => {
+                  e.stopPropagation();
+
+                  getCloneInstance(id);
+                }}
+              >
+                <FaRegClone size={18} />
+              </button>
+            )}
+
             <button
-              className="text-[#B4B4B4] hover:text-gray-600"
+              className="text-[#B4B4B4] hover:text-gray-600 mx-2"
               onClick={(e) => {
                 e.stopPropagation();
                 setupdateInstanceModal(true),
@@ -48,7 +63,7 @@ function VideoTitleCard({
             </button>
             {!locked && (
               <button
-                className="text-red-500 hover:text-red-600 ml-2"
+                className="text-red-500 hover:text-red-600 "
                 onClick={(e) => {
                   e.stopPropagation();
                   deleteInstance(id);
@@ -59,35 +74,20 @@ function VideoTitleCard({
             )}
           </div>
         </div>
-        {/* <div className="flex justify-between items-center">
-        <h3 className="text-sm font-medium text-[#B4B4B4]">{title}</h3>
-      </div> */}
 
-        {/* <div className="mt-4 flex justify-between items-center">
-                <div className="flex gap-3">
-                    <h4 className="text-sm font-medium text-[#B4B4B4]">Variable<br /> Selected</h4>
-                    <p className="text-2xl font-normal text-[#333333]">28</p>
-                </div>
-                <div className="flex gap-3">
-                    <h4 className="text-sm font-medium text-[#B4B4B4]">No. Of<br /> Recipients</h4>
-                    <p className="text-2xl font-normal text-[#333333]">50</p>
-                </div>
-            </div> */}
         {thumbnail && (
-          <Image
+          <img
             src={thumbnail}
-            width={280}
-            height={100}
             className="rounded-[8px] mt-2"
-            style={{ height: "130px", objectFit: "cover" }}
+            style={{ height: "80%", width: "100%", objectFit: "cover" }}
             alt="thumbnail"
           />
         )}
         {thumbnail === null && (
           <div
-            className={`relative mt-2  cursor-pointer border-2 border-dashed border-gray-300 rounded-[10px] px-[16px] py-[20px] text-center h-[130px]`}
+            className={`relative mt-2 h-[80%] cursor-pointer border-2 border-dashed border-gray-300 rounded-[10px] px-[16px] py-[20px] text-center `}
           >
-            <div className="flex flex-col items-center justify-center space-y-2">
+            <div className="flex flex-col items-center justify-center space-y-2 h-full">
               <div className="text-orange-500 text-4xl">
                 <img src="/assets/bx_image-add.png" alt="upload icon" />
               </div>
