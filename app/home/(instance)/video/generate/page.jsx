@@ -50,7 +50,7 @@
 //               return data;
 //             });
 //           });
-       
+
 //           toast({
 //             description: updatedData[0].message,
 //           });
@@ -260,7 +260,7 @@ const Generate_video = () => {
   // Connect to WebSocket
   const connectWebSocket = () => {
     if (!socket && token) {
-      const ws = new WebSocket(`${hirelloSocket}/${token}`);
+      const ws = new WebSocket(`${hirelloSocket}/${token}/${id}`);
 
       ws.onopen = () => {
         console.log("WebSocket connection established");

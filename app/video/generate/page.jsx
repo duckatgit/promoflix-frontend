@@ -25,7 +25,7 @@ const Generate_video = () => {
 
   const connectWebSocket = () => {
     if (!socket) {
-      const ws = new WebSocket(`${hirelloSocket}/${token}`); // Using the token in the URL
+      const ws = new WebSocket(`${hirelloSocket}/${token}/${id}`); // Using the token in the URL
       ws.onopen = () => {
         console.log('Connected to the WebSocket server');
       };
@@ -148,6 +148,7 @@ const Generate_video = () => {
           <p>Generated Videos</p>
 
         </div>
+        {console.log('videoArray', videoArray)}
         {videoArray && videoArray.length > 0 ? videoArray?.map((item, index) => {
           const findKeyword = csvData?.records[index][0] || ''
           return (

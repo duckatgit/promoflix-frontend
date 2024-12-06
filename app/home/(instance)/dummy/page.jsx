@@ -27,14 +27,13 @@ const Generate_video = () => {
 
   const connectWebSocket = () => {
     if (!socket) {
-      const ws = new WebSocket(`${hirelloSocket}/${token}`); // Using the token in the URL
+      const ws = new WebSocket(`${hirelloSocket}/${token}/${id}`); // Using the token in the URL
       ws.onopen = () => {
         console.log("Connected to the WebSocket server");
       };
 
       ws.onmessage = (event) => {
         console.log(event, "event");
-        // console.log('Message received from server: ', JSON.parse(event.data));
 
         const updatedData = JSON.parse(event.data)?.GeneratedVideo;
 
