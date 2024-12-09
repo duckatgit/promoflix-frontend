@@ -77,7 +77,7 @@ const Preview_video = () => {
   const fileInputRef = useRef(null);
   const [isHighlighted, setIsHighlighted] = useState({});
   const [socket, setSocket] = useState(null);
-  const [videoArray, setVideoArray] = useAtom(videoArrayAtom);
+  const [videoArray, setVideoArray] = useState([]);
   const setCsvData = useSetAtom(csvDataAtom);
   const [selectedIndices, setSelectedIndices] = useState({
     start: null,
@@ -92,7 +92,7 @@ const Preview_video = () => {
 
   const connectWebSocket = () => {
     if (!socket) {
-      const ws = new WebSocket(`${hirelloSocket}/${token}`); // Using the token in the URL
+      const ws = new WebSocket(`${hirelloSocket}/${token}/${id}`); // Using the token in the URL
       ws.onopen = () => {
         console.log("Connected to the WebSocket server");
       };
@@ -758,7 +758,7 @@ const Preview_video = () => {
               className="rounded-2xl   object-cover"
               src={videoThumb}
               alt="videoThumbnail"
-          
+
             />
           </div>
           <div className="w-2/5 m-4">

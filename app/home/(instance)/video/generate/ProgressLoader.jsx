@@ -2,7 +2,7 @@
 import React from "react";
 
 const ProgressLoader = ({ percentage }) => {
-    console.log(percentage, "kkkkk")
+    // console.log(percentage, "kkkkk")
   const radius = 48; // Circle radius
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (percentage / 100) * circumference;

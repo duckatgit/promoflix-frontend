@@ -20,12 +20,12 @@ const Generate_video = () => {
   const { toast } = useToast()
   const id = searchParams.get('id');
   const [socket, setSocket] = useState(null);
-  const [videoArray, setVideoArray] = useAtom(videoArrayAtom);
+  const [videoArray, setVideoArray] = useState([]);
   const [csvData, setCsvData] = useAtom(csvDataAtom)
 
   const connectWebSocket = () => {
     if (!socket) {
-      const ws = new WebSocket(`${hirelloSocket}/${token}`); // Using the token in the URL
+      const ws = new WebSocket(`${hirelloSocket}/${token}/${id}`); // Using the token in the URL
       ws.onopen = () => {
         console.log('Connected to the WebSocket server');
       };
@@ -148,6 +148,7 @@ const Generate_video = () => {
           <p>Generated Videos</p>
 
         </div>
+        {console.log('videoArray', videoArray)}
         {videoArray && videoArray.length > 0 ? videoArray?.map((item, index) => {
           const findKeyword = csvData?.records[index][0] || ''
           return (

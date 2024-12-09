@@ -97,7 +97,10 @@ const Preview_video = () => {
   const fileInputRef2 = useRef(null);
   const [isHighlighted, setIsHighlighted] = useState({});
   const [socket, setSocket] = useState(null);
+
   const [videoArray, setVideoArray] = useAtom(videoArrayAtom);
+
+  console.log(videoArrayAtom,videoArray, "video array main page");
   const setCsvData = useSetAtom(csvDataAtom);
   const [selectedIndices, setSelectedIndices] = useState({
     start: null,
@@ -126,7 +129,7 @@ const Preview_video = () => {
   // const bgColor = ["#FDE6EB","#F2E6FF","#CCFBF1","#FFEDD5",""]
   const connectWebSocket = () => {
     if (!socket) {
-      const ws = new WebSocket(`${hirelloSocket}/${token}`); // Using the token in the URL
+      const ws = new WebSocket(`${hirelloSocket}/${token}/${id}`); // Using the token in the URL
       ws.onopen = () => {
         console.log("Connected to the WebSocket server");
       };
@@ -165,6 +168,7 @@ const Preview_video = () => {
     if (hasFile) {
       try {
         const data = await postData(`api/v1/generate/${id}`, {}, "hirello");
+        console.log(data, "data generate");
         if (data.code == 200) {
           setLoading(false);
 
@@ -875,7 +879,7 @@ const Preview_video = () => {
                   >
                     <p
                       className="truncate mb-[2px]"
-                      // style={{ color: textColor }}
+                    // style={{ color: textColor }}
                     >
                       {" "}
                       {i.name}
@@ -914,7 +918,7 @@ const Preview_video = () => {
                       const value = inputValue.trim().toLowerCase();
                       let isYellow =
                         i.start >= isHighlighted[word]?.start_time &&
-                        i.end <= isHighlighted[word]?.end_time
+                          i.end <= isHighlighted[word]?.end_time
                           ? true
                           : false;
                       // let isYellow = isHighlighted[word]?.highlight && i.id === isHighlighted[word].id;
@@ -953,9 +957,8 @@ const Preview_video = () => {
                                 {newWord}
                               </span> */}
                               <span
-                                className={`my-2 ${
-                                  isYellow ? "bg-[#FEF08A]" : ""
-                                }`}
+                                className={`my-2 ${isYellow ? "bg-[#FEF08A]" : ""
+                                  }`}
                                 onMouseDown={() => {
                                   if (countQuota < quota?.quota2) {
                                     handleMouseDown(index);
@@ -986,9 +989,8 @@ const Preview_video = () => {
                             </>
                           ) : (
                             <span
-                              className={`my-2 ${
-                                isYellow ? "bg-[#FEF08A]" : ""
-                              }`}
+                              className={`my-2 ${isYellow ? "bg-[#FEF08A]" : ""
+                                }`}
                               onMouseDown={() => handleMouseDown(index)}
                               onMouseUp={() => handleMouseUp(index)}
                               key={index} // Added key for list items
@@ -1079,9 +1081,8 @@ const Preview_video = () => {
             </p>
             <div className="p-4">
               <div
-                className={`${
-                  allInstances[0]?.locked ? "cursor-no-drop" : "cursor-pointer"
-                } relative border-2 border-dashed border-gray-300 rounded-[10px] h-[205px] px-[26px] py-[42px] text-center`}
+                className={`${allInstances[0]?.locked ? "cursor-no-drop" : "cursor-pointer"
+                  } relative border-2 border-dashed border-gray-300 rounded-[10px] h-[205px] px-[26px] py-[42px] text-center`}
                 onClick={() => {
                   if (!allInstances[0]?.locked) {
                     fileInputRef.current.click();
@@ -1147,11 +1148,10 @@ const Preview_video = () => {
                           onClick={() => {
                             setDeleteFilePopUp(true);
                           }}
-                          className={`${
-                            allInstances[0]?.locked
+                          className={`${allInstances[0]?.locked
                               ? " cursor-not-allowed"
                               : "cursor-pointer"
-                          } text-red-600 border-2 rounded-3xl size-10 border-red-600 p-2 `}
+                            } text-red-600 border-2 rounded-3xl size-10 border-red-600 p-2 `}
                         />
                       )}
                     </div>
@@ -1182,11 +1182,10 @@ const Preview_video = () => {
                   </div>
                 </div>
                 <div
-                  className={`${
-                    allInstances[0]?.locked
+                  className={`${allInstances[0]?.locked
                       ? "cursor-no-drop"
                       : "cursor-pointer"
-                  } relative w-1/2 flex flex-col items-center justify-center bg-[#FFF5F0] border-2 border-dashed border-orange-400 rounded-md`}
+                    } relative w-1/2 flex flex-col items-center justify-center bg-[#FFF5F0] border-2 border-dashed border-orange-400 rounded-md`}
                   onClick={() => {
                     if (!allInstances[0]?.locked) {
                       fileInputRef2.current.click();
@@ -1276,7 +1275,7 @@ const Preview_video = () => {
                   style={{ backgroundColor: "#333333", cursor: "pointer" }}
                   onClick={() => {
                     if (allInstances[0]?.locked) {
-                      router.push(`/home/video/generate?id=${id}`);
+                      router.push(`/home/video/generated2?id=${id}`);
                     } else {
                       sendMessage();
                     }

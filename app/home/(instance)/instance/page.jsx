@@ -27,15 +27,19 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { searchAtom } from "@/utils/atom";
+import { searchAtom, videoArrayAtom } from "@/utils/atom";
 import { useAtom } from "jotai";
 import Pagination from "./Pagination";
-import Cookies from "js-cookie";
+
+
+
 const InstancePage = () => {
   const { toast } = useToast();
   const router = useRouter();
   const [allInstances, setAllInstances] = useState([]);
   const [id, setId] = useState("");
+  const [videoArray, setVideoArray] = useAtom(videoArrayAtom);
+  console.log(videoArray, "video array instance page")
   const [updateInstanceModal, setupdateInstanceModal] = useState(false);
   const [updatedInstance, setUpdatedInstance] = useState("");
   const [updatedInstanceId, setUpdatedInstanceID] = useState();
@@ -187,6 +191,34 @@ const InstancePage = () => {
       setId(id);
       handleUploadvideo();
     }
+  };
+  const sendMessage = async (id) => {
+    setShowUploadeVideoLoader(true);
+
+
+      try {
+        const data = await postData(`api/v1/generate/${id}`, {}, "hirello");
+        console.log(data, "data generate instance page");
+        if (data.code == 200) {
+          setLoading(false);
+
+          setVideoArray(data.result);
+          if(data.result.length > 0) {
+            router.push(`/home/video/generate?id=${id}`);
+          }
+        
+        }
+      } catch (error) {
+        console.log(error, "errrrr");
+
+        setShowUploadeVideoLoader(false);
+        toast({
+          type: "error",
+          description: error?.message,
+        });
+      }
+    
+
   };
   useEffect(() => {
     getAllInstance();
@@ -639,6 +671,7 @@ const InstancePage = () => {
                           thumbnail={ele.thumbnail}
                           created_at={ele.created_at}
                           getCloneInstance={getCloneInstance}
+                          sendMessage={sendMessage}
                         />
                       </div>
                     ))}

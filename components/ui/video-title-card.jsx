@@ -18,6 +18,7 @@ function VideoTitleCard({
   thumbnail,
   created_at,
   getCloneInstance,
+  sendMessage
 }) {
   const router = useRouter();
 
@@ -28,7 +29,8 @@ function VideoTitleCard({
         onClick={(e) => {
           e.stopPropagation();
           if (locked) {
-            router.push(`/home/video/generate?id=${id}`);
+            // sendMessage(id)
+            router.push(`/home/video/generated2?id=${id}`);
           } else {
             getVideo(id);
           }
