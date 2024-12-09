@@ -178,6 +178,7 @@ const Sidebar = () => {
                 <p className="text-black font-semibold ">
                   {updatedName ? updatedName : name}
                 </p>
+                
                 {/* <p
                 className="font-[12px] text-[#757575] leading-[15.6px]"
                 style={{ wordBreak: "break-word" }}

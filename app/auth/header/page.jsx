@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
 import { fetchData } from "@/utils/api";
 import { Input } from "@/components/ui/input";
@@ -21,7 +21,9 @@ const Header = () => {
   const [search, setSearch] = useAtom(searchAtom)
   const [name, setname] = useState("John Doe");
   const router = useRouter();
-  const { toast } = useToast()
+  const { toast } = useToast();
+  const pathname = usePathname(); // Current route path
+
   useEffect(() => {
     const data = safeLocalStorage.getItem("name");
     setname(data);
@@ -62,6 +64,8 @@ const Header = () => {
 
 
       <div className="flex gap-10">
+      {pathname === "/home/instance" && 
+      
         <div className="relative border border-[#bababa] w-60 flex items-center rounded-lg px-2">
           {/* Search Icon */}
           <IoSearchOutline className="text-gray-500 text-lg" />
@@ -76,6 +80,7 @@ const Header = () => {
           // onChange={handleInputChange}  
           />
         </div>
+      }
         {/* <DropdownMenu>
           <DropdownMenuTrigger>
             <NameLogo name={name} />

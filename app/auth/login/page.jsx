@@ -50,6 +50,7 @@ const Login = () => {
         email: form.email,
         password: form.password,
       });
+  
       if (response.code != 200) {
         setLoading(false);
         toast({
@@ -75,7 +76,7 @@ const Login = () => {
       toast({
         type: "error",
         title: "Uh oh! Something went wrong.",
-        description: error.message,
+        description: error.response.data.result,
       })
    
     }
