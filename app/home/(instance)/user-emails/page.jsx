@@ -181,7 +181,7 @@ const UserEmails = () => {
           className="text-right text-white mb-5 cursor-pointer"
           style={{ backgroundColor: "#333333" }}
           onClick={() => openModal()}
-          disabled={emailData?.length==3}
+          disabled={emailData?.length == 3}
         >
           Add Email
         </Button>
@@ -199,8 +199,8 @@ const UserEmails = () => {
         <>
           {emailData?.length > 0 ? (
             <div className="grid grid-cols-3 gap-4">
-              {emailData?.map((ele) => (
-                <div className="max-w-sm min-w-[311px] bg-white border border-slate-200 rounded-lg p-4">
+              {emailData?.map((ele, index) => (
+                <div className="max-w-sm min-w-[311px] bg-white border border-slate-200 rounded-lg p-4" key={index}>
                   <div className="flex justify-between items-center flex-wrap ">
                     <div className=" w-full text-end">
                       <button

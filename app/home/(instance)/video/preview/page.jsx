@@ -101,7 +101,7 @@ const Preview_video = () => {
 
   const [videoArray, setVideoArray] = useAtom(videoArrayAtom);
 
-  console.log(videoArrayAtom,videoArray, "video array main page");
+  console.log(videoArrayAtom, videoArray, "video array main page");
   const setCsvData = useSetAtom(csvDataAtom);
   const [selectedIndices, setSelectedIndices] = useState({
     start: null,
@@ -479,7 +479,7 @@ const Preview_video = () => {
           type: "success",
           description: "Segment added SuccessfullY",
         });
-        setVariableCount(variableCount+1)
+        setVariableCount(variableCount + 1)
         await getAllSegment();
       }
     } catch (error) {
@@ -619,7 +619,7 @@ const Preview_video = () => {
     setHighlightedSegment(segment);
     setEditingWordIndex(selectedStart);
     setInputVisible(true);
-    setInputValue(`variable ${variableCount+1}`);
+    setInputValue(`variable ${variableCount + 1}`);
     myfunction(id);
   };
 
@@ -880,7 +880,7 @@ const Preview_video = () => {
                         {
                           setDeletePopUp(true);
                           setSegmentID(i.id);
-                          setVariableCount(variableCount-1)
+                          setVariableCount(variableCount - 1)
                         }
                       }}
                     />
@@ -1005,7 +1005,7 @@ const Preview_video = () => {
                                 <Input
                                   value={inputValue}
                                   disabled
-                                  // onChange={handleInputChange}
+                                // onChange={handleInputChange}
                                 />
                                 <div className="flex justify-between ">
                                   <div
@@ -1116,7 +1116,7 @@ const Preview_video = () => {
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-orange-200 text-sm text-gray-700"
                 />
                 <p className="text-xs text-gray-500 mt-2">
-                  Make sure file is shared with "anyone with a link"
+                  Make sure file is shared with &quot;anyone with a link&quot;
                 </p>
               </div>
               {hasFile && (
@@ -1139,8 +1139,8 @@ const Preview_video = () => {
                             setDeleteFilePopUp(true);
                           }}
                           className={`${allInstances[0]?.locked
-                              ? " cursor-not-allowed"
-                              : "cursor-pointer"
+                            ? " cursor-not-allowed"
+                            : "cursor-pointer"
                             } text-red-600 border-2 rounded-3xl size-10 border-red-600 p-2 `}
                         />
                       )}
@@ -1173,8 +1173,8 @@ const Preview_video = () => {
                 </div>
                 <div
                   className={`${allInstances[0]?.locked
-                      ? "cursor-no-drop"
-                      : "cursor-pointer"
+                    ? "cursor-no-drop"
+                    : "cursor-pointer"
                     } relative w-1/2 flex flex-col items-center justify-center bg-[#FFF5F0] border-2 border-dashed border-orange-400 rounded-md`}
                   onClick={() => {
                     if (!allInstances[0]?.locked) {
@@ -1208,7 +1208,7 @@ const Preview_video = () => {
                     </p>
                   </div>
                 </div>
-                 {/* <div className="flex flex-wrap gap-2 p-4 ">
+                {/* <div className="flex flex-wrap gap-2 p-4 ">
                   {arr?.map((i, index) => {
                     // const bgColor = getRandomColor();
                     // const textColor = getContrastingColor(bgColor);
@@ -1344,7 +1344,7 @@ const Preview_video = () => {
           </div>
         )} */}
       {/* <h1 className="mx-4 mt-2 mb-2">Video Thumbnail</h1> */}
-       {/* <div className="flex justify-around border-2 rounded-lg">
+      {/* <div className="flex justify-around border-2 rounded-lg">
           <div className="w-2/5 m-4 relative h-[300px]">
             <Image
               layout="fill"
@@ -1425,7 +1425,7 @@ const Preview_video = () => {
           </div>
         </div>  */}
       {/* <h1 className='mx-4 mt-2 mb-2'>Video Thumbnail</h1> */}
-       {/* <div className='flex justify-between border-2 rounded-lg'>
+      {/* <div className='flex justify-between border-2 rounded-lg'>
           <div className='w-1/2 m-4'>
             <div>
               <Label htmlFor="email">Email Videos from</Label>
@@ -1576,7 +1576,7 @@ const Preview_video = () => {
       </AlertDialog>
 
       {/* Upload doc */}
-       {/* <Dialog open={uploadDocPopup} onOpenChange={setUploadDocPopup}>
+      {/* <Dialog open={uploadDocPopup} onOpenChange={setUploadDocPopup}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Upload CSV</DialogTitle>
@@ -1626,7 +1626,7 @@ const Preview_video = () => {
       </Dialog>  */}
 
       {/* thumb Popup */}
-       {/* <Dialog open={uploadThumbPopup} onOpenChange={setUploadThumbPopup}>
+      {/* <Dialog open={uploadThumbPopup} onOpenChange={setUploadThumbPopup}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Upload Thumb</DialogTitle>
