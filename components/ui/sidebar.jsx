@@ -105,7 +105,7 @@ const Sidebar = () => {
                   <img src="/assets/black-instance.svg" alt="Instance Icon" />
                 )}
               </span>
-              <span className="text">Instance</span>
+              <span className="text">Video Projects</span>
             </div>
             <div
               className={`menu-item ${pathname === "/home/plan" ? "menu-item-active" : ""
@@ -141,7 +141,20 @@ const Sidebar = () => {
               </span>
               <span className="text">Billing History</span>
             </div>
-
+            <div
+              className={`menu-item ${pathname === "/home/user-emails" ? "menu-item-active" : ""
+                }`}
+              onClick={() => router.push("/home/user-emails")}
+            >
+              <span className="icon">
+                {pathname === "/home/user-emails" ? (
+                  <img src="/assets/orange-email-icon.svg" alt="Email Icon" />
+                ) : (
+                  <img src="/assets/black-email-icon.svg" alt="Email Icon" />
+                )}
+              </span>
+              <span className="text">Emails</span>
+            </div>
             <div
               className={`menu-item ${pathname === "/home/userprofile" ? "menu-item-active" : ""
                 }`}

@@ -573,7 +573,7 @@ const InstancePage = () => {
           >
             <div className="flex text-start p-2 border border-b-1">
               <h1 className="text-lg font-semibold text-gray-700">
-                Upload File
+               Create New Project
               </h1>
             </div>
 
@@ -625,7 +625,7 @@ const InstancePage = () => {
                   </div>
                   {/* Upload Instructions */}
                   <p className="text-sm font-medium text-gray-700">
-                    Upload Data, or{" "}
+                    Upload <span className="text-orange-500">Original</span> Video, or{" "}
                     <span
                       className="text-orange-500 cursor-pointer"
                       // className={`${

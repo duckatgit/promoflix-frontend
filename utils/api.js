@@ -7,6 +7,8 @@ const BASE_URL = process.env.NEXT_PUBLIC_VIDEO_API_BASE_URL;
 const AUTH_URL = process.env.NEXT_PUBLIC_VIDEO_API_AUTH_URL;
 const HIRELLO_URL = process.env.NEXT_PUBLIC_VIDEO_API_HIRELLO_URL;
 const CSV_URL = process.env.NEXT_PUBLIC_VIDEO_API_CSV_URL;
+const SHARE_DEV = process.env.NEXT_PUBLIC_VIDEO_API_SHARE_DEV;
+
 
 const apiClient = axios.create();
 // Request interceptor
@@ -50,6 +52,8 @@ const findBaseUrl=(type)=>{
       return HIRELLO_URL;
     case "csv":
       return CSV_URL
+      case "share_dev":
+        return SHARE_DEV
     default:
       return AUTH_URL
   }

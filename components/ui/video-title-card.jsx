@@ -95,7 +95,7 @@ function VideoTitleCard({
               </div>
               {/* Upload Instructions */}
               <p className="text-sm font-medium text-gray-700">
-                Upload Data, or{" "}
+              Upload <span className="text-orange-500">Original</span> Video, or{" "}
                 <span className="text-orange-500 cursor-pointer">Browse</span>
               </p>
               <p className="text-xs text-gray-500">

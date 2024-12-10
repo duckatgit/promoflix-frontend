@@ -79,6 +79,7 @@ const Preview_video = () => {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [inputValue, setInputValue] = useState("");
+  const [variableCount, setVariableCount] = useState(0);
   const [csvUrlInput, setCsvUrlInput] = useState("");
   const [data, setData] = useState([]);
   const [segmentData, setSegmentData] = useState([]);
@@ -478,7 +479,7 @@ const Preview_video = () => {
           type: "success",
           description: "Segment added SuccessfullY",
         });
-
+        setVariableCount(variableCount+1)
         await getAllSegment();
       }
     } catch (error) {
@@ -618,7 +619,7 @@ const Preview_video = () => {
     setHighlightedSegment(segment);
     setEditingWordIndex(selectedStart);
     setInputVisible(true);
-    setInputValue(segment);
+    setInputValue(`variable ${variableCount+1}`);
     myfunction(id);
   };
 
@@ -819,18 +820,6 @@ const Preview_video = () => {
                 Your browser does not support the video tag.
               </video>
             )}
-            {/* {allInstances.length > 0 && (
-              <>
-                <p className="mt-4">{`Video Title : ${allInstances[0]?.name}`}</p>
-                <p>{`Uploaded date : ${getFormatedDate(
-                  allInstances[0]?.created_at
-                )}`}</p>
-                <p>{`Updated at : ${getFormatedDate(
-                  allInstances[0]?.updated_at
-                )}`}</p>
-              </>
-            )} */}
-
             {allInstances.length > 0 && (
               <div className="w-[260px] mt-4">
                 <table className="table-auto w-full text-left text-sm">
@@ -891,6 +880,7 @@ const Preview_video = () => {
                         {
                           setDeletePopUp(true);
                           setSegmentID(i.id);
+                          setVariableCount(variableCount-1)
                         }
                       }}
                     />
@@ -1014,7 +1004,8 @@ const Preview_video = () => {
                               >
                                 <Input
                                   value={inputValue}
-                                  onChange={handleInputChange}
+                                  disabled
+                                  // onChange={handleInputChange}
                                 />
                                 <div className="flex justify-between ">
                                   <div
@@ -1095,7 +1086,7 @@ const Preview_video = () => {
                   </div>
                   {/* <!-- Upload Instructions --> */}
                   <p className="text-sm font-medium text-gray-700">
-                    Upload Data, or{" "}
+                    Upload Your List (.CSV only), or{" "}
                     <span className="text-orange-500">Browse</span>
                   </p>
                   <p className="text-xs text-gray-500">
@@ -1125,8 +1116,7 @@ const Preview_video = () => {
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-orange-200 text-sm text-gray-700"
                 />
                 <p className="text-xs text-gray-500 mt-2">
-                  File must be .xls, .xlsx, .xlsm, .xlt, .xltx, (Excel or Google
-                  Sheets).
+                  Make sure file is shared with "anyone with a link"
                 </p>
               </div>
               {hasFile && (
@@ -1218,7 +1208,7 @@ const Preview_video = () => {
                     </p>
                   </div>
                 </div>
-                {/* <div className="flex flex-wrap gap-2 p-4 ">
+                 {/* <div className="flex flex-wrap gap-2 p-4 ">
                   {arr?.map((i, index) => {
                     // const bgColor = getRandomColor();
                     // const textColor = getContrastingColor(bgColor);
@@ -1247,29 +1237,9 @@ const Preview_video = () => {
                       </div>
                     );
                   })}
-                </div> */}
+                </div>  */}
               </div>
               <div className="flex gap-2 p-4 ">
-                {/* <Button
-                  className=" text-white"
-                  style={{ backgroundColor: "#333333", cursor: "pointer" }}
-                  onClick={() => {
-                    if (allInstances[0]?.locked) {
-                      router.push(`/home/video/generate?id=${id}`);
-                    } else {
-                      sendMessage();
-                    }
-                  }}
-                >
-                  {loading ? (
-                    <>
-                      Merge Video <LoadingSpinner className="ml-2 text-white" />
-                    </>
-                  ) : (
-                    "Merge Video"
-                  )}
-                </Button> */}
-
                 <Button
                   className="text-white"
                   style={{ backgroundColor: "#333333", cursor: "pointer" }}
@@ -1374,7 +1344,7 @@ const Preview_video = () => {
           </div>
         )} */}
       {/* <h1 className="mx-4 mt-2 mb-2">Video Thumbnail</h1> */}
-      {/* <div className="flex justify-around border-2 rounded-lg">
+       {/* <div className="flex justify-around border-2 rounded-lg">
           <div className="w-2/5 m-4 relative h-[300px]">
             <Image
               layout="fill"
@@ -1453,9 +1423,9 @@ const Preview_video = () => {
 
             </div>
           </div>
-        </div> */}
+        </div>  */}
       {/* <h1 className='mx-4 mt-2 mb-2'>Video Thumbnail</h1> */}
-      {/* <div className='flex justify-between border-2 rounded-lg'>
+       {/* <div className='flex justify-between border-2 rounded-lg'>
           <div className='w-1/2 m-4'>
             <div>
               <Label htmlFor="email">Email Videos from</Label>
@@ -1549,7 +1519,7 @@ const Preview_video = () => {
               </Button>
             </div>
           </div>
-        </div> */}
+        </div>  */}
 
       <AlertDialog open={deleteFilePopUp}>
         <AlertDialogTrigger></AlertDialogTrigger>
@@ -1606,7 +1576,7 @@ const Preview_video = () => {
       </AlertDialog>
 
       {/* Upload doc */}
-      {/* <Dialog open={uploadDocPopup} onOpenChange={setUploadDocPopup}>
+       {/* <Dialog open={uploadDocPopup} onOpenChange={setUploadDocPopup}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Upload CSV</DialogTitle>
@@ -1653,10 +1623,10 @@ const Preview_video = () => {
             </Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog> */}
+      </Dialog>  */}
 
       {/* thumb Popup */}
-      {/* <Dialog open={uploadThumbPopup} onOpenChange={setUploadThumbPopup}>
+       {/* <Dialog open={uploadThumbPopup} onOpenChange={setUploadThumbPopup}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Upload Thumb</DialogTitle>
@@ -1701,7 +1671,7 @@ const Preview_video = () => {
             </Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog> */}
+      </Dialog>  */}
 
       {filePreviewPopUp && (
         <>
