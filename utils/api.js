@@ -69,7 +69,7 @@ export const fetchData = async (endpoint, params,type) => {
     } else {
       response = await apiClient.get(`${baseUrl}/${endpoint}`);
     }
-    console.log(response.data, endpoint, "pershant")
+ 
     return response.data;
   } catch (error) {
     console.error('Error fetching data:', error);

@@ -80,10 +80,13 @@ const Preview_video = () => {
   const [endTime, setEndTime] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [variableCount, setVariableCount] = useState(0);
+  console.log(variableCount, "variable count");
+  const [countQuota, setCountQuota] = useState(0);
+
   const [csvUrlInput, setCsvUrlInput] = useState("");
   const [data, setData] = useState([]);
   const [segmentData, setSegmentData] = useState([]);
-  console.log(segmentData, "iiiii");
+
 
   const [transcriptSteps, setTranscriptSteps] = useState("Loading...");
 
@@ -101,7 +104,7 @@ const Preview_video = () => {
 
   const [videoArray, setVideoArray] = useAtom(videoArrayAtom);
 
-  console.log(videoArrayAtom, videoArray, "video array main page");
+
   const setCsvData = useSetAtom(csvDataAtom);
   const [selectedIndices, setSelectedIndices] = useState({
     start: null,
@@ -120,7 +123,6 @@ const Preview_video = () => {
   const [plansData, setPlansData] = useState([]);
   const [quota, setQuota] = useState([]);
   const [usedQuota, setUsedQuota] = useState(null);
-  const [countQuota, setCountQuota] = useState(0);
 
   const hasCalledNext = useRef(false);
 
@@ -128,32 +130,7 @@ const Preview_video = () => {
     setShowAll(!showAll);
   };
   // const bgColor = ["#FDE6EB","#F2E6FF","#CCFBF1","#FFEDD5",""]
-  const connectWebSocket = () => {
-    if (!socket) {
-      const ws = new WebSocket(`${hirelloSocket}/${token}/${id}`); // Using the token in the URL
-      ws.onopen = () => {
-        console.log("Connected to the WebSocket server");
-      };
 
-      ws.onmessage = (event) => {
-        console.log(event, "event");
-        console.log("Message received from server: ", event.data);
-        setReceivedMessages((prevMessages) => [...prevMessages, event.data]);
-        toast({
-          description: "video generated successfully sucessfully",
-        });
-      };
-
-      ws.onerror = (error) => {
-        console.error("WebSocket Error: ", error);
-      };
-
-      ws.onclose = () => {
-        console.log("WebSocket connection closed");
-      };
-      setSocket(ws); // Store the WebSocket instance
-    }
-  };
   const sendMessage = async () => {
     setLoading(true);
     if (!hasFile && !csvUrlInput) {
@@ -326,12 +303,7 @@ const Preview_video = () => {
       uploadNewThumb();
     }
   }, [thumbnailFile]);
-  console.log(
-    hasFile,
-    csvDataAtom,
-    fileData,
-    "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii"
-  );
+
 
   const getAllSegment = async () => {
     try {
@@ -479,7 +451,10 @@ const Preview_video = () => {
           type: "success",
           description: "Segment added SuccessfullY",
         });
-        setVariableCount(variableCount + 1)
+        // quota?.quota2
+        // setVariableCount((pre)=>pre + 1)
+        setVariableCount((prev) => (prev < quota?.quota2 ? prev + 1 : prev));
+
         await getAllSegment();
       }
     } catch (error) {
@@ -583,18 +558,7 @@ const Preview_video = () => {
       console.log(error, "==========error");
     }
   };
-  const generateVideo = async () => {
-    try {
-      const data = await postData(`api/v1/generate/${id}`, {}, "hirello");
-      if (data.code == 200) {
-        toast({
-          description: "Video generated sucessfully",
-        });
-      }
-    } catch (error) {
-      console.log(error, "========error");
-    }
-  };
+
 
   const handleMouseDown = (index) => {
     setIndexToVisible(index);
@@ -619,7 +583,7 @@ const Preview_video = () => {
     setHighlightedSegment(segment);
     setEditingWordIndex(selectedStart);
     setInputVisible(true);
-    setInputValue(`variable ${variableCount + 1}`);
+    setInputValue(`variable ${variableCount + 1 }`);
     myfunction(id);
   };
 
@@ -859,6 +823,7 @@ const Preview_video = () => {
               {arr?.map((i, index) => {
                 // const bgColor = getRandomColor();
                 // const textColor = getContrastingColor(bgColor);
+                console.log(i, "countQuota iiiii");
 
                 return (
                   <div
@@ -872,6 +837,7 @@ const Preview_video = () => {
                     >
                       {" "}
                       {i.name}
+                      {/* {`variable ${variableCount  }`} */}
                     </p>
                     <X
                       className="cursor-pointer"
@@ -880,7 +846,9 @@ const Preview_video = () => {
                         {
                           setDeletePopUp(true);
                           setSegmentID(i.id);
-                          setVariableCount(variableCount - 1)
+                          // setVariableCount((pre)=>pre  - 1)
+                          setVariableCount((prev) => (prev > 0 ? prev - 1 : prev));
+
                         }
                       }}
                     />
@@ -904,6 +872,7 @@ const Preview_video = () => {
                   {data
                     ?.slice(0, showAll ? data.length : 150)
                     ?.map((i, index) => {
+                  
                       const word = i?.word?.trim()?.toLowerCase();
                       const value = inputValue.trim().toLowerCase();
                       let isYellow =
@@ -917,39 +886,12 @@ const Preview_video = () => {
                         <React.Fragment key={index}>
                           {isYellow ? (
                             <>
-                              {/* <span
-                                className={`my-2 ${
-                                  isYellow ? "bg-[#FEF08A]" : ""
-                                }`}
-                                onMouseDown={() =>
-                                
-                                {
-                                  if (countQuota < quota?.quota2) {
-                                    handleMouseDown(index)}
-                                  }
-                                  else if (countQuota === quota?.quota2) {
-                                    console.log("limit reached")
-                                   
-                                  }
-                                }
-                            
-                                onMouseUp={() => {
-                                  if (countQuota < quota?.quota2) {
-                                    handleMouseUp(index);
-                                  }
-                                  else  if (countQuota === quota?.quota2) {
-                                    console.log("limit reached")
-                                   
-                                  }
-                                }}
-                                key={index} // Added key for list items
-                              >
-                                {newWord}
-                              </span> */}
+                              
                               <span
                                 className={`my-2 ${isYellow ? "bg-[#FEF08A]" : ""
                                   }`}
                                 onMouseDown={() => {
+                                  
                                   if (countQuota < quota?.quota2) {
                                     handleMouseDown(index);
                                   } else {
@@ -970,19 +912,51 @@ const Preview_video = () => {
 
                               <span
                                 className={`my-2 }`}
-                                onMouseDown={() => handleMouseDown(index)}
-                                onMouseUp={() => handleMouseUp(index)}
+                                // onMouseDown={() => handleMouseDown(index)}
+                                onMouseDown={() => {
+                              
+                                  if (countQuota < quota?.quota2) {
+                                    handleMouseDown(index);
+                                  } else {
+                                    console.log("limit reached");
+                                  }
+                                }}
+                                // onMouseUp={() => handleMouseUp(index)}
+                                onMouseUp={() => {
+                               
+                                  if (countQuota < quota?.quota2) {
+                                    handleMouseUp(index);
+                                  } else {
+                                    console.log("limit reached");
+                                  }
+                                }}
                                 key={`${index}dup`} // Added key for list items
                               >
-                                {removedChar}
+                                {removedChar} 
                               </span>
                             </>
                           ) : (
                             <span
                               className={`my-2 ${isYellow ? "bg-[#FEF08A]" : ""
                                 }`}
-                              onMouseDown={() => handleMouseDown(index)}
-                              onMouseUp={() => handleMouseUp(index)}
+                              // onMouseDown={() => handleMouseDown(index)}
+                              onMouseDown={() => {
+                              
+                                  if (countQuota < quota?.quota2) {
+                                    handleMouseDown(index);
+                                  } else {
+                                    console.log("limit reached");
+                                  }
+                                }}
+                              // onMouseUp={() => handleMouseUp(index)}
+                              onMouseUp={() => {
+                                
+                                  if (countQuota < quota?.quota2) {
+                                    handleMouseUp(index);
+                                  } else {
+                                    console.log("limit reached");
+                                  }
+                                }}
                               key={index} // Added key for list items
                             >
                               {i.word}
@@ -1065,7 +1039,7 @@ const Preview_video = () => {
 
       <div className="flex gap-4 w-full   mt-4 ">
         {/* left section */}
-        {(activeStep == 2 || activeStep == 3) && (
+        {(activeStep == 2 || activeStep == 3) && ( 
           <div className="w-[30%] shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px]  bg-white">
             <p className="font-semibold text-[16px] p-[10px] border-b border-gray-200">
               Upload Data From Document

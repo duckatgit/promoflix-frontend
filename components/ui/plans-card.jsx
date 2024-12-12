@@ -158,11 +158,11 @@ console.log(isFree, "kkkk")
             / <span> {billing_period} </span>
           </p>
           <p className="text-[#B3B3B3] my-4">
-            {highlighted && isFree ? usedQuota : 0}/{quantity} used
+            {highlighted ? usedQuota : 0}/{quantity} used
           </p>
 
           <div className="my-4 h-4">
-            {highlighted && isFree && (
+            {highlighted  && (
               <div className="w-full h-2 bg-[#F5F5F5] rounded-full relative">
                 <div
                   className="h-2 bg-[#E7680F] rounded-full"

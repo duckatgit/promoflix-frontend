@@ -28,6 +28,9 @@ import Image from "next/image";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { TbEdit } from "react-icons/tb";
 import { Pointer } from "lucide-react";
+import { maskPassword } from "@/lib/utils";
+import StickyBanner from "./Banner";
+
 
 const UserEmails = () => {
   const { toast } = useToast();
@@ -176,6 +179,7 @@ const UserEmails = () => {
 
   return (
     <div className="w-full">
+      <StickyBanner />
       <div className="text-end">
         <Button
           className="text-right text-white mb-5 cursor-pointer"
@@ -198,9 +202,9 @@ const UserEmails = () => {
       ) : (
         <>
           {emailData?.length > 0 ? (
-            <div className="grid grid-cols-3 gap-4">
+            <div >
               {emailData?.map((ele, index) => (
-                <div className="max-w-sm min-w-[311px] bg-white border border-slate-200 rounded-lg p-4" key={index}>
+                <div  className="max-w-sm min-w-[311px] mb-4 bg-white border border-slate-200 rounded-lg p-4" key={index}>
                   <div className="flex justify-between items-center flex-wrap ">
                     <div className=" w-full text-end">
                       <button
@@ -236,13 +240,13 @@ const UserEmails = () => {
                             <th className="px-4 py-2 text-black font-semibold">
                               Email
                             </th>
-                            <td className="px-4 py-2">: {ele?.email}</td>
+                            <td className="px-4 py-2" style={{wordBreak:"break-word"}}>: {ele?.email}</td>
                           </tr>
                           <tr>
                             <th className="px-4 py-2 text-black font-semibold">
                               Password
                             </th>
-                            <td className="px-4 py-2">: {ele?.password}</td>
+                            <td className="px-4 py-2">:  {maskPassword(ele?.password)}</td>
                           </tr>
                         </tbody>
                       </table>
@@ -267,7 +271,7 @@ const UserEmails = () => {
             <form>
               <div className="grid w-full items-center gap-4">
                 <div className="flex flex-col space-y-1.5 ">
-                  <Label htmlFor="name">Name</Label>
+                  <Label htmlFor="name" className="mb-2" >Name</Label>
                   <Input
                     id="name"
                     placeholder="Enter your name"
@@ -276,7 +280,7 @@ const UserEmails = () => {
                   />
                 </div>
                 <div className="flex flex-col space-y-1.5 w-[400px]">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email"  className="mb-2">Email</Label>
                   <Input
                     id="email"
                     placeholder="Enter your email"
@@ -285,7 +289,7 @@ const UserEmails = () => {
                   />
                 </div>
                 <div className="flex flex-col space-y-1.5 w-[400px]">
-                  <Label>Password</Label>
+                  <Label htmlFor="password" className="mb-2">Password</Label>
                   <Input
                     id="password"
                     type="password"
@@ -294,6 +298,7 @@ const UserEmails = () => {
                     onChange={handleInputChange}
                   />
                 </div>
+                <p><>Note: The email password is encrypted and can only be used for sending emails through this website</></p>
               </div>
             </form>
           </div>
