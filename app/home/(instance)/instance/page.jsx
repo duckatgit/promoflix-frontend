@@ -117,7 +117,7 @@ const InstancePage = () => {
       setShowUploadeVideoLoader(true);
       const queryParams = {
         id: id,
-      
+
       };
       const result = await fetchData("api/v1/instance/clone", queryParams, "hirello");
       if (result.code != 200) {
@@ -196,33 +196,33 @@ const InstancePage = () => {
     setShowUploadeVideoLoader(true);
 
 
-      try {
-        const data = await postData(`api/v1/generate/${id}`, {}, "hirello");
-        console.log(data, "data generate instance page");
-        if (data.code == 200) {
-          setLoading(false);
+    try {
+      const data = await postData(`api/v1/generate/${id}`, {}, "hirello");
+      console.log(data, "data generate instance page");
+      if (data.code == 200) {
+        setLoading(false);
 
-          setVideoArray(data.result);
-          if(data.result.length > 0) {
-            router.push(`/home/video/generate?id=${id}`);
-          }
-        
+        setVideoArray(data.result);
+        if (data.result.length > 0) {
+          router.push(`/home/video/generate?id=${id}`);
         }
-      } catch (error) {
-        console.log(error, "errrrr");
 
-        setShowUploadeVideoLoader(false);
-        toast({
-          type: "error",
-          description: error?.message,
-        });
       }
-    
+    } catch (error) {
+      console.log(error, "errrrr");
+
+      setShowUploadeVideoLoader(false);
+      toast({
+        type: "error",
+        description: error?.message,
+      });
+    }
+
 
   };
   useEffect(() => {
     getAllInstance();
-  
+
   }, []);
   useEffect(() => {
     getAllInstance();
@@ -573,13 +573,13 @@ const InstancePage = () => {
           >
             <div className="flex text-start p-2 border border-b-1">
               <h1 className="text-lg font-semibold text-gray-700">
-               Create New Project
+                Create New Project
               </h1>
             </div>
 
             <div className="flex flex-col p-4 gap-3">
               {/* Video Title Input */}
-              <div>
+              {/* <div>
                 <Input
                   id="video-title"
                   placeholder="Video Title"
@@ -588,7 +588,7 @@ const InstancePage = () => {
                   onChange={(e) => handleChange(e)}
                   onBlur={(e) => handleBlur(e)}
                 />
-              </div>
+              </div> */}
               {/* Upload Section */}
               {/* // ${id ? "cursor-pointer" : "cursor-no-drop" */}
               <div
@@ -598,7 +598,7 @@ const InstancePage = () => {
                   fileInputRef.current.click(); // Only trigger the click if `id` is present
                   // }
                 }}
-                // title={!id ? "First create an instance, then upload video." : ""}
+              // title={!id ? "First create an instance, then upload video." : ""}
               >
                 {showLoader && (
                   <div className="absolute top-0 left-0 flex justify-center items-center w-full h-full bg-[#62666917]">
@@ -628,11 +628,11 @@ const InstancePage = () => {
                     Upload <span className="text-orange-500">Original</span> Video, or{" "}
                     <span
                       className="text-orange-500 cursor-pointer"
-                      // className={`${
-                      //   id
-                      //     ? "text-orange-500 cursor-pointer"
-                      //     : "text-gray-500 cursor-no-drop"
-                      // }`}
+                    // className={`${
+                    //   id
+                    //     ? "text-orange-500 cursor-pointer"
+                    //     : "text-gray-500 cursor-no-drop"
+                    // }`}
                     >
                       Browse
                     </span>
@@ -647,9 +647,8 @@ const InstancePage = () => {
 
           <div>
             <div
-              className={`overflow-y-auto ${
-                limit >= tolat ? "h-[98%]" : "h-[88%]"
-              }`}
+              className={`overflow-y-auto ${limit >= tolat ? "h-[98%]" : "h-[88%]"
+                }`}
             >
               <div
                 className="flex flex-wrap gap-4 "
