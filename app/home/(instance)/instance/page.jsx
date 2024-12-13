@@ -579,7 +579,7 @@ const InstancePage = () => {
 
             <div className="flex flex-col p-4 gap-3">
               {/* Video Title Input */}
-              <div>
+              {/* <div>
                 <Input
                   id="video-title"
                   placeholder="Video Title"
@@ -588,7 +588,7 @@ const InstancePage = () => {
                   onChange={(e) => handleChange(e)}
                   onBlur={(e) => handleBlur(e)}
                 />
-              </div>
+              </div> */}
               {/* Upload Section */}
               {/* // ${id ? "cursor-pointer" : "cursor-no-drop" */}
               <div

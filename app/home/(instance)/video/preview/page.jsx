@@ -85,8 +85,8 @@ const Preview_video = () => {
 
   const [csvUrlInput, setCsvUrlInput] = useState("");
   const [data, setData] = useState([]);
+  console.log(data);
   const [segmentData, setSegmentData] = useState([]);
-
 
   const [transcriptSteps, setTranscriptSteps] = useState("Loading...");
 
@@ -100,10 +100,10 @@ const Preview_video = () => {
   const fileInputRef = useRef(null);
   const fileInputRef2 = useRef(null);
   const [isHighlighted, setIsHighlighted] = useState({});
+  console.log(isHighlighted, "ishighlighted");
   const [socket, setSocket] = useState(null);
 
   const [videoArray, setVideoArray] = useAtom(videoArrayAtom);
-
 
   const setCsvData = useSetAtom(csvDataAtom);
   const [selectedIndices, setSelectedIndices] = useState({
@@ -123,6 +123,7 @@ const Preview_video = () => {
   const [plansData, setPlansData] = useState([]);
   const [quota, setQuota] = useState([]);
   const [usedQuota, setUsedQuota] = useState(null);
+  const [targetPhrase, setTargetPhrase] = useState("");
 
   const hasCalledNext = useRef(false);
 
@@ -304,7 +305,6 @@ const Preview_video = () => {
     }
   }, [thumbnailFile]);
 
-
   const getAllSegment = async () => {
     try {
       const queryParams = {
@@ -321,6 +321,8 @@ const Preview_video = () => {
           for (let item of result?.result) {
             const word = item.highlight?.toLowerCase();
             // selected[word] = true;
+            // selected = word;
+
             selected[word] = {
               start_time: item?.start_time,
               end_time: item?.end_time,
@@ -430,6 +432,9 @@ const Preview_video = () => {
           segments = segments + item.word;
         }
       }
+      console.log(highlight_si, "highlight_si 0000");
+      console.log(highlight_ei, "highlight_ei 0000");
+      console.log(segments, "segments 0000");
       let cal_startTime = startTime - 0.1;
       let cal_endTime = endTime + 0.1;
       const responseData = await postData(
@@ -467,6 +472,7 @@ const Preview_video = () => {
     }
     setEditingWordIndex(null);
   };
+
   const handleCrossClick = () => {
     setEditingWordIndex(null); // Close the input without saving
   };
@@ -559,15 +565,17 @@ const Preview_video = () => {
     }
   };
 
-
   const handleMouseDown = (index) => {
+    console.log(index, "index handleMouseDown handleMouseDown");
     setIndexToVisible(index);
     setIsSelecting(true);
     setSelectedIndices({ start: index, end: index });
     startRef.current = index;
   };
 
-  const handleMouseUp = (index) => {
+  const handleMouseUp = (index, startTime, endTime) => {
+    console.log(startTime, endTime, "start end");
+    console.log(index, "index handleMouseUp");
     setIsSelecting(false);
     const start = startRef.current;
     const end = index;
@@ -583,7 +591,7 @@ const Preview_video = () => {
     setHighlightedSegment(segment);
     setEditingWordIndex(selectedStart);
     setInputVisible(true);
-    setInputValue(`variable ${variableCount + 1 }`);
+    setInputValue(`variable ${variableCount + 1}`);
     myfunction(id);
   };
 
@@ -712,6 +720,61 @@ const Preview_video = () => {
   useEffect(() => {
     setCountQuota(segmentData.length);
   }, [segmentData]);
+
+//   useEffect(() => {
+//     // Initialize an empty string to hold the target phrase
+//     let targetText = "";
+
+//     // Loop through the isHighlight state
+//     Object.keys(isHighlighted).forEach((key) => {
+//       if (isHighlighted[key].highlight) {
+//         targetText += key + " "; // Concatenate the phrases where highlight is true
+//       }
+//     });
+
+//     // Set the final targetPhrase in state
+//     setTargetPhrase(targetText.trim()); // trim to remove extra space at the end
+//   }, [isHighlighted]); // Re-run the effect when isHighlight changes
+
+//   useEffect(() => {
+//     // Target the <p> tag
+//     const paragraph = document.getElementById("data");
+
+//     // If the paragraph is not found, log an error
+//     if (!paragraph) {
+//       console.error("Element with ID 'data' not found.");
+//       return; // Exit if element is not found
+//     }
+
+//     // The phrase you want to match
+//     const targetPhrase1 = targetPhrase;
+// console.log(targetPhrase1, "targetPhrase1")
+//     // Convert the phrase to an array of words
+//     const targetWords = targetPhrase1.split(" ");
+
+//     // Find all <span> tags inside the <p> tag
+//     const spans = Array.from(paragraph.querySelectorAll("span"));
+
+//     // Iterate through the spans to find the target phrase
+//     for (let i = 0; i <= spans.length - targetWords.length; i++) {
+//       // Check if the sequence matches the target words
+//       let isMatch = true;
+//       for (let j = 0; j < targetWords.length; j++) {
+//         if (spans[i + j].textContent.trim().toLowerCase() !== targetWords[j].toLowerCase()) {
+//           isMatch = false;
+//           break;
+//         }
+//       }
+
+//       // If a match is found, add the `text-yellow` class to the relevant spans
+//       if (isMatch) {
+//         for (let j = 0; j < targetWords.length; j++) {
+//           spans[i + j].classList.add("bg-[#FEF08A]");
+//         }
+//       }
+//     }
+//   }, [data , targetPhrase, isHighlighted]); // Add data to dependency to re-run when data changes
+
   if (segmentData) {
     arr = segmentData;
   }
@@ -823,7 +886,9 @@ const Preview_video = () => {
               {arr?.map((i, index) => {
                 // const bgColor = getRandomColor();
                 // const textColor = getContrastingColor(bgColor);
-                console.log(i, "countQuota iiiii");
+                {
+                  /* console.log(i, "countQuota iiiii"); */
+                }
 
                 return (
                   <div
@@ -833,7 +898,7 @@ const Preview_video = () => {
                   >
                     <p
                       className="truncate mb-[2px]"
-                    // style={{ color: textColor }}
+                      // style={{ color: textColor }}
                     >
                       {" "}
                       {i.name}
@@ -847,8 +912,9 @@ const Preview_video = () => {
                           setDeletePopUp(true);
                           setSegmentID(i.id);
                           // setVariableCount((pre)=>pre  - 1)
-                          setVariableCount((prev) => (prev > 0 ? prev - 1 : prev));
-
+                          setVariableCount((prev) =>
+                            prev > 0 ? prev - 1 : prev
+                          );
                         }
                       }}
                     />
@@ -863,35 +929,95 @@ const Preview_video = () => {
             </div>
           </div>
 
-          <div
+          <div id="data"
             className={`p-4 pt-0 text-[16px] leading-[24px] text-justify max-h-[316px] overflow-y-auto `}
           >
             {data && data.length > 0 ? (
               <>
-                <p>
+                <p >
                   {data
                     ?.slice(0, showAll ? data.length : 150)
                     ?.map((i, index) => {
-                  
                       const word = i?.word?.trim()?.toLowerCase();
                       const value = inputValue.trim().toLowerCase();
                       let isYellow =
                         i.start >= isHighlighted[word]?.start_time &&
-                          i.end <= isHighlighted[word]?.end_time
+                        i.end <= isHighlighted[word]?.end_time
                           ? true
                           : false;
-                      // let isYellow = isHighlighted[word]?.highlight && i.id === isHighlighted[word].id;
+
+                      Object.keys(isHighlighted).forEach((phrase) => {
+                        if (
+                          phrase.includes(word) &&
+                          i.start >= isHighlighted[phrase]?.start_time &&
+                          i.end <= isHighlighted[phrase]?.end_time
+                        ) {
+                          isYellow = true;
+                        }
+                      });
+
+                      {
+                        /* Object.keys(isHighlighted).forEach((phrase) => {
+                        const words = phrase
+                          .split(" ")
+                          .map((w) => w.trim().toLowerCase());
+                        const phraseLength = words.length; */
+                      }
+
+                      // Check if the sequence matches
+                      {
+                        /* const matchesSequence = data
+                          .slice(index, index + phraseLength)
+                          .every(
+                            (item, offset) =>
+                              words[offset] === item.word.trim().toLowerCase()
+                          ); */
+                      }
+                      {
+                        /* const matchesSequence = data
+                          .slice(index, index + phraseLength)
+                          .every((item, offset) => {
+                            // Log the current slice being checked
+                            console.log(
+                              "Slice being checked:",
+                              data.slice(index, index + phraseLength)
+                            );
+
+                            // Log the current word in the phrase and the current item from the slice
+                            console.log("Phrase word:", words[offset]);
+                            console.log(
+                              "Current item word:",
+                              item.word.trim().toLowerCase()
+                            );
+
+                            // Log the comparison result
+                            const isMatch =
+                              words[offset] === item.word.trim().toLowerCase();
+                            console.log(
+                              `Is match at offset ${offset}:`,
+                              isMatch
+                            );
+
+                            // Return the comparison result
+                            return isMatch;
+                          });
+
+                        console.log(matchesSequence, words, "matchesSequence");
+                        if (matchesSequence) {
+                          isYellow = true;
+                        }
+                      }); */
+                      }
                       const { newWord, removedChar } = cleanAndSplit(i.word);
                       return (
                         <React.Fragment key={index}>
                           {isYellow ? (
                             <>
-                              
                               <span
-                                className={`my-2 ${isYellow ? "bg-[#FEF08A]" : ""
-                                  }`}
+                                className={`my-2 ${
+                                  isYellow ? "bg-[#FEF08A]" : ""
+                                }`}
                                 onMouseDown={() => {
-                                  
                                   if (countQuota < quota?.quota2) {
                                     handleMouseDown(index);
                                   } else {
@@ -900,7 +1026,8 @@ const Preview_video = () => {
                                 }}
                                 onMouseUp={() => {
                                   if (countQuota < quota?.quota2) {
-                                    handleMouseUp(index);
+                                    // handleMouseUp(index);
+                                    handleMouseUp(index, i.start, i.end);
                                   } else {
                                     console.log("limit reached");
                                   }
@@ -914,7 +1041,6 @@ const Preview_video = () => {
                                 className={`my-2 }`}
                                 // onMouseDown={() => handleMouseDown(index)}
                                 onMouseDown={() => {
-                              
                                   if (countQuota < quota?.quota2) {
                                     handleMouseDown(index);
                                   } else {
@@ -923,40 +1049,40 @@ const Preview_video = () => {
                                 }}
                                 // onMouseUp={() => handleMouseUp(index)}
                                 onMouseUp={() => {
-                               
                                   if (countQuota < quota?.quota2) {
                                     handleMouseUp(index);
+                                    handleMouseUp(index, i.start, i.end);
                                   } else {
                                     console.log("limit reached");
                                   }
                                 }}
                                 key={`${index}dup`} // Added key for list items
                               >
-                                {removedChar} 
+                                {removedChar}
                               </span>
                             </>
                           ) : (
                             <span
-                              className={`my-2 ${isYellow ? "bg-[#FEF08A]" : ""
-                                }`}
+                              className={`my-2 ${
+                                isYellow ? "bg-[#FEF08A]" : ""
+                              }`}
                               // onMouseDown={() => handleMouseDown(index)}
                               onMouseDown={() => {
-                              
-                                  if (countQuota < quota?.quota2) {
-                                    handleMouseDown(index);
-                                  } else {
-                                    console.log("limit reached");
-                                  }
-                                }}
+                                if (countQuota < quota?.quota2) {
+                                  handleMouseDown(index);
+                                } else {
+                                  console.log("limit reached");
+                                }
+                              }}
                               // onMouseUp={() => handleMouseUp(index)}
                               onMouseUp={() => {
-                                
-                                  if (countQuota < quota?.quota2) {
-                                    handleMouseUp(index);
-                                  } else {
-                                    console.log("limit reached");
-                                  }
-                                }}
+                                if (countQuota < quota?.quota2) {
+                                  // handleMouseUp(index);
+                                  handleMouseUp(index, i.start, i.end);
+                                } else {
+                                  console.log("limit reached");
+                                }
+                              }}
                               key={index} // Added key for list items
                             >
                               {i.word}
@@ -979,7 +1105,7 @@ const Preview_video = () => {
                                 <Input
                                   value={inputValue}
                                   disabled
-                                // onChange={handleInputChange}
+                                  // onChange={handleInputChange}
                                 />
                                 <div className="flex justify-between ">
                                   <div
@@ -1039,15 +1165,16 @@ const Preview_video = () => {
 
       <div className="flex gap-4 w-full   mt-4 ">
         {/* left section */}
-        {(activeStep == 2 || activeStep == 3) && ( 
+        {(activeStep == 2 || activeStep == 3) && (
           <div className="w-[30%] shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px]  bg-white">
             <p className="font-semibold text-[16px] p-[10px] border-b border-gray-200">
               Upload Data From Document
             </p>
             <div className="p-4">
               <div
-                className={`${allInstances[0]?.locked ? "cursor-no-drop" : "cursor-pointer"
-                  } relative border-2 border-dashed border-gray-300 rounded-[10px] h-[205px] px-[26px] py-[42px] text-center`}
+                className={`${
+                  allInstances[0]?.locked ? "cursor-no-drop" : "cursor-pointer"
+                } relative border-2 border-dashed border-gray-300 rounded-[10px] h-[205px] px-[26px] py-[42px] text-center`}
                 onClick={() => {
                   if (!allInstances[0]?.locked) {
                     fileInputRef.current.click();
@@ -1112,10 +1239,11 @@ const Preview_video = () => {
                           onClick={() => {
                             setDeleteFilePopUp(true);
                           }}
-                          className={`${allInstances[0]?.locked
-                            ? " cursor-not-allowed"
-                            : "cursor-pointer"
-                            } text-red-600 border-2 rounded-3xl size-10 border-red-600 p-2 `}
+                          className={`${
+                            allInstances[0]?.locked
+                              ? " cursor-not-allowed"
+                              : "cursor-pointer"
+                          } text-red-600 border-2 rounded-3xl size-10 border-red-600 p-2 `}
                         />
                       )}
                     </div>
@@ -1146,10 +1274,11 @@ const Preview_video = () => {
                   </div>
                 </div>
                 <div
-                  className={`${allInstances[0]?.locked
-                    ? "cursor-no-drop"
-                    : "cursor-pointer"
-                    } relative w-1/2 flex flex-col items-center justify-center bg-[#FFF5F0] border-2 border-dashed border-orange-400 rounded-md`}
+                  className={`${
+                    allInstances[0]?.locked
+                      ? "cursor-no-drop"
+                      : "cursor-pointer"
+                  } relative w-1/2 flex flex-col items-center justify-center bg-[#FFF5F0] border-2 border-dashed border-orange-400 rounded-md`}
                   onClick={() => {
                     if (!allInstances[0]?.locked) {
                       fileInputRef2.current.click();
