@@ -10,6 +10,23 @@ import { safeLocalStorage } from "@/lib/safelocastorage";
 import { useAtom } from "jotai";
 import { updatedNameAtom } from "@/utils/atom";
 import Cookies from "js-cookie";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogFooter,
+  DialogHeader,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import Image from "next/image";
 
 const Sidebar = () => {
   const [name, setName] = useState("John Doe");
@@ -19,6 +36,7 @@ const Sidebar = () => {
   const { toast } = useToast();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [updatedName, setUpdatedName] = useAtom(updatedNameAtom);
+  const [uploadFileModal, setUploadFileModal] = useState(false);
 
   useEffect(() => {
     const name = safeLocalStorage.getItem("name");
@@ -35,7 +53,7 @@ const Sidebar = () => {
     });
     safeLocalStorage.removeItem("token");
     safeLocalStorage.removeItem("name");
-    Cookies.remove('token')
+    Cookies.remove("token");
     router.push("/auth/login");
   };
 
@@ -76,8 +94,9 @@ const Sidebar = () => {
   return (
     <>
       <div
-        className={` max-w-[30%] bg-white transition-all duration-300 flex flex-col items-start relative rounded-lg ${isCollapsed ? "w-[60px] collapsed" : "min-w-[180px]"
-          }`}
+        className={` max-w-[30%] bg-white transition-all duration-300 flex flex-col items-start relative rounded-lg ${
+          isCollapsed ? "w-[60px] collapsed" : "min-w-[180px]"
+        }`}
       >
         <div
           className="sidebar-icon"
@@ -94,8 +113,9 @@ const Sidebar = () => {
         <div className="sidebar-content">
           <div className="p-2">
             <div
-              className={`menu-item ${pathname === "/home/instance" ? "menu-item-active" : ""
-                }`}
+              className={`menu-item ${
+                pathname === "/home/instance" ? "menu-item-active" : ""
+              }`}
               onClick={() => router.push("/home/instance")}
             >
               <span className="icon">
@@ -108,8 +128,9 @@ const Sidebar = () => {
               <span className="text">Video Projects</span>
             </div>
             <div
-              className={`menu-item ${pathname === "/home/plan" ? "menu-item-active" : ""
-                }`}
+              className={`menu-item ${
+                pathname === "/home/plan" ? "menu-item-active" : ""
+              }`}
               onClick={() => router.push("/home/plan")}
             >
               <span className="icon">
@@ -122,8 +143,9 @@ const Sidebar = () => {
               <span className="text">Pricing Plans</span>
             </div>
             <div
-              className={`menu-item ${pathname === "/home/billing-history" ? "menu-item-active" : ""
-                }`}
+              className={`menu-item ${
+                pathname === "/home/billing-history" ? "menu-item-active" : ""
+              }`}
               onClick={() => fetchBillingHistory()}
             >
               <span className="icon">
@@ -142,8 +164,9 @@ const Sidebar = () => {
               <span className="text">Billing History</span>
             </div>
             <div
-              className={`menu-item ${pathname === "/home/user-emails" ? "menu-item-active" : ""
-                }`}
+              className={`menu-item ${
+                pathname === "/home/user-emails" ? "menu-item-active" : ""
+              }`}
               onClick={() => router.push("/home/user-emails")}
             >
               <span className="icon">
@@ -156,8 +179,9 @@ const Sidebar = () => {
               <span className="text">Emails</span>
             </div>
             <div
-              className={`menu-item ${pathname === "/home/userprofile" ? "menu-item-active" : ""
-                }`}
+              className={`menu-item ${
+                pathname === "/home/userprofile" ? "menu-item-active" : ""
+              }`}
               onClick={() => router.push("/home/userprofile")}
             >
               <span className="icon">
@@ -171,12 +195,26 @@ const Sidebar = () => {
             </div>
           </div>
         </div>
+
         <div className="border-b-2 border-[#D9D9D9] w-full">
+          <div
+            className="flex items-center  p-4 cursor-pointer"
+            onClick={() => {
+              setUploadFileModal(true);
+            }}
+          >
+            <span className="icon">
+              <img src="/assets/help.svg" alt="Instance Icon" />
+            </span>
+            <span className="text">Help</span>
+          </div>
+
           <div className="p-4">
             <div className="user-info ">
               <span
-                className={` rounded-[50%] bg-white border-[3px] border-[#f1c40f] text-center font-sans text-[14px] font-bold text-[#333]  ${isCollapsed ? "w-full h-[26px]" : "w-[35px] h-[35px]"
-                  }`}
+                className={` rounded-[50%] bg-white border-[3px] border-[#f1c40f] text-center font-sans text-[14px] font-bold text-[#333]  ${
+                  isCollapsed ? "w-full h-[26px]" : "w-[35px] h-[35px]"
+                }`}
               >
                 <span
                   className={`relative`}
@@ -191,7 +229,7 @@ const Sidebar = () => {
                 <p className="text-black font-semibold ">
                   {updatedName ? updatedName : name}
                 </p>
-                
+
                 {/* <p
                 className="font-[12px] text-[#757575] leading-[15.6px]"
                 style={{ wordBreak: "break-word" }}
@@ -214,6 +252,129 @@ const Sidebar = () => {
         </div>
         <div></div>
       </div>
+
+      <Dialog open={uploadFileModal} onOpenChange={setUploadFileModal}>
+        <DialogContent className="w-[90vw] max-w-none">
+          <DialogHeader>
+            <DialogTitle>Tour for website</DialogTitle>
+          </DialogHeader>
+
+          <Carousel>
+            <CarouselContent>
+              <CarouselItem>
+                <div className="h-[82vh] ">
+                  <div className="bg-[#edeef2] h-[80%]">
+                    <Image
+                      src="/assets/ss1.png"
+                      alt="tour"
+                      className="w-full h-full"
+                      width={500}
+                      height={500}
+                      style={{ objectFit: "contain" }}
+                    />
+                  </div>
+
+                  <p className="mt-8">
+                    <strong>
+                      Choose your variable(s): In the transcript, select the
+                      word(s) you want to replace in each video. Click the
+                      checkmark to confirm. This becomes "Variable 1." (Paid
+                      subscribers can select a second set of words to replace as
+                      "Variable 2.")
+                    </strong>
+                  </p>
+                </div>
+              </CarouselItem>
+              <CarouselItem>
+                <div className="h-[80vh] " style={{overflowY: "auto"}}> 
+                  <div className="bg-[#edeef2] h-[80%]">
+                    <Image
+                      src="/assets/ss2.png"
+                      alt="tour"
+                      className="w-full h-full"
+                      width={500}
+                      height={500}
+                      style={{ objectFit: "contain" }}
+                    />
+                  </div>
+
+                  <p className="mt-4">
+                    <strong>
+                      Prepare your spreadsheet: Make sure your spreadsheet has a
+                      column named "Variable 1" (and "Variable 2" if you have a
+                      paid subscription). Each row in these columns should
+                      contain the specific information you want to use in place
+                      of the variable(s) in your video.
+                    </strong>
+                    <p className="mt-1">
+                      <strong>
+                        {" "}
+                        Example: If "Variable 1" is the name "David" in your
+                        video, your "Variable 1" column in the spreadsheet would
+                        contain the names of each person you want to address
+                        (e.g., "Susan," "John," "Jennifer"). Customize your
+                        thumbnail: Choose an eye-catching image to be the first
+                        thing your viewers see.
+                      </strong>
+                    </p>
+                  </p>
+                </div>
+              </CarouselItem>
+              <CarouselItem>
+                <div className="h-[80vh] ">
+                  <div className="bg-[#edeef2] h-[80%]">
+                    <Image
+                      src="/assets/ss3.png"
+                      alt="tour"
+                      className="w-full h-full"
+                      width={500}
+                      height={500}
+                      style={{ objectFit: "contain" }}
+                    />
+                  </div>
+
+                  <p className="mt-4">
+                    <strong>
+                      Add thumbnail text (optional): Include a short message on
+                      your thumbnail to further personalize the video or grab
+                      attention
+                    </strong>
+                  </p>
+                </div>
+              </CarouselItem>
+
+              <CarouselItem>
+                <div className="h-[80vh] ">
+                  <div className="bg-[#edeef2] h-[80%]">
+                    <Image
+                      src="/assets/ss4.png"
+                      alt="tour"
+                      className="w-full h-full"
+                      width={500}
+                      height={500}
+                      style={{ objectFit: "contain" }}
+                    />
+                  </div>
+
+                  <p className="mt-4">
+                    <strong>
+                      {" "}
+                      Generate your videos: Click "Merge Video" to start the
+                      process. Our system will create a unique video for each
+                      contact in your spreadsheet, replacing the variable(s)
+                      with the corresponding information from your spreadsheet.{" "}
+                    </strong>
+                  </p>
+                </div>
+              </CarouselItem>
+            </CarouselContent>
+            <div className="relative mb-3 ">
+              <CarouselPrevious className="absolute left-0 rounded-[10px] px-9 py-4 " />
+              <CarouselNext className="absolute right-0 rounded-[10px] px-9 py-4" />
+            </div>
+          </Carousel>
+        </DialogContent>
+      </Dialog>
     </>
   );
   ``;
