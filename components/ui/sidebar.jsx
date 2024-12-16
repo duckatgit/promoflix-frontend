@@ -192,7 +192,7 @@ const Sidebar = () => {
 
         <div className="border-b-2 border-[#D9D9D9] w-full">
           <div
-            className="flex items-center  p-4 cursor-pointer"
+            className="flex items-center  p-4 pb-[10px] cursor-pointer"
             onClick={() => {
               setUploadFileModal(true);
             }}
@@ -203,23 +203,25 @@ const Sidebar = () => {
             <span className="text">Help</span>
           </div>
 
-          <div className="p-4">
+          <div className="p-4 pl-[18px]">
             <div className="user-info ">
               <span
-                className={` rounded-[50%] bg-white border-[3px] border-[#f1c40f] text-center font-sans text-[14px] font-bold text-[#333]  ${isCollapsed ? "w-full h-[26px]" : "w-[35px] h-[35px]"
-                  }`}
+                className={`border-[#757575] text-[#757575] font-medium border-2 w-5 h-5 rounded-[50%] bg-white   text-center font-sans text-[14px]   
+                  `}
+
+
               >
                 <span
                   className={`relative`}
                   style={{
-                    top: isCollapsed ? "-2px " : "2px",
+                    top: "-3px",
                   }}
                 >
                   {updatedName ? updatedName?.charAt(0) : name?.charAt(0)}
                 </span>
               </span>
-              <div className="text ml-2">
-                <p className="text-black font-semibold ">
+              <div className="text ml-3">
+                <p className="text ">
                   {updatedName ? updatedName : name}
                 </p>
 
