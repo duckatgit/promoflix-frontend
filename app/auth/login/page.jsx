@@ -18,6 +18,7 @@ import { postData } from '@/utils/api';
 import { useRouter } from 'next/navigation';
 import FormDesign from '@/components/common-designs/form-design';
 import Cookies from 'js-cookie';
+import { safeLocalStorage } from '@/lib/safelocastorage';
 
 const Login = () => {
   const router = useRouter();
@@ -30,7 +31,7 @@ const Login = () => {
 
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = safeLocalStorage.getItem("token");
     if (token) {
       router.push("/home/instance");
     }
@@ -50,7 +51,7 @@ const Login = () => {
         email: form.email,
         password: form.password,
       });
-  
+
       if (response.code != 200) {
         setLoading(false);
         toast({
@@ -66,8 +67,8 @@ const Login = () => {
           title: "Logged in",
           description: "You are logged in successfully"
         })
-        localStorage.setItem("name", response?.result?.user?.name)
-        localStorage.setItem("token", response.result.token.access_token)
+        safeLocalStorage.setItem("name", response?.result?.user?.name)
+        safeLocalStorage.setItem("token", response.result.token.access_token)
         Cookies.set('token', response.result.token.access_token)
         router.push('/home/instance'); // Redirect to the dashboard page
       }
@@ -78,7 +79,7 @@ const Login = () => {
         title: "Uh oh! Something went wrong.",
         description: error.response.data.result,
       })
-   
+
     }
   }
 

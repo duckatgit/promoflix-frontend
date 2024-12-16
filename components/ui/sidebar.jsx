@@ -217,12 +217,12 @@ const Sidebar = () => {
                     top: "-3px",
                   }}
                 >
-                  {updatedName ? updatedName?.charAt(0) : name?.charAt(0)}
+                  {name ? name?.charAt(0) : updatedName?.charAt(0)}
                 </span>
               </span>
               <div className="text ml-3">
                 <p className="text ">
-                  {updatedName ? updatedName : name}
+                  {name ? name : updatedName}
                 </p>
 
                 {/* <p
