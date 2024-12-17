@@ -77,25 +77,29 @@ const Sidebar = () => {
   const profile = async () => {
     try {
       const result = await fetchData("api/user", {}, "");
+      console.log(result, "hghghghg");
       if (result.code != 200) {
         toast({
           type: "error",
           title: "Uh oh! Something went wrong.",
           description: data.result,
         });
-      } else {
-        const data = result;
-        setUpdatedName(data?.result?.user?.name);
+      } else if (result.code == 401) {
+        logOutUser();
       }
     } catch (error) {
       console.log(error);
     }
   };
+  useEffect(() => {
+    profile();
+  }, []);
   return (
     <>
       <div
-        className={` max-w-[30%] bg-white transition-all duration-300 flex flex-col items-start relative rounded-lg ${isCollapsed ? "w-[60px] collapsed" : "min-w-[180px]"
-          }`}
+        className={` max-w-[30%] bg-white transition-all duration-300 flex flex-col items-start relative rounded-lg ${
+          isCollapsed ? "w-[60px] collapsed" : "min-w-[180px]"
+        }`}
       >
         <div
           className="sidebar-icon"
@@ -112,8 +116,9 @@ const Sidebar = () => {
         <div className="sidebar-content">
           <div className="p-2">
             <div
-              className={`menu-item ${pathname === "/home/instance" ? "menu-item-active" : ""
-                }`}
+              className={`menu-item ${
+                pathname === "/home/instance" ? "menu-item-active" : ""
+              }`}
               onClick={() => router.push("/home/instance")}
             >
               <span className="icon">
@@ -126,8 +131,9 @@ const Sidebar = () => {
               <span className="text">Video Projects</span>
             </div>
             <div
-              className={`menu-item ${pathname === "/home/plan" ? "menu-item-active" : ""
-                }`}
+              className={`menu-item ${
+                pathname === "/home/plan" ? "menu-item-active" : ""
+              }`}
               onClick={() => router.push("/home/plan")}
             >
               <span className="icon">
@@ -140,8 +146,9 @@ const Sidebar = () => {
               <span className="text">Pricing Plans</span>
             </div>
             <div
-              className={`menu-item ${pathname === "/home/billing-history" ? "menu-item-active" : ""
-                }`}
+              className={`menu-item ${
+                pathname === "/home/billing-history" ? "menu-item-active" : ""
+              }`}
               onClick={() => fetchBillingHistory()}
             >
               <span className="icon">
@@ -160,8 +167,9 @@ const Sidebar = () => {
               <span className="text">Billing History</span>
             </div>
             <div
-              className={`menu-item ${pathname === "/home/user-emails" ? "menu-item-active" : ""
-                }`}
+              className={`menu-item ${
+                pathname === "/home/user-emails" ? "menu-item-active" : ""
+              }`}
               onClick={() => router.push("/home/user-emails")}
             >
               <span className="icon">
@@ -174,8 +182,9 @@ const Sidebar = () => {
               <span className="text">Emails</span>
             </div>
             <div
-              className={`menu-item ${pathname === "/home/userprofile" ? "menu-item-active" : ""
-                }`}
+              className={`menu-item ${
+                pathname === "/home/userprofile" ? "menu-item-active" : ""
+              }`}
               onClick={() => router.push("/home/userprofile")}
             >
               <span className="icon">
@@ -208,8 +217,6 @@ const Sidebar = () => {
               <span
                 className={`border-[#757575] text-[#757575] font-medium border-2 w-5 h-5 rounded-[50%] bg-white   text-center font-sans text-[14px]   
                   `}
-
-
               >
                 <span
                   className={`relative`}
@@ -221,9 +228,7 @@ const Sidebar = () => {
                 </span>
               </span>
               <div className="text ml-3">
-                <p className="text ">
-                  {name ? name : updatedName}
-                </p>
+                <p className="text ">{name ? name : updatedName}</p>
 
                 {/* <p
                 className="font-[12px] text-[#757575] leading-[15.6px]"
@@ -273,9 +278,9 @@ const Sidebar = () => {
                     <strong>
                       Choose your variable(s): In the transcript, select the
                       word(s) you want to replace in each video. Click the
-                      checkmark to confirm. This becomes &quot;Variable 1.&quot; (Paid
-                      subscribers can select a second set of words to replace as
-                      &quot;Variable 2.&quot;)
+                      checkmark to confirm. This becomes &quot;Variable 1.&quot;
+                      (Paid subscribers can select a second set of words to
+                      replace as &quot;Variable 2.&quot;)
                     </strong>
                   </p>
                 </div>
@@ -296,20 +301,22 @@ const Sidebar = () => {
                   <p className="mt-4">
                     <strong>
                       Prepare your spreadsheet: Make sure your spreadsheet has a
-                      column named &quot;Variable 1&quot; (and &quot;Variable 2&quot; if you have a
-                      paid subscription). Each row in these columns should
-                      contain the specific information you want to use in place
-                      of the variable(s) in your video.
+                      column named &quot;Variable 1&quot; (and &quot;Variable
+                      2&quot; if you have a paid subscription). Each row in
+                      these columns should contain the specific information you
+                      want to use in place of the variable(s) in your video.
                     </strong>
                     <p className="mt-1">
                       <strong>
                         {" "}
-                        Example: If &quot;Variable 1&quot; is the name &quot;David&quot; in your
-                        video, your &quot;Variable 1&quot; column in the spreadsheet would
-                        contain the names of each person you want to address
-                        (e.g., &quot;Susan,&quot; &quot;John,&quot; &quot;Jennifer&quot;). Customize your
-                        thumbnail: Choose an eye-catching image to be the first
-                        thing your viewers see.
+                        Example: If &quot;Variable 1&quot; is the name
+                        &quot;David&quot; in your video, your &quot;Variable
+                        1&quot; column in the spreadsheet would contain the
+                        names of each person you want to address (e.g.,
+                        &quot;Susan,&quot; &quot;John,&quot;
+                        &quot;Jennifer&quot;). Customize your thumbnail: Choose
+                        an eye-catching image to be the first thing your viewers
+                        see.
                       </strong>
                     </p>
                   </p>
@@ -354,10 +361,11 @@ const Sidebar = () => {
                   <p className="mt-4">
                     <strong>
                       {" "}
-                      Generate your videos: Click &quot;Merge Video&quot; to start the
-                      process. Our system will create a unique video for each
-                      contact in your spreadsheet, replacing the variable(s)
-                      with the corresponding information from your spreadsheet.{" "}
+                      Generate your videos: Click &quot;Merge Video&quot; to
+                      start the process. Our system will create a unique video
+                      for each contact in your spreadsheet, replacing the
+                      variable(s) with the corresponding information from your
+                      spreadsheet.{" "}
                     </strong>
                   </p>
                 </div>
