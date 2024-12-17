@@ -391,7 +391,7 @@ const Dashboard = ({
         >
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Update Instance</DialogTitle>
+              <DialogTitle>Update Video Title</DialogTitle>
             </DialogHeader>
             <div className="gap-4 border-dashed justify-center flex flex-col m-4 items-center">
               <div className="flex flex-col space-y-1.5 w-[400px]">
