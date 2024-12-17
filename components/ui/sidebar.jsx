@@ -84,9 +84,10 @@ const Sidebar = () => {
           title: "Uh oh! Something went wrong.",
           description: data.result,
         });
-      } else if (result.code == 401) {
+      } else if (result.code == 401 || result.code == 403) {
         logOutUser();
       }
+
     } catch (error) {
       console.log(error);
     }
