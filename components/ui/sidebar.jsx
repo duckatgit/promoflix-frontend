@@ -76,15 +76,10 @@ const Sidebar = () => {
 
   const profile = async () => {
     try {
+      debugger;
       const result = await fetchData("api/user", {}, "");
       console.log(result, "hghghghg");
-      if (result.code != 200) {
-        toast({
-          type: "error",
-          title: "Uh oh! Something went wrong.",
-          description: data.result,
-        });
-      } else if (result.code == 401 || result.code == 403) {
+      if (result.code == 401 || result.code == 403) {
         logOutUser();
       }
 
@@ -98,9 +93,8 @@ const Sidebar = () => {
   return (
     <>
       <div
-        className={` max-w-[30%] bg-white transition-all duration-300 flex flex-col items-start relative rounded-lg ${
-          isCollapsed ? "w-[60px] collapsed" : "min-w-[180px]"
-        }`}
+        className={` max-w-[30%] bg-white transition-all duration-300 flex flex-col items-start relative rounded-lg ${isCollapsed ? "w-[60px] collapsed" : "min-w-[180px]"
+          }`}
       >
         <div
           className="sidebar-icon"
@@ -117,9 +111,8 @@ const Sidebar = () => {
         <div className="sidebar-content">
           <div className="p-2">
             <div
-              className={`menu-item ${
-                pathname === "/home/instance" ? "menu-item-active" : ""
-              }`}
+              className={`menu-item ${pathname === "/home/instance" ? "menu-item-active" : ""
+                }`}
               onClick={() => router.push("/home/instance")}
             >
               <span className="icon">
@@ -132,9 +125,8 @@ const Sidebar = () => {
               <span className="text">Video Projects</span>
             </div>
             <div
-              className={`menu-item ${
-                pathname === "/home/plan" ? "menu-item-active" : ""
-              }`}
+              className={`menu-item ${pathname === "/home/plan" ? "menu-item-active" : ""
+                }`}
               onClick={() => router.push("/home/plan")}
             >
               <span className="icon">
@@ -147,9 +139,8 @@ const Sidebar = () => {
               <span className="text">Pricing Plans</span>
             </div>
             <div
-              className={`menu-item ${
-                pathname === "/home/billing-history" ? "menu-item-active" : ""
-              }`}
+              className={`menu-item ${pathname === "/home/billing-history" ? "menu-item-active" : ""
+                }`}
               onClick={() => fetchBillingHistory()}
             >
               <span className="icon">
@@ -168,9 +159,8 @@ const Sidebar = () => {
               <span className="text">Billing History</span>
             </div>
             <div
-              className={`menu-item ${
-                pathname === "/home/user-emails" ? "menu-item-active" : ""
-              }`}
+              className={`menu-item ${pathname === "/home/user-emails" ? "menu-item-active" : ""
+                }`}
               onClick={() => router.push("/home/user-emails")}
             >
               <span className="icon">
@@ -183,9 +173,8 @@ const Sidebar = () => {
               <span className="text">Emails</span>
             </div>
             <div
-              className={`menu-item ${
-                pathname === "/home/userprofile" ? "menu-item-active" : ""
-              }`}
+              className={`menu-item ${pathname === "/home/userprofile" ? "menu-item-active" : ""
+                }`}
               onClick={() => router.push("/home/userprofile")}
             >
               <span className="icon">
