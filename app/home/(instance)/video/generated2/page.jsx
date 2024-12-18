@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 
 import { fetchData } from "@/utils/api";
 import ProgressLoader from "../generate/ProgressLoader";
+import { FaShareAlt } from "react-icons/fa";
 
 const Generate_video = () => {
   const searchParams = useSearchParams();
@@ -133,25 +134,34 @@ const Generate_video = () => {
             Back
           </Button>
 
-          {csvData && (
-            <CSVLink
-              className="py-2 m-0 cursor-pointer"
-              filename={`${id}.csv`}
-              data={csvData?.records}
-              headers={csvData?.headers}
+          <div className="flex items-center gap-3">
+            {csvData && (
+              <CSVLink
+                className="py-2 m-0 cursor-pointer"
+                filename={`${id}.csv`}
+                data={csvData?.records}
+                headers={csvData?.headers}
+              >
+                <Button className="py-2 px-3 cursor-pointer rounded-[8px] text-base">
+                  <Image
+                    className="mr-2"
+                    src={"/assets/download.svg"}
+                    height={24}
+                    width={24}
+                    alt="download"
+                  />
+                  Download CSV
+                </Button>
+              </CSVLink>
+            )}
+            <Button
+              className="py-2 px-3 cursor-pointer rounded-[8px] text-base"
+              onClick={() => router.push(`/home/shareEmails`)}
             >
-              <Button className="py-2 px-3 cursor-pointer rounded-[8px] text-base">
-                <Image
-                  className="mr-2"
-                  src={"/assets/download.svg"}
-                  height={24}
-                  width={24}
-                  alt="download"
-                />
-                Download CSV
-              </Button>
-            </CSVLink>
-          )}
+              <FaShareAlt />
+              <span className="ml-2">Share</span>
+            </Button>
+          </div>
         </div>
 
         <div className="p-[10px] border-b border-gray-300">

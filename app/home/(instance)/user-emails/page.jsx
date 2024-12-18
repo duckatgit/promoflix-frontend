@@ -30,6 +30,8 @@ import { TbEdit } from "react-icons/tb";
 import { Pointer } from "lucide-react";
 import { maskPassword } from "@/lib/utils";
 import StickyBanner from "./Banner";
+import { useAtom } from "jotai";
+import { emailsAtom } from "@/utils/atom";
 
 
 const UserEmails = () => {
@@ -38,7 +40,7 @@ const UserEmails = () => {
   const [loading, setLoading] = useState(false);
   const [showLoader, setShowLoader] = useState(false);
   const [deletePopUp, setDeletePopUp] = useState(false);
-  const [emailData, setEmailData] = useState([]);
+  const [emailData, setEmailData] = useAtom(emailsAtom);
   const [emailId, setEmailId] = useState("");
   const [editData, setEditData] = useState(null);
 
