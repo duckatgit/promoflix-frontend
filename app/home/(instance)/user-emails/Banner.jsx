@@ -1,6 +1,7 @@
+import Link from "next/link";
 import React from "react";
 
-const StickyBanner = () => {
+const StickyBanner = ({path}) => {
   const handleDismiss = () => {
     const banner = document.getElementById("sticky-banner");
     if (banner) {
@@ -28,16 +29,30 @@ const StickyBanner = () => {
             </svg>
             <span className="sr-only">Light bulb</span>
           </span>
-          <span>
-          If you are adding your Gmail account, please create an app password.   {" "}
-            <a
-              href="https://support.google.com/mail/answer/185833?hl=en" target="_blank"
-              className="inline font-medium text-blue-600 underline dark:text-blue-500 underline-offset-2 decoration-600 dark:decoration-500 decoration-solid hover:no-underline"
-            >
-              click here
-            </a>
-            {" "} to check the steps.
-          </span>
+          {path=='user-emails' ?(
+             <span>
+             If you are adding your Gmail account, please create an app password.   {" "}
+               <a
+                 href="https://support.google.com/mail/answer/185833?hl=en" target="_blank"
+                 className="inline font-medium text-blue-600 underline dark:text-blue-500 underline-offset-2 decoration-600 dark:decoration-500 decoration-solid hover:no-underline"
+               >
+                 click here
+               </a>
+               {" "} to check the steps.
+             </span>
+          ):(
+            <span>
+          If you don't have an email, please create by clicking the Add Email button.   {" "}
+              <Link
+                href="/home/user-emails"
+                className="inline font-medium text-blue-600 underline dark:text-blue-500 underline-offset-2 decoration-600 dark:decoration-500 decoration-solid hover:no-underline"
+              >
+                go to the email page 
+                </Link>
+              {" "} directly by clicking here.
+            </span>
+          )}
+         
         </p>
       </div>
       <div className="flex items-center">

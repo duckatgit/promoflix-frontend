@@ -181,7 +181,7 @@ const UserEmails = () => {
 
   return (
     <div className="w-full">
-      <StickyBanner />
+      <StickyBanner path={'user-emails'}/>
       <div className="text-end">
         <Button
           className="text-right text-white mb-5 cursor-pointer"

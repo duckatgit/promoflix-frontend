@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 
 import React, { useState } from "react";
 import { useEffect } from "react";
+import StickyBanner from "../user-emails/Banner";
 
 const ShareEmails = () => {
   const router = useRouter();
@@ -23,23 +24,11 @@ const ShareEmails = () => {
     setColumn(e.target.value);
   };
 
-//   useEffect(() => {
-//     setTimeout(() => {
-//      return(
-//         <Image
-//         src="/assets/tube-spinner.svg"
-//         alt="Logo"
-//         width={50}
-//         height={50}
-//       />
-//      )
-//     }, 2000);
-//   }, []);
   return (
     <>
       {emailData?.length > 0 ? (
-        <div className=" w-screen bg-white p-4">
-          <div className="flex gap-4 w-full shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px]">
+        <div className="">
+          <div className="flex gap-4 w-full bg-white p-4 shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px]">
             {/* left section */}
             <div className="w-[50%] my-[5px] bg-white ">
               {/* Email to List */}
@@ -51,7 +40,7 @@ const ShareEmails = () => {
                   Select the email you'd like to send from. You can create more
                   emails in{" "}
                   <Link
-                    href="/home/userprofile"
+                    href="/home/user-emails"
                     className="text-blue-600 hover:underline"
                   >
                     Settings
@@ -143,26 +132,17 @@ const ShareEmails = () => {
           </div>
         </div>
       ) : (
-        <div className="w-screen flex justify-between ">
-          <div className="w-[50%]">
-            <Input
-              className="rounded-[20px] p-3"
-              id="email"
-              type="text"
-              placeholder="Paste Spreadsheet URL"
-              value={""}
-              onChange={(e) => {
-                "";
-              }}
-            />
-          </div>
-          <Button
-            className="text-right text-white mb-5 cursor-pointer px-8"
-            style={{ backgroundColor: "#333333" }}
-            onClick={() => router.push(`/home/user-emails`)}
-          >
-            Add Email
-          </Button>
+        <div className="w-full ">
+         <StickyBanner />
+      <div className="text-end">
+        <Button
+          className="text-right text-white mb-5 cursor-pointer"
+          style={{ backgroundColor: "#333333" }}
+          onClick={() => router.push(`/home/user-emails`)}
+        >
+          Add Email
+        </Button>
+      </div>
         </div>
       )}
     </>
