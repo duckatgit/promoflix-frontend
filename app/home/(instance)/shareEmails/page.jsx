@@ -37,7 +37,7 @@ const ShareEmails = () => {
                   Email Videos to list
                 </h1>
                 <label className="block text-sm font-medium mb-1 my-[2px]">
-                  Select the email you'd like to send from. You can create more
+                  Select the email you&apos;d like to send from. You can create more
                   emails in{" "}
                   <Link
                     href="/home/user-emails"
@@ -133,16 +133,16 @@ const ShareEmails = () => {
         </div>
       ) : (
         <div className="w-full ">
-         <StickyBanner />
-      <div className="text-end">
-        <Button
-          className="text-right text-white mb-5 cursor-pointer"
-          style={{ backgroundColor: "#333333" }}
-          onClick={() => router.push(`/home/user-emails`)}
-        >
-          Add Email
-        </Button>
-      </div>
+          <StickyBanner />
+          <div className="text-end">
+            <Button
+              className="text-right text-white mb-5 cursor-pointer"
+              style={{ backgroundColor: "#333333" }}
+              onClick={() => router.push(`/home/user-emails`)}
+            >
+              Add Email
+            </Button>
+          </div>
         </div>
       )}
     </>
