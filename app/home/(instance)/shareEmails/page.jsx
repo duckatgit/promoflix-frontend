@@ -11,15 +11,19 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useEffect } from "react";
 import StickyBanner from "../user-emails/Banner";
+import { useSearchParams } from "next/navigation";
 
 const ShareEmails = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [emailData, setEmailData] = useAtom(emailsAtom);
   const [selectedEmail, setSelectedEmail] = useState("");
   const [column, setColumn] = useState("");
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
-
+  const id = searchParams.get("id");
+  const arrayParam = searchParams.get("array");
+  const array = arrayParam ? JSON.parse(arrayParam) : [];
   const handleDropdownChange = (e) => {
     setColumn(e.target.value);
   };
@@ -28,6 +32,15 @@ const ShareEmails = () => {
     <>
       {emailData?.length > 0 ? (
         <div className="">
+          <div className="mb-3">
+            {" "}
+            <Button
+              className="py-2 px-3 cursor-pointer border w-[60px]"
+              onClick={() => router.push(`/home/video/generated2?id=${id}`)}
+            >
+              Back
+            </Button>
+          </div>
           <div className="flex gap-4 w-full bg-white p-4 shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px]">
             {/* left section */}
             <div className="w-[50%] my-[5px] bg-white ">
@@ -37,8 +50,8 @@ const ShareEmails = () => {
                   Email Videos to list
                 </h1>
                 <label className="block text-sm font-medium mb-1 my-[2px]">
-                  Select the email you&apos;d like to send from. You can create more
-                  emails in{" "}
+                  Select the email you&apos;d like to send from. You can create
+                  more emails in{" "}
                   <Link
                     href="/home/user-emails"
                     className="text-blue-600 hover:underline"
@@ -67,7 +80,7 @@ const ShareEmails = () => {
                   The email addresses in the selected column will be sent the
                   email.
                 </label>
-                <select
+                {/* <select
                   className="w-full p-2 mb-[20px] border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                   value={column}
                   onChange={(e) => setColumn(e.target.value)}
@@ -76,14 +89,35 @@ const ShareEmails = () => {
                   <option value="name">No column</option>
                   <option value="linkedin page">LinkedIn Page</option>
                   <option value="email">Email</option>
+                </select> */}
+
+                <select
+                  className="w-full p-2 mb-[20px] border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  value={column}
+                  onChange={(e) => setColumn(e.target.value)}
+                >
+                  <option value="">Select a column</option>
+                  {array?.map((ele) => (
+                    <option key={ele} value={ele}>
+                      {ele}
+                    </option>
+                  ))}
                 </select>
               </div>
               {/* Subject */}
               <div>
                 <h1 className="font-semibold leading-6">Subject</h1>
                 <label className="block text-sm font-medium mb-1">
-                  Click to add coulumn header:
+                  Click to add column header:
                 </label>
+                <div className="my-3 flex gap-2 flex-wrap">
+                  {array?.map((item, i) => (
+                    <div key={i}
+                  className="py-2 px-6 text-blue-500 bg-white   font-medium border border-blue-500  rounded-2xl"
+                    
+                    >{item}</div>
+                  ))}
+                </div>
                 <input
                   type="text"
                   placeholder="Hey {{First Name}}..."
@@ -101,7 +135,7 @@ const ShareEmails = () => {
                   className="w-full text-blue-500 bg-white hover:text-white hover:bg-blue-500 font-medium border border-blue-500 rounded-2xl"
                   onClick={""}
                 >
-                  🚀 Send to 4 recipients
+                  🚀 Send to {array?.length} recipients
                 </Button>
                 <Button
                   className="w-full text-blue-500 bg-white hover:text-white hover:bg-blue-500 font-medium border border-blue-500  rounded-2xl"
@@ -116,10 +150,16 @@ const ShareEmails = () => {
               {/* Body */}
               <div>
                 <h1 className="font-semibold leading-6 mb-[2px]">
-                  {
-                    "Body (must include {{ Video }} or {{ Landing page }} variable)"
-                  }
+                  {"Body (must include {{ Video }} variable)"}
                 </h1>
+                <div className="my-3 flex gap-2 flex-wrap">
+                  {array?.map((item, i) => (
+                    <div key={i}
+                  className="py-2 px-6 text-blue-500 bg-white   font-medium border border-blue-500  rounded-2xl"
+                    
+                    >{item}</div>
+                  ))}
+                </div>
                 <textarea
                   placeholder="Hey {{First Name}}..."
                   rows="7"

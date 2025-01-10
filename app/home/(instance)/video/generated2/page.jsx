@@ -10,9 +10,10 @@ import Image from "next/image";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 
-import { fetchData } from "@/utils/api";
+import { fetchData, postData } from "@/utils/api";
 import ProgressLoader from "../generate/ProgressLoader";
 import { FaShareAlt } from "react-icons/fa";
+import { IoMdRefresh } from "react-icons/io";
 
 const Generate_video = () => {
   const searchParams = useSearchParams();
@@ -26,10 +27,21 @@ const Generate_video = () => {
   const [csvData, setCsvData] = useAtom(csvDataAtom);
 
   const [showLoader, setShowLoader] = useState(true);
+  const [filteredCsvData, setFilteredCsvData] = useState([]);
+
+  const excludeHeaders = ["url", "thumbnail", "gif", "status"];
+  // Function to filter out specific properties
+  const filterHeaders = () => {
+    const filteredHeaders = csvData?.headers.filter(
+      (header) => !excludeHeaders.includes(header)
+    );
+    setFilteredCsvData(filteredHeaders);
+  };
+  useEffect(() => {
+    filterHeaders();
+  }, [csvData]);
 
   const getAllVideoById = async (id) => {
-    console.log("object getAllInstance");
-
     try {
       const result = await fetchData(`api/v1/generate/${id}`, {}, "hirello");
       if (result.code != 200) {
@@ -46,7 +58,35 @@ const Generate_video = () => {
         setShowLoader(false);
 
         const data = result;
-        console.log(data, "get video by id");
+
+        setVideoArray(data.result);
+      }
+    } catch (error) {
+      setShowLoader(false);
+
+      console.log(error);
+    }
+  };
+
+  const regenerateAllVideoById = async (id) => {
+    try {
+      const result = await postData(`api/v1/regenerate/${id}`, {}, "hirello");
+      console.log(result, "regenerate");
+      if (result.code != 200) {
+        setShowLoader(false);
+
+        toast({
+          type: "error",
+
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: data.result,
+        });
+      } else {
+        setShowLoader(false);
+
+        const data = result;
+
         setVideoArray(data.result);
       }
     } catch (error) {
@@ -111,6 +151,14 @@ const Generate_video = () => {
       });
     }
   }, []);
+  const handleClick = () => {
+    // const id = id
+    const queryParams = new URLSearchParams();
+    queryParams.set("id", id);
+    queryParams.set("array", JSON.stringify(filteredCsvData));
+
+    router.push(`/home/shareEmails?${queryParams.toString()}`);
+  };
 
   return (
     <>
@@ -154,9 +202,19 @@ const Generate_video = () => {
                 </Button>
               </CSVLink>
             )}
+
             <Button
               className="py-2 px-3 cursor-pointer rounded-[8px] text-base"
-              onClick={() => router.push(`/home/shareEmails`)}
+              onClick={()=>regenerateAllVideoById(id)}
+            >
+              <IoMdRefresh size={25} />
+              <span className="ml-2">Regenerate Video</span>
+            </Button>
+            <Button
+              className="py-2 px-3 cursor-pointer rounded-[8px] text-base"
+              onClick={() => {
+                handleClick();
+              }}
             >
               <FaShareAlt />
               <span className="ml-2">Share</span>
