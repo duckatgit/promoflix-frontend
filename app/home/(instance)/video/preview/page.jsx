@@ -115,7 +115,6 @@ const Preview_video = () => {
   const [highlightedSegment, setHighlightedSegment] = useState("");
   const [indexToVisible, setIndexToVisible] = useState(null);
 
-  const [receivedMessages, setReceivedMessages] = useState([]);
   const [showAll, setShowAll] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
@@ -123,7 +122,7 @@ const Preview_video = () => {
   const [plansData, setPlansData] = useState([]);
   const [quota, setQuota] = useState([]);
   const [usedQuota, setUsedQuota] = useState(null);
-  const [targetPhrase, setTargetPhrase] = useState("");
+
 
   const hasCalledNext = useRef(false);
 
@@ -721,20 +720,7 @@ const Preview_video = () => {
     setCountQuota(segmentData.length);
   }, [segmentData]);
 
-//   useEffect(() => {
-//     // Initialize an empty string to hold the target phrase
-//     let targetText = "";
-
-//     // Loop through the isHighlight state
-//     Object.keys(isHighlighted).forEach((key) => {
-//       if (isHighlighted[key].highlight) {
-//         targetText += key + " "; // Concatenate the phrases where highlight is true
-//       }
-//     });
-
-//     // Set the final targetPhrase in state
-//     setTargetPhrase(targetText.trim()); // trim to remove extra space at the end
-//   }, [isHighlighted]); // Re-run the effect when isHighlight changes
+  // 8th
 
 //   useEffect(() => {
 //     // Target the <p> tag
@@ -746,49 +732,177 @@ const Preview_video = () => {
 //       return; // Exit if element is not found
 //     }
 
-//     // The phrase you want to match
-//     const targetPhrase1 = targetPhrase;
-// console.log(targetPhrase1, "targetPhrase1")
+//     // Initialize an empty string to hold the target phrase
+//     let targetText = "";
+
+//     // Loop through the isHighlighted state and build the target phrase
+//     Object.keys(isHighlighted).forEach((key) => {
+//       if (isHighlighted[key].highlight) {
+//         targetText += key + " "; // Concatenate the phrases where highlight is true
+//       }
+//     });
+
+//     // Trim and set the target phrase
+//     const targetPhrase1 = targetText.trim();
+//     console.log(targetPhrase1, "targetPhrase1");
+
 //     // Convert the phrase to an array of words
 //     const targetWords = targetPhrase1.split(" ");
 
 //     // Find all <span> tags inside the <p> tag
 //     const spans = Array.from(paragraph.querySelectorAll("span"));
 
-//     // Iterate through the spans to find the target phrase
+  
+// console.log(spans, "spans 1111")
+// console.log(targetWords, "targetWords 1111")
+
+//     // Add highlight for the target phrase
 //     for (let i = 0; i <= spans.length - targetWords.length; i++) {
 //       // Check if the sequence matches the target words
 //       let isMatch = true;
 //       for (let j = 0; j < targetWords.length; j++) {
-//         if (spans[i + j].textContent.trim().toLowerCase() !== targetWords[j].toLowerCase()) {
+//         if (
+//           spans[i + j].textContent.trim().toLowerCase() !==
+//           targetWords[j].toLowerCase()
+//         ) {
 //           isMatch = false;
 //           break;
 //         }
 //       }
-
-//       // If a match is found, add the `text-yellow` class to the relevant spans
+// console.log(isMatch, "kjjjkjkjkj")
+//       // If a match is found, add the `bg-[#FEF08A]` class to the relevant spans
 //       if (isMatch) {
 //         for (let j = 0; j < targetWords.length; j++) {
-//           spans[i + j].classList.add("bg-[#FEF08A]");
+//           const index = i + j;
+//           spans[index].classList.add("bg-[#FEF08A]");
 //         }
 //       }
 //     }
-//   }, [data , targetPhrase, isHighlighted]); // Add data to dependency to re-run when data changes
+
+//     // Clear highlights from spans not in the target phrase
+//     spans.forEach((span) => {
+//       const spanText = span.textContent.trim().toLowerCase();
+//       if (!targetWords.includes(spanText)) {
+//         span.classList.remove("bg-[#FEF08A]");
+//       }
+//     });
+//     console.log(" kklk 11111")
+//   }, [isHighlighted]);
+
+
+// 9th
+
+useEffect(() => {
+  // Target the <p> tag
+  const paragraph = document.getElementById("data");
+
+  // If the paragraph is not found, log an error
+  if (!paragraph) {
+    console.error("Element with ID 'data' not found.");
+    return; // Exit if the element is not found
+  }
+
+  // Initialize an empty string to hold the target phrase
+  let targetText = "";
+
+  // Loop through the isHighlighted state and build the target phrase
+  Object.keys(isHighlighted).forEach((key) => {
+    if (isHighlighted[key].highlight) {
+      targetText += key + " "; // Concatenate the phrases where highlight is true
+    }
+  });
+
+  // Trim and set the target phrase
+  const targetPhrase1 = targetText.trim();
+  console.log(targetPhrase1, "targetPhrase1");
+
+  // Convert the phrase to an array of words
+  const targetWords = targetPhrase1.split(" ").filter(Boolean);
+
+  // Find all <span> tags inside the <p> tag
+  const spans = Array.from(paragraph.querySelectorAll("span"));
+
+  console.log(spans, "spans 1111");
+  console.log(targetWords, "targetWords 1111");
+
+  // Clear all highlights before applying new ones
+  spans.forEach((span) => {
+    span.classList.remove("bg-[#FEF08A]");
+  });
+
+  // Add highlight for the target phrase
+  for (let i = 0; i <= spans.length - targetWords.length; i++) {
+    // Check if the sequence matches the target words
+    let isMatch = true;
+    for (let j = 0; j < targetWords.length; j++) {
+      if (
+        spans[i + j].textContent.trim().toLowerCase() !==
+        targetWords[j].toLowerCase()
+      ) {
+        isMatch = false;
+        break;
+      }
+    }
+
+    // If a match is found, add the `bg-[#FEF08A]` class to the relevant spans
+    if (isMatch) {
+      for (let j = 0; j < targetWords.length; j++) {
+        spans[i + j].classList.add("bg-[#FEF08A]");
+      }
+    }
+  }
+}, [isHighlighted]);
+
+
+ // 10th
+
+ useEffect(() => {
+  // Target the <p> tag
+  const paragraph = document.getElementById("data");
+
+  // If the paragraph is not found, log an error
+  if (!paragraph) {
+    console.error("Element with ID 'data' not found.");
+    return; // Exit if the element is not found
+  }
+
+  // Find all <span> tags inside the <p> tag
+  const spans = Array.from(paragraph.querySelectorAll("span"));
+
+  // Track all words to highlight based on isHighlighted
+  const highlightWords = [];
+
+  // Build the array of words to highlight
+  Object.keys(isHighlighted).forEach((key) => {
+    if (isHighlighted[key].highlight) {
+      highlightWords.push(...key.split(" ").map((word) => word.toLowerCase().trim()));
+    }
+  });
+
+  console.log(highlightWords, "highlightWords");
+
+  // Clear all highlights
+  spans.forEach((span) => {
+    span.classList.remove("bg-[#FEF08A]");
+  });
+
+  // Apply highlights for all matching words
+  spans.forEach((span) => {
+    const spanText = span.textContent.trim().toLowerCase();
+    if (highlightWords.includes(spanText)) {
+      span.classList.add("bg-[#FEF08A]");
+    }
+  });
+
+  console.log("Highlights updated");
+}, [isHighlighted]);
+
 
   if (segmentData) {
     arr = segmentData;
   }
 
-  // useEffect(() => {
-  //   if (data && data.length > 0 && activeStep == 0) {
-  //     handleNext(1)
-  //   }
-  // }, [data]);
-  // useEffect(() => {
-  //   if (segmentData.length > 0 && segmentData.length < 2) {
-  //     handleNext(2)
-  //   }
-  // }, [segmentData]);
+ 
   const steps = [
     { title: "Video ", icon: "icon1" },
     { title: "Transcript ", icon: "icon2" },
@@ -946,7 +1060,8 @@ const Preview_video = () => {
                           ? true
                           : false;
 
-                      Object.keys(isHighlighted).forEach((phrase) => {
+                      {
+                        /* Object.keys(isHighlighted).forEach((phrase) => {
                         if (
                           phrase.includes(word) &&
                           i.start >= isHighlighted[phrase]?.start_time &&
@@ -954,7 +1069,8 @@ const Preview_video = () => {
                         ) {
                           isYellow = true;
                         }
-                      });
+                      }); */
+                      }
 
                       {
                         /* Object.keys(isHighlighted).forEach((phrase) => {
@@ -1348,7 +1464,7 @@ const Preview_video = () => {
                   style={{ backgroundColor: "#333333", cursor: "pointer" }}
                   onClick={() => {
                     if (allInstances[0]?.locked) {
-                      router.push(`/home/video/generated2?id=${id}`);
+                      router.push(`/home/video/generate?id=${id}`);
                     } else {
                       sendMessage();
                     }

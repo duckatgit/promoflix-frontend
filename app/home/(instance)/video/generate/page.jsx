@@ -273,8 +273,10 @@ const Generate_video = () => {
   useEffect(() => {
     filterHeaders();
   }, [csvData]);
+
   // Connect to WebSocket
   const connectWebSocket = (id) => {
+    console.log("connectWebSocket function runing")
     if (!socket && token) {
       const ws = new WebSocket(`${hirelloSocket}/${token}/${id}`);
 
@@ -283,12 +285,11 @@ const Generate_video = () => {
       };
 
       ws.onmessage = (event) => {
-        // console.log("Raw WebSocket Data:", event.data);
-
+      
         try {
+          console.log("try block")
           const parsedData = JSON.parse(event.data);
-          // console.log("Parsed WebSocket Data:", parsedData);
-
+          console.log(parsedData, "parsedData")
           const updatedData = parsedData?.GeneratedVideo;
           if (updatedData && updatedData.videos?.length > 0) {
             setVideoArray((prevState) => {
@@ -323,6 +324,7 @@ const Generate_video = () => {
             });
           }
         } catch (error) {
+          console.log("error parsing websocket message")
           console.error("Error parsing WebSocket message:", error);
         }
       };
@@ -333,17 +335,17 @@ const Generate_video = () => {
 
       ws.onclose = () => {
         console.log("WebSocket connection closed. Reconnecting...");
-        setTimeout(connectWebSocket, 3000); // Reconnect after 3 seconds
+        setTimeout(() => connectWebSocket(id), 3000);// Reconnect after 3 seconds
       };
 
       setSocket(ws);
     }
   };
-  const regenerateAllVideoById = async (id) => {
+  const getAllVideoById = async (id) => {
+   
     try {
       setShowLoader(true)
-      const result = await postData(`api/v1/regenerate/${id}`, {}, "hirello");
-      console.log(result, "regenerate");
+      const result = await fetchData(`api/v1/generate/${id}`, {}, "hirello");
       if (result.code != 200) {
         setShowLoader(false);
 
@@ -354,12 +356,21 @@ const Generate_video = () => {
           title: "Uh oh! Something went wrong.",
           description: data.result,
         });
-      } else {
+      }
+      else {
         setShowLoader(false);
-
         const data = result;
-
-        setVideoArray(data.result);
+        console.log(data , "data all video")
+        if (data.result[0]?.status === "succeeded") {
+          console.log("succeeded")
+          setShareButton(true)
+          setVideoArray(data.result);
+        } else {
+          console.log("web socket")
+          setShareButton(false)
+          setVideoArray(data.result);
+          connectWebSocket(id);
+        }
       }
     } catch (error) {
       setShowLoader(false);
@@ -367,15 +378,42 @@ const Generate_video = () => {
       console.log(error);
     }
   };
-
-  useEffect(() => {
-    connectWebSocket(id);
-    return () => {
-      if (socket) {
-        socket.close(); // Clean up the WebSocket connection on component unmount
+  const regenerateAllVideoById = async (id) => {
+    try {
+      setShowLoader(true)
+      const result = await postData(`api/v1/regenerate/${id}`, {}, "hirello");
+      console.log(result, "regenerate");
+      if (result.code != 200) {
+        setShowLoader(false);
+        toast({
+          type: "error",
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: data.result,
+        });
+      } else {
+        console.log("regenerate video")
+        // setVideoArray([]);
+        getAllVideoById(id);
+        // connectWebSocket(id);
+        // setVideoArray(data.result);
       }
-    };
-  }, [id]);
+    } catch (error) {
+      setShowLoader(false);
+      console.log(error);
+    }
+  };
+
+    useEffect(() => {
+      getAllVideoById(id);
+      return () => {
+        if (socket) {
+          socket.close();
+          setSocket(null);
+        }
+      };
+    }, [id]);
+
 
   // Update CSV data when video array changes
   const updateCsvData = () => {
@@ -507,7 +545,7 @@ const Generate_video = () => {
         </div>
 
         <div className="h-[88%] p-[10px] overflow-y-auto flex flex-wrap content-baseline gap-4 mt-4">
-          {videoArray && videoArray.length > 0 ? (
+          {!showLoader && videoArray && videoArray.length > 0 ? (
             videoArray?.map((item, index) => {
               const statusPercentageMap = {
                 pending: 0,

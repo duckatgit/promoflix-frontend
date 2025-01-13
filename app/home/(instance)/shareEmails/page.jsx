@@ -24,9 +24,7 @@ const ShareEmails = () => {
   const id = searchParams.get("id");
   const arrayParam = searchParams.get("array");
   const array = arrayParam ? JSON.parse(arrayParam) : [];
-  const handleDropdownChange = (e) => {
-    setColumn(e.target.value);
-  };
+
 
   return (
     <>
@@ -36,7 +34,7 @@ const ShareEmails = () => {
             {" "}
             <Button
               className="py-2 px-3 cursor-pointer border w-[60px]"
-              onClick={() => router.push(`/home/video/generated2?id=${id}`)}
+              onClick={() => router.push(`/home/video/generate?id=${id}`)}
             >
               Back
             </Button>

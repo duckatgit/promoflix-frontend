@@ -30,7 +30,9 @@ function VideoTitleCard({
           e.stopPropagation();
           if (locked) {
             // sendMessage(id)
-            router.push(`/home/video/generated2?id=${id}`);
+          router.push(`/home/video/generate?id=${id}`);
+
+            // router.push(`/home/video/generated2?id=${id}`);
           } else {
             getVideo(id);
           }
