@@ -792,110 +792,110 @@ const Preview_video = () => {
 
 // 9th
 
-useEffect(() => {
-  // Target the <p> tag
-  const paragraph = document.getElementById("data");
+// useEffect(() => {
+//   // Target the <p> tag
+//   const paragraph = document.getElementById("data");
 
-  // If the paragraph is not found, log an error
-  if (!paragraph) {
-    console.error("Element with ID 'data' not found.");
-    return; // Exit if the element is not found
-  }
+//   // If the paragraph is not found, log an error
+//   if (!paragraph) {
+//     console.error("Element with ID 'data' not found.");
+//     return; // Exit if the element is not found
+//   }
 
-  // Initialize an empty string to hold the target phrase
-  let targetText = "";
+//   // Initialize an empty string to hold the target phrase
+//   let targetText = "";
 
-  // Loop through the isHighlighted state and build the target phrase
-  Object.keys(isHighlighted).forEach((key) => {
-    if (isHighlighted[key].highlight) {
-      targetText += key + " "; // Concatenate the phrases where highlight is true
-    }
-  });
+//   // Loop through the isHighlighted state and build the target phrase
+//   Object.keys(isHighlighted).forEach((key) => {
+//     if (isHighlighted[key].highlight) {
+//       targetText += key + " "; // Concatenate the phrases where highlight is true
+//     }
+//   });
 
-  // Trim and set the target phrase
-  const targetPhrase1 = targetText.trim();
-  console.log(targetPhrase1, "targetPhrase1");
+//   // Trim and set the target phrase
+//   const targetPhrase1 = targetText.trim();
+//   console.log(targetPhrase1, "targetPhrase1");
 
-  // Convert the phrase to an array of words
-  const targetWords = targetPhrase1.split(" ").filter(Boolean);
+//   // Convert the phrase to an array of words
+//   const targetWords = targetPhrase1.split(" ").filter(Boolean);
 
-  // Find all <span> tags inside the <p> tag
-  const spans = Array.from(paragraph.querySelectorAll("span"));
+//   // Find all <span> tags inside the <p> tag
+//   const spans = Array.from(paragraph.querySelectorAll("span"));
 
-  console.log(spans, "spans 1111");
-  console.log(targetWords, "targetWords 1111");
+//   console.log(spans, "spans 1111");
+//   console.log(targetWords, "targetWords 1111");
 
-  // Clear all highlights before applying new ones
-  spans.forEach((span) => {
-    span.classList.remove("bg-[#FEF08A]");
-  });
+//   // Clear all highlights before applying new ones
+//   spans.forEach((span) => {
+//     span.classList.remove("bg-[#FEF08A]");
+//   });
 
-  // Add highlight for the target phrase
-  for (let i = 0; i <= spans.length - targetWords.length; i++) {
-    // Check if the sequence matches the target words
-    let isMatch = true;
-    for (let j = 0; j < targetWords.length; j++) {
-      if (
-        spans[i + j].textContent.trim().toLowerCase() !==
-        targetWords[j].toLowerCase()
-      ) {
-        isMatch = false;
-        break;
-      }
-    }
+//   // Add highlight for the target phrase
+//   for (let i = 0; i <= spans.length - targetWords.length; i++) {
+//     // Check if the sequence matches the target words
+//     let isMatch = true;
+//     for (let j = 0; j < targetWords.length; j++) {
+//       if (
+//         spans[i + j].textContent.trim().toLowerCase() !==
+//         targetWords[j].toLowerCase()
+//       ) {
+//         isMatch = false;
+//         break;
+//       }
+//     }
 
-    // If a match is found, add the `bg-[#FEF08A]` class to the relevant spans
-    if (isMatch) {
-      for (let j = 0; j < targetWords.length; j++) {
-        spans[i + j].classList.add("bg-[#FEF08A]");
-      }
-    }
-  }
-}, [isHighlighted]);
+//     // If a match is found, add the `bg-[#FEF08A]` class to the relevant spans
+//     if (isMatch) {
+//       for (let j = 0; j < targetWords.length; j++) {
+//         spans[i + j].classList.add("bg-[#FEF08A]");
+//       }
+//     }
+//   }
+// }, [isHighlighted]);
 
 
  // 10th
 
- useEffect(() => {
-  // Target the <p> tag
-  const paragraph = document.getElementById("data");
+//  useEffect(() => {
+//   // Target the <p> tag
+//   const paragraph = document.getElementById("data");
 
-  // If the paragraph is not found, log an error
-  if (!paragraph) {
-    console.error("Element with ID 'data' not found.");
-    return; // Exit if the element is not found
-  }
+//   // If the paragraph is not found, log an error
+//   if (!paragraph) {
+//     console.error("Element with ID 'data' not found.");
+//     return; // Exit if the element is not found
+//   }
 
-  // Find all <span> tags inside the <p> tag
-  const spans = Array.from(paragraph.querySelectorAll("span"));
+//   // Find all <span> tags inside the <p> tag
+//   const spans = Array.from(paragraph.querySelectorAll("span"));
 
-  // Track all words to highlight based on isHighlighted
-  const highlightWords = [];
+//   // Track all words to highlight based on isHighlighted
+//   const highlightWords = [];
 
-  // Build the array of words to highlight
-  Object.keys(isHighlighted).forEach((key) => {
-    if (isHighlighted[key].highlight) {
-      highlightWords.push(...key.split(" ").map((word) => word.toLowerCase().trim()));
-    }
-  });
+//   // Build the array of words to highlight
+//   Object.keys(isHighlighted).forEach((key) => {
+//     if (isHighlighted[key].highlight) {
+//       highlightWords.push(...key.split(" ").map((word) => word.toLowerCase().trim()));
+//     }
+//   });
 
-  console.log(highlightWords, "highlightWords");
+//   console.log(highlightWords, "highlightWords");
 
-  // Clear all highlights
-  spans.forEach((span) => {
-    span.classList.remove("bg-[#FEF08A]");
-  });
+//   // Clear all highlights
+//   spans.forEach((span) => {
+//     span.classList.remove("bg-[#FEF08A]");
+//   });
 
-  // Apply highlights for all matching words
-  spans.forEach((span) => {
-    const spanText = span.textContent.trim().toLowerCase();
-    if (highlightWords.includes(spanText)) {
-      span.classList.add("bg-[#FEF08A]");
-    }
-  });
+//   // Apply highlights for all matching words
+//   spans.forEach((span) => {
+//     const spanText = span.textContent.trim().toLowerCase();
+//     if (highlightWords.includes(spanText)) {
+//       span.classList.add("bg-[#FEF08A]");
+//     }
+//   });
 
-  console.log("Highlights updated");
-}, [isHighlighted]);
+//   console.log("Highlights updated");
+// }, [isHighlighted]);
 
 
   if (segmentData) {
