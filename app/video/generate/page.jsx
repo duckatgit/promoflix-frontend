@@ -35,8 +35,6 @@ const Generate_video = () => {
         // console.log('Message received from server: ', JSON.parse(event.data));
 
         const updatedData = JSON.parse(event.data)?.GeneratedVideo
-
-        console.log('updatedData', updatedData)
         if (updatedData && updatedData.length > 0) {
           setVideoArray((prevState) => {
             return prevState.map((data) => {
@@ -148,7 +146,6 @@ const Generate_video = () => {
           <p>Generated Videos</p>
 
         </div>
-        {console.log('videoArray', videoArray)}
         {videoArray && videoArray.length > 0 ? videoArray?.map((item, index) => {
           const findKeyword = csvData?.records[index][0] || ''
           return (

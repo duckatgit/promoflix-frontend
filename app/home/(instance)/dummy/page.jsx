@@ -33,11 +33,8 @@ const Generate_video = () => {
       };
 
       ws.onmessage = (event) => {
-        console.log(event, "event");
 
         const updatedData = JSON.parse(event.data)?.GeneratedVideo;
-
-        console.log("updatedData", updatedData);
         if (updatedData && updatedData.length > 0) {
           setVideoArray((prevState) => {
             return prevState.map((data) => {

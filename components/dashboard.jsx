@@ -63,7 +63,6 @@ const Dashboard = ({
 
   const [updateInstanceModal, setupdateInstanceModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null); // State to store the selected file
-  console.log(selectedFile, "lllllll");
   const fileInputRef = useRef(null);
   const handleUploadClick = () => {
     setFileModal(true);
@@ -227,7 +226,6 @@ const Dashboard = ({
         {},
         "hirello"
       );
-      console.log(data, "datafile");
       if (data.code == 200) {
         router.push(`/video/preview?id=${row.original.id}`);
       }
@@ -271,7 +269,7 @@ const Dashboard = ({
     }
   };
 
-  console.log("allInstances", allInstances);
+
   return (
     <>
       <div className="w-full">

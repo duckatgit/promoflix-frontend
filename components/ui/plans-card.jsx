@@ -133,7 +133,6 @@ const PlansCard = ({
   // const handleButtonClick = () => {
   //   handleCheckoutPlan(plan_id); // Call handleCheckoutPlan for Buy button
   // };
-console.log(isFree, "kkkk")
   const handleButtonClick = () => {
     if (highlighted) {
       cancelPlan(); // Call cancelPlan for highlighted plans

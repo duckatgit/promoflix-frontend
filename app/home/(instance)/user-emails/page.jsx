@@ -140,7 +140,6 @@ const UserEmails = () => {
     try {
       setShowLoader(true);
       const response = await fetchData("api/email", {}, "share_dev");
-      console.log(response, "resss");
 
       if (response.code != 200) {
         toast({

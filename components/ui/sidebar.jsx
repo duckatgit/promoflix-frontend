@@ -77,7 +77,6 @@ const Sidebar = () => {
   const profile = async () => {
     try {
       const result = await fetchData("api/user", {}, "");
-      console.log(result, "hghghghg");
       if (result.code == 401 || result.code == 403) {
         logOutUser();
       }

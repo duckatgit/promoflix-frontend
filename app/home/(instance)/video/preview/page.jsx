@@ -80,12 +80,10 @@ const Preview_video = () => {
   const [endTime, setEndTime] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [variableCount, setVariableCount] = useState(0);
-  console.log(variableCount, "variable count");
   const [countQuota, setCountQuota] = useState(0);
 
   const [csvUrlInput, setCsvUrlInput] = useState("");
   const [data, setData] = useState([]);
-  console.log(data);
   const [segmentData, setSegmentData] = useState([]);
 
   const [transcriptSteps, setTranscriptSteps] = useState("Loading...");
@@ -100,7 +98,6 @@ const Preview_video = () => {
   const fileInputRef = useRef(null);
   const fileInputRef2 = useRef(null);
   const [isHighlighted, setIsHighlighted] = useState({});
-  console.log(isHighlighted, "ishighlighted");
   const [socket, setSocket] = useState(null);
 
   const [videoArray, setVideoArray] = useAtom(videoArrayAtom);
@@ -146,7 +143,6 @@ const Preview_video = () => {
     if (hasFile) {
       try {
         const data = await postData(`api/v1/generate/${id}`, {}, "hirello");
-        console.log(data, "data generate");
         if (data.code == 200) {
           setLoading(false);
 
@@ -431,9 +427,9 @@ const Preview_video = () => {
           segments = segments + item.word;
         }
       }
-      console.log(highlight_si, "highlight_si 0000");
-      console.log(highlight_ei, "highlight_ei 0000");
-      console.log(segments, "segments 0000");
+      // console.log(highlight_si, "highlight_si 0000");
+      // console.log(highlight_ei, "highlight_ei 0000");
+      // console.log(segments, "segments 0000");
       let cal_startTime = startTime - 0.1;
       let cal_endTime = endTime + 0.1;
       const responseData = await postData(

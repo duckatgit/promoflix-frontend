@@ -71,7 +71,6 @@ const Generate_video = () => {
   const regenerateAllVideoById = async (id) => {
     try {
       const result = await postData(`api/v1/regenerate/${id}`, {}, "hirello");
-      console.log(result, "regenerate");
       if (result.code != 200) {
         setShowLoader(false);
 

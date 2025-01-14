@@ -39,7 +39,6 @@ const InstancePage = () => {
   const [allInstances, setAllInstances] = useState([]);
   const [id, setId] = useState("");
   const [videoArray, setVideoArray] = useAtom(videoArrayAtom);
-  console.log(videoArray, "video array instance page")
   const [updateInstanceModal, setupdateInstanceModal] = useState(false);
   const [updatedInstance, setUpdatedInstance] = useState("");
   const [updatedInstanceId, setUpdatedInstanceID] = useState();
@@ -107,7 +106,6 @@ const InstancePage = () => {
       }
     } catch (error) {
       setShowUploadeVideoLoader(false);
-
       console.log(error);
     }
   };
@@ -133,7 +131,6 @@ const InstancePage = () => {
         setShowUploadeVideoLoader(false);
 
         const data = result;
-        console.log(data)
         // setAllInstances(data);
         // setTotal(result?.result?.total);
         getAllInstance();
