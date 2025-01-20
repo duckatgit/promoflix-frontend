@@ -205,7 +205,7 @@ const Generate_video = () => {
 
             <Button
               className="py-2 px-3 cursor-pointer rounded-[8px] text-base"
-              onClick={()=>regenerateAllVideoById(id)}
+              onClick={() => regenerateAllVideoById(id)}
             >
               <IoMdRefresh size={25} />
               <span className="ml-2">Regenerate Video</span>

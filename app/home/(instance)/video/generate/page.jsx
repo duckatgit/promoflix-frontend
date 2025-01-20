@@ -266,7 +266,8 @@ const Generate_video = () => {
   const [filteredCsvData, setFilteredCsvData] = useState([]);
   const [filteredUserCsvData, setFilteredUserCsvData] = useState([]);
 
-  const excludeHeaders = ["url", "thumbnail", "gif", "status"];
+  // const excludeHeaders = ["url", "thumbnail", "gif", "status"];
+  const excludeHeaders = [];
   // Function to filter out specific properties
   const filterHeaders = () => {
     const filteredHeaders = csvData?.headers.filter(

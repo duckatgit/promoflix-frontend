@@ -129,8 +129,8 @@ const ShareEmails = () => {
                 <div className="my-3 flex gap-2 flex-wrap">
                   {array?.map((item, i) => (
                     <div key={i}
-                  className="py-2 px-6 text-blue-500 bg-white   font-medium border border-blue-500  rounded-2xl cursor-pointer"
-                  onClick={() => handleClick(item)}
+                      className="py-2 px-6 text-blue-500 bg-white   font-medium border border-blue-500  rounded-2xl cursor-pointer"
+                      onClick={() => handleClick(item)}
                     >{item}</div>
                   ))}
                 </div>
@@ -139,7 +139,7 @@ const ShareEmails = () => {
                   placeholder="Hey {{First Name}}..."
                   className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                   value={subject}
-       
+
                   onChange={handleChange}
                 />
                 {/* <p className="text-red-500 text-xs mt-1">
@@ -167,13 +167,13 @@ const ShareEmails = () => {
               {/* Body */}
               <div>
                 <h1 className="font-semibold leading-6 mb-[2px]">
-                  {"Body (must include {{ Video }} variable)"}
+                  {"Body (must include {{video}}) variable) all csv headers + video, gif, thumbnail"}
                 </h1>
                 <div className="my-3 flex gap-2 flex-wrap">
                   {array?.map((item, i) => (
                     <div key={i}
-                  className="py-2 px-6 text-blue-500 bg-white   font-medium border border-blue-500  rounded-2xl cursor-pointer"
-                    onClick={() => handleClickBody(item)}
+                      className="py-2 px-6 text-blue-500 bg-white   font-medium border border-blue-500  rounded-2xl cursor-pointer"
+                      onClick={() => handleClickBody(item)}
                     >{item}</div>
                   ))}
                 </div>
@@ -182,7 +182,7 @@ const ShareEmails = () => {
                   rows="7"
                   className="w-full p-2 border border-gray-300  rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                   value={body}
-                 
+
                   onChange={handleChangeBody}
                 ></textarea>
               </div>
