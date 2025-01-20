@@ -230,7 +230,7 @@
 
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { CSVLink } from "react-csv";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAtom } from "jotai";
@@ -264,6 +264,8 @@ const Generate_video = () => {
   const [quota, setQuota] = useState(null);
 
   const [filteredCsvData, setFilteredCsvData] = useState([]);
+  const [filteredUserCsvData, setFilteredUserCsvData] = useState([]);
+
   const excludeHeaders = ["url", "thumbnail", "gif", "status"];
   // Function to filter out specific properties
   const filterHeaders = () => {
@@ -271,6 +273,9 @@ const Generate_video = () => {
       (header) => !excludeHeaders.includes(header)
     );
     setFilteredCsvData(filteredHeaders);
+  const newArray = csvData?.records.map(record => record[0]);
+  setFilteredUserCsvData(newArray);
+
   };
 
   const handleDismiss = () => {
@@ -424,9 +429,11 @@ const Generate_video = () => {
     const queryParams = new URLSearchParams();
     queryParams.set("id", id);
     queryParams.set("array", JSON.stringify(filteredCsvData));
+    queryParams.set("userArray", JSON.stringify(filteredUserCsvData));
 
     router.push(`/home/shareEmails?${queryParams.toString()}`);
   };
+
 
   useEffect(() => {
     getAllVideoById(id);
@@ -493,6 +500,7 @@ const Generate_video = () => {
       });
     }
   }, []);
+
   useEffect(() => {
     filterHeaders();
   }, [csvData]);

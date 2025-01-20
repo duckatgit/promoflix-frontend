@@ -23,8 +23,26 @@ const ShareEmails = () => {
   const [body, setBody] = useState("");
   const id = searchParams.get("id");
   const arrayParam = searchParams.get("array");
-  const array = arrayParam ? JSON.parse(arrayParam) : [];
+  const userArrayParam = searchParams.get("userArray");
+  // console.log(arrayParam,userArrayParam.length, "arrayParam");
 
+  const array = arrayParam ? JSON.parse(arrayParam) : [];
+  const userArray = userArrayParam ? JSON.parse(userArrayParam) : [];
+
+  const handleClick = (item) => {
+    // Append the clicked item in the format {{item}} to the subject
+    setSubject((prevSubject) => `${prevSubject}{{${item}}}`);
+  };
+  const handleClickBody = (item) => {
+    // Append the clicked item in the format {{item}} to the subject
+    setBody((prevSubject) => `${prevSubject}{{${item}}}`);
+  };
+  const handleChange = (e) => {
+    setSubject(e.target.value);
+  };
+  const handleChangeBody = (e) => {
+    setBody(e.target.value);
+  };
 
   return (
     <>
@@ -111,8 +129,8 @@ const ShareEmails = () => {
                 <div className="my-3 flex gap-2 flex-wrap">
                   {array?.map((item, i) => (
                     <div key={i}
-                  className="py-2 px-6 text-blue-500 bg-white   font-medium border border-blue-500  rounded-2xl"
-                    
+                  className="py-2 px-6 text-blue-500 bg-white   font-medium border border-blue-500  rounded-2xl cursor-pointer"
+                  onClick={() => handleClick(item)}
                     >{item}</div>
                   ))}
                 </div>
@@ -121,7 +139,8 @@ const ShareEmails = () => {
                   placeholder="Hey {{First Name}}..."
                   className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                   value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
+       
+                  onChange={handleChange}
                 />
                 {/* <p className="text-red-500 text-xs mt-1">
                   The email subject should not be empty
@@ -133,7 +152,7 @@ const ShareEmails = () => {
                   className="w-full text-blue-500 bg-white hover:text-white hover:bg-blue-500 font-medium border border-blue-500 rounded-2xl"
                   onClick={""}
                 >
-                  🚀 Send to {array?.length} recipients
+                  🚀 Send to {userArray?.length} recipients
                 </Button>
                 <Button
                   className="w-full text-blue-500 bg-white hover:text-white hover:bg-blue-500 font-medium border border-blue-500  rounded-2xl"
@@ -153,8 +172,8 @@ const ShareEmails = () => {
                 <div className="my-3 flex gap-2 flex-wrap">
                   {array?.map((item, i) => (
                     <div key={i}
-                  className="py-2 px-6 text-blue-500 bg-white   font-medium border border-blue-500  rounded-2xl"
-                    
+                  className="py-2 px-6 text-blue-500 bg-white   font-medium border border-blue-500  rounded-2xl cursor-pointer"
+                    onClick={() => handleClickBody(item)}
                     >{item}</div>
                   ))}
                 </div>
@@ -163,7 +182,8 @@ const ShareEmails = () => {
                   rows="7"
                   className="w-full p-2 border border-gray-300  rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                   value={body}
-                  onChange={(e) => setBody(e.target.value)}
+                 
+                  onChange={handleChangeBody}
                 ></textarea>
               </div>
             </div>
