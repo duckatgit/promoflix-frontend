@@ -273,9 +273,8 @@ const Generate_video = () => {
       (header) => !excludeHeaders.includes(header)
     );
     setFilteredCsvData(filteredHeaders);
-  const newArray = csvData?.records.map(record => record[0]);
-  setFilteredUserCsvData(newArray);
-
+    const newArray = csvData?.records.map((record) => record[0]);
+    setFilteredUserCsvData(newArray);
   };
 
   const handleDismiss = () => {
@@ -434,7 +433,6 @@ const Generate_video = () => {
     router.push(`/home/shareEmails?${queryParams.toString()}`);
   };
 
-
   useEffect(() => {
     getAllVideoById(id);
     return () => {
@@ -541,7 +539,7 @@ const Generate_video = () => {
                 </span>
 
                 <span>
-                  Renew your plan to generate more videos by {" "}
+                  Renew your plan to generate more videos by{" "}
                   <Link
                     href="/home/plan"
                     className="inline font-medium text-blue-600 underline dark:text-blue-500 underline-offset-2 decoration-600 dark:decoration-500 decoration-solid hover:no-underline"

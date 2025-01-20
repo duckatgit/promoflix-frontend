@@ -38,7 +38,7 @@ const Generate_video = () => {
         if (updatedData && updatedData.length > 0) {
           setVideoArray((prevState) => {
             return prevState.map((data) => {
-              if (data.id === updatedData[0].id) {=
+              if (data.id === updatedData[0].id) {
                 return updatedData[0]
               }
               return data
