@@ -486,12 +486,12 @@ const Generate_video = () => {
     if (csvData && csvData?.headers) {
       setCsvData((preData) => {
         if (
-          !preData?.headers.includes("url") ||
+          !preData?.headers.includes("video") ||
           !preData?.headers.includes("thumbnail")
         ) {
           return {
             ...preData,
-            headers: [...preData.headers, "url", "thumbnail", "gif", "status"],
+            headers: [...preData.headers, "video", "thumbnail", "gif", "status"],
           };
         } else {
           return preData;
@@ -604,15 +604,20 @@ const Generate_video = () => {
                 </Button>
               </CSVLink>
             )}
-            <Button
-              className="py-2 px-3 cursor-pointer rounded-[8px] text-base"
-              onClick={() => {
-                regenerateAllVideoById(id);
-              }}
-            >
-              <IoMdRefresh size={25} />
-              <span className="ml-2">Regenerate Video</span>
-            </Button>
+            {
+              shareButton && (
+                <Button
+                  className="py-2 px-3 cursor-pointer rounded-[8px] text-base"
+                  onClick={() => {
+                    regenerateAllVideoById(id);
+                  }}
+                >
+                  <IoMdRefresh size={25} />
+                  <span className="ml-2">Regenerate Video</span>
+                </Button>
+              )
+            }
+        
             {shareButton && (
               <Button
                 className="py-2 px-3 cursor-pointer rounded-[8px] text-base"

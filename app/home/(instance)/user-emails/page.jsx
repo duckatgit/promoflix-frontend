@@ -43,11 +43,13 @@ const UserEmails = () => {
   const [emailData, setEmailData] = useAtom(emailsAtom);
   const [emailId, setEmailId] = useState("");
   const [editData, setEditData] = useState(null);
+  const [errors, setErrors] = useState({});
 
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
+    delay:"",
   });
   const handleInputChange = (e) => {
     const { id, value } = e.target;
@@ -55,10 +57,20 @@ const UserEmails = () => {
       ...prevForm,
       [id]: value,
     }));
+
+    // Clear validation error when user provides valid input
+    if (errors[id]) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [id]: "",
+      }));
+    }
   };
+
 
   const handleSave = async () => {
     try {
+      if (validateForm()) {
       setLoading(true);
       const endpoint = editData ? `api/email` : `api/email`;
       const method = editData ? putData : postData;
@@ -66,6 +78,7 @@ const UserEmails = () => {
         name: form.name,
         email: form.email,
         password: form.password,
+        delay:Number(form.delay),
         ...(editData && { id: editData.id }), // Include ID for editing
       };
 
@@ -84,10 +97,11 @@ const UserEmails = () => {
             : "Email added successfully.",
         });
         setIsOpen(false);
-        setForm({ name: "", email: "", password: "" });
+        setForm({ name: "", email: "", password: "", delay:"" });
         setEditData(null);
         setEmailData(response.result); // Update the list
       }
+    }
     } catch (error) {
       console.error("Error:", error.message);
       toast({
@@ -169,15 +183,49 @@ const UserEmails = () => {
 
   const openModal = (data = null) => {
     if (data) {
-      setEditData(data); // Set data to edit
-      setForm({ name: data.name, email: data.email, password: data.password });
+      setEditData(data); // Set data to edit  
+      setForm({ name: data.name, email: data.email, password: data.password, delay:data.delay });
     } else {
       setEditData(null);
-      setForm({ name: "", email: "", password: "" });
+      setForm({ name: "", email: "", password: "" ,delay:''});
     }
     setIsOpen(true);
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+
+    // Name validation
+    if (!form.name) {
+      newErrors.name = "Name is required.";
+    }
+
+    // Email validation
+    if (!form.email) {
+      newErrors.email = "Email is required.";
+    } else if (
+      !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(form.email)
+    ) {
+      newErrors.email = "Enter a valid email address.";
+    }
+
+    // Password validation
+    if (!form.password) {
+      newErrors.password = "Password is required.";
+    } else if (form.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters.";
+    }
+
+    // Delay dropdown validation
+    if (!form.delay) {
+      newErrors.delay = "Please select a delay value.";
+    }
+
+    setErrors(newErrors);
+
+    // Return true if no errors exist
+    return Object.keys(newErrors).length === 0;
+  };
   return (
     <div className="w-full">
       <StickyBanner path={'user-emails'}/>
@@ -203,7 +251,7 @@ const UserEmails = () => {
       ) : (
         <>
           {emailData?.length > 0 ? (
-            <div >
+            <div className="flex content-baseline gap-2 " >
               {emailData?.map((ele, index) => (
                 <div  className="max-w-sm min-w-[311px] mb-4 bg-white border border-slate-200 rounded-lg p-4" key={index}>
                   <div className="flex justify-between items-center flex-wrap ">
@@ -249,6 +297,12 @@ const UserEmails = () => {
                             </th>
                             <td className="px-4 py-2">:  {maskPassword(ele?.password)}</td>
                           </tr>
+                          <tr>
+                            <th className="px-4 py-2 text-black font-semibold">
+                              Delay
+                            </th>
+                            <td className="px-4 py-2">:  {ele?.delay}</td>
+                          </tr>
                         </tbody>
                       </table>
                     </div>
@@ -278,18 +332,22 @@ const UserEmails = () => {
                     placeholder="Enter your name"
                     value={form.name}
                     onChange={handleInputChange}
-                  />
+                    className={errors.name ? "border-red-500" : ""}
+                    />
+                    {errors.name && <p className="text-red-500">{errors.name}</p>}
                 </div>
-                <div className="flex flex-col space-y-1.5 w-[400px]">
+                <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="email"  className="mb-2">Email</Label>
                   <Input
                     id="email"
                     placeholder="Enter your email"
                     value={form.email}
                     onChange={handleInputChange}
-                  />
+                    className={errors.email ? "border-red-500" : ""}
+                    />
+                    {errors.email && <p className="text-red-500">{errors.email}</p>}
                 </div>
-                <div className="flex flex-col space-y-1.5 w-[400px]">
+                <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="password" className="mb-2">Password</Label>
                   <Input
                     id="password"
@@ -297,8 +355,37 @@ const UserEmails = () => {
                     placeholder="Enter your password"
                     value={form.password}
                     onChange={handleInputChange}
-                  />
+                    className={errors.password ? "border-red-500" : ""}
+                    />
+                    {errors.password && (
+                      <p className="text-red-500">{errors.password}</p>
+                    )}
                 </div>
+                <div className="flex flex-col space-y-1.5">
+                  <Label htmlFor="delay" className="mb-2">Delay</Label>
+                  <select
+                    id="delay"
+                    value={form.delay}
+                    onChange={handleInputChange}
+                    className={`px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-black ${
+                      errors.delay ? "border-red-500" : ""
+                    }`}
+                    aria-labelledby="delay"
+                  >
+                    {!form.delay && (
+                      <option value="" disabled hidden>
+                        Select a value
+                      </option>
+                    )}
+                    {[0, 1, 2, 3].map((value) => (
+                      <option key={value} value={value}>
+                        {value}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.delay && <p className="text-red-500">{errors.delay}</p>}
+                </div>
+
                 <p><>Note: The email password is encrypted and can only be used for sending emails through this website</></p>
               </div>
             </form>

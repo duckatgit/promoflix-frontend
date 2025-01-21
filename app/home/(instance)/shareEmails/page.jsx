@@ -44,6 +44,17 @@ const ShareEmails = () => {
     setBody(e.target.value);
   };
 
+  const filterArray = (array, excludeKeywords) => {
+    // Ensure the array exists and is an array
+    if (!Array.isArray(array)) return [];
+    // Filter out items that include any keyword in the excludeKeywords array
+    return array.filter((item) =>
+      Array.isArray(excludeKeywords)
+        ? !excludeKeywords.some((keyword) => item.includes(keyword))
+        : !item.includes(excludeKeywords)
+    );
+  };
+  
   return (
     <>
       {emailData?.length > 0 ? (
@@ -113,7 +124,7 @@ const ShareEmails = () => {
                   onChange={(e) => setColumn(e.target.value)}
                 >
                   <option value="">Select a column</option>
-                  {array?.map((ele) => (
+                  {filterArray(array, ["url","video", "thumbnail", "gif", "status"])?.map((ele) => (
                     <option key={ele} value={ele}>
                       {ele}
                     </option>
@@ -127,7 +138,7 @@ const ShareEmails = () => {
                   Click to add column header:
                 </label>
                 <div className="my-3 flex gap-2 flex-wrap">
-                  {array?.map((item, i) => (
+                {filterArray(array,["url","video", "thumbnail", "gif", "status"])?.map((item, i) => (
                     <div key={i}
                       className="py-2 px-6 text-blue-500 bg-white   font-medium border border-blue-500  rounded-2xl cursor-pointer"
                       onClick={() => handleClick(item)}
@@ -170,7 +181,7 @@ const ShareEmails = () => {
                   {"Body (must include {{video}}) variable) all csv headers + video, gif, thumbnail"}
                 </h1>
                 <div className="my-3 flex gap-2 flex-wrap">
-                  {array?.map((item, i) => (
+                  {filterArray(array, "status")?.map((item, i) => (
                     <div key={i}
                       className="py-2 px-6 text-blue-500 bg-white   font-medium border border-blue-500  rounded-2xl cursor-pointer"
                       onClick={() => handleClickBody(item)}
