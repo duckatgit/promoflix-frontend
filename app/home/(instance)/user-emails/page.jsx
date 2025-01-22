@@ -51,6 +51,23 @@ const UserEmails = () => {
     password: "",
     delay:"",
   });
+
+  const array=[{0:'Very Fast: 5 ~ 10 mins'},{1:'Fast: 10 ~ 20 mins'},{2:'Normal: 30 ~ 60 mins'},{3:'Slow: 60 ~ 180 mins'}]
+
+  const findKeyFromValue = (valueToFind) => {
+    const key = array.find((obj) =>
+      Object.values(obj).includes(valueToFind)
+    );
+
+    const resultKey = key ? Object.keys(key)[0] : null;
+    return Number(resultKey);
+  }
+  
+  const findValueFromKey = (keyToFind) => {
+    const value = array.find((obj) => obj.hasOwnProperty(keyToFind))?.[keyToFind];
+    return value
+  }
+
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setForm((prevForm) => ({
@@ -78,7 +95,7 @@ const UserEmails = () => {
         name: form.name,
         email: form.email,
         password: form.password,
-        delay:Number(form.delay),
+        delay: findKeyFromValue(form.delay),
         ...(editData && { id: editData.id }), // Include ID for editing
       };
 
@@ -184,7 +201,7 @@ const UserEmails = () => {
   const openModal = (data = null) => {
     if (data) {
       setEditData(data); // Set data to edit  
-      setForm({ name: data.name, email: data.email, password: data.password, delay:data.delay });
+      setForm({ name: data.name, email: data.email, password: data.password, delay: findValueFromKey(data.delay) });
     } else {
       setEditData(null);
       setForm({ name: "", email: "", password: "" ,delay:''});
@@ -301,7 +318,7 @@ const UserEmails = () => {
                             <th className="px-4 py-2 text-black font-semibold">
                               Delay
                             </th>
-                            <td className="px-4 py-2">:  {ele?.delay}</td>
+                            <td className="px-4 py-2">:  {findValueFromKey(ele?.delay)}</td>
                           </tr>
                         </tbody>
                       </table>
@@ -377,11 +394,13 @@ const UserEmails = () => {
                         Select a value
                       </option>
                     )}
-                    {[0, 1, 2, 3].map((value) => (
-                      <option key={value} value={value}>
-                        {value}
-                      </option>
-                    ))}
+                    {array?.map((ele) =>
+                      Object.entries(ele).map(([key, value]) => (
+                        <option key={key} value={value}>
+                          {value}
+                        </option>
+                      ))
+                    )}
                   </select>
                   {errors.delay && <p className="text-red-500">{errors.delay}</p>}
                 </div>
