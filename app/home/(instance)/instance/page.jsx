@@ -678,9 +678,9 @@ const InstancePage = () => {
               </div>
             </div>
             {/* <Pagination totalItems={100} setLimit ={setLimit} setpage= {setPage} /> */}
-            {tolat && limit && (
+            {tolat && limit ? (
               <Pagination totalItems={tolat} setPage={setPage} limit={limit} />
-            )}
+            ):null}
           </div>
         </div>
       </div>

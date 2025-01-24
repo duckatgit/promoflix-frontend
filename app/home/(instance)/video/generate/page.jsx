@@ -376,7 +376,6 @@ const Generate_video = () => {
 
         toast({
           type: "error",
-
           variant: "destructive",
           title: "Uh oh! Something went wrong.",
           description: data.result,
@@ -646,8 +645,8 @@ const Generate_video = () => {
               };
 
               const progressPercentage = statusPercentageMap[item.status] || 0;
-              const findKeyword = csvData?.records[index]?.[0] || "";
-
+              // const findKeyword = csvData?.records[index]?.[0] || "";
+              
               return (
                 <div className="w-[300px]" key={item.id}>
                   {item?.video_url ? (
@@ -662,16 +661,16 @@ const Generate_video = () => {
                         Your browser does not support the video tag.
                       </video>
                       <p className="mt-4">
-                        {findKeyword.charAt(0).toUpperCase() +
-                          findKeyword.slice(1)}
+                        {item?.texts[0]?.charAt(0).toUpperCase() +
+                          item?.texts[0]?.slice(1)}
                       </p>
                     </div>
                   ) : (
                     <div>
                       <ProgressLoader percentage={progressPercentage} />
                       <p className="mt-4">
-                        {findKeyword.charAt(0).toUpperCase() +
-                          findKeyword.slice(1)}
+                        {item?.texts[0]?.charAt(0).toUpperCase() +
+                          item?.texts[0]?.slice(1)}
                       </p>
                     </div>
                   )}
