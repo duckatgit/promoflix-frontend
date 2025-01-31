@@ -22,9 +22,8 @@ const ShareEmails = () => {
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
   const id = searchParams.get("id");
-  const arrayParam = searchParams.get("array");
-  const userArrayParam = searchParams.get("userArray");
-  // console.log(arrayParam,userArrayParam.length, "arrayParam");
+  const arrayParam = localStorage.getItem("array")
+  const userArrayParam = localStorage.getItem("userArray")
 
   const array = arrayParam ? JSON.parse(arrayParam) : [];
   const userArray = userArrayParam ? JSON.parse(userArrayParam) : [];
@@ -54,7 +53,7 @@ const ShareEmails = () => {
         : !item.includes(excludeKeywords)
     );
   };
-  
+
   return (
     <>
       {emailData?.length > 0 ? (
@@ -124,7 +123,7 @@ const ShareEmails = () => {
                   onChange={(e) => setColumn(e.target.value)}
                 >
                   <option value="">Select a column</option>
-                  {filterArray(array, ["url","video", "thumbnail", "gif", "status"])?.map((ele) => (
+                  {filterArray(array, ["url", "video", "thumbnail", "gif", "status"])?.map((ele) => (
                     <option key={ele} value={ele}>
                       {ele}
                     </option>
@@ -138,7 +137,7 @@ const ShareEmails = () => {
                   Click to add column header:
                 </label>
                 <div className="my-3 flex gap-2 flex-wrap">
-                {filterArray(array,["url","video", "thumbnail", "gif", "status"])?.map((item, i) => (
+                  {filterArray(array, ["url", "video", "thumbnail", "gif", "status"])?.map((item, i) => (
                     <div key={i}
                       className="py-2 px-6 text-blue-500 bg-white   font-medium border border-blue-500  rounded-2xl cursor-pointer"
                       onClick={() => handleClick(item)}

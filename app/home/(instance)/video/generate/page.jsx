@@ -266,6 +266,8 @@ const Generate_video = () => {
   const [filteredCsvData, setFilteredCsvData] = useState([]);
   const [filteredUserCsvData, setFilteredUserCsvData] = useState([]);
 
+  console.log('csvData?.headers', filteredCsvData)
+
   // const excludeHeaders = ["url", "thumbnail", "gif", "status"];
   const excludeHeaders = [];
   // Function to filter out specific properties
@@ -273,7 +275,15 @@ const Generate_video = () => {
     const filteredHeaders = csvData?.headers.filter(
       (header) => !excludeHeaders.includes(header)
     );
-    setFilteredCsvData(filteredHeaders);
+
+    let finalCsvheaderData = [];
+    filteredHeaders?.map((item) => {
+      if (!finalCsvheaderData?.includes(item)) {
+        finalCsvheaderData?.push(item)
+      }
+    })
+
+    setFilteredCsvData(finalCsvheaderData);
     const newArray = csvData?.records.map((record) => record[0]);
     setFilteredUserCsvData(newArray);
   };
@@ -424,11 +434,13 @@ const Generate_video = () => {
     }
   };
   const handleClick = () => {
-    // const id = id
+    // TODO: handling not from params but from localstorage
     const queryParams = new URLSearchParams();
     queryParams.set("id", id);
-    queryParams.set("array", JSON.stringify(filteredCsvData));
-    queryParams.set("userArray", JSON.stringify(filteredUserCsvData));
+    localStorage.setItem("array", JSON.stringify(filteredCsvData))
+    // queryParams.set("array", JSON.stringify(filteredCsvData));
+    localStorage.setItem("userArray", JSON.stringify(filteredUserCsvData))
+    // queryParams.set("userArray", JSON.stringify(filteredUserCsvData));
 
     router.push(`/home/shareEmails?${queryParams.toString()}`);
   };
@@ -616,7 +628,7 @@ const Generate_video = () => {
                 </Button>
               )
             }
-        
+
             {shareButton && (
               <Button
                 className="py-2 px-3 cursor-pointer rounded-[8px] text-base"
@@ -646,7 +658,7 @@ const Generate_video = () => {
 
               const progressPercentage = statusPercentageMap[item.status] || 0;
               // const findKeyword = csvData?.records[index]?.[0] || "";
-              
+
               return (
                 <div className="w-[300px]" key={item.id}>
                   {item?.video_url ? (
