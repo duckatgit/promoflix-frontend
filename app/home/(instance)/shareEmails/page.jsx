@@ -30,11 +30,11 @@ const ShareEmails = () => {
 
   const handleClick = (item) => {
     // Append the clicked item in the format {{item}} to the subject
-    setSubject((prevSubject) => `${prevSubject}{{${item}}}`);
+    setSubject((prevSubject) => `${prevSubject} {{${item}}}`);
   };
   const handleClickBody = (item) => {
     // Append the clicked item in the format {{item}} to the subject
-    setBody((prevSubject) => `${prevSubject}{{${item}}}`);
+    setBody((prevSubject) => `${prevSubject} {{${item}}}`);
   };
   const handleChange = (e) => {
     setSubject(e.target.value);
@@ -137,7 +137,7 @@ const ShareEmails = () => {
                   Click to add column header:
                 </label>
                 <div className="my-3 flex gap-2 flex-wrap">
-                  {filterArray(array, ["url", "video", "thumbnail", "gif", "status"])?.map((item, i) => (
+                  {filterArray(array, ["url", "Video", "thumbnail", "gif", "status"])?.map((item, i) => (
                     <div key={i}
                       className="py-2 px-6 text-blue-500 bg-white   font-medium border border-blue-500  rounded-2xl cursor-pointer"
                       onClick={() => handleClick(item)}
@@ -149,7 +149,6 @@ const ShareEmails = () => {
                   placeholder="Hey {{First Name}}..."
                   className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                   value={subject}
-
                   onChange={handleChange}
                 />
                 {/* <p className="text-red-500 text-xs mt-1">
