@@ -21,7 +21,7 @@ const ShareEmails = () => {
   const { toast } = useToast();
   const searchParams = useSearchParams();
   const [emailData, setEmailData] = useAtom(emailsAtom);
-  const [selectedEmail, setSelectedEmail] = useState({email:"",emai_id:''});
+  const [selectedEmail, setSelectedEmail] = useState({ email: "", emai_id: '' });
   const [column, setColumn] = useState("");
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
@@ -31,21 +31,21 @@ const ShareEmails = () => {
 
   const array = arrayParam ? JSON.parse(arrayParam) : [];
   const userArray = userArrayParam ? JSON.parse(userArrayParam) : [];
-  const [errors, setErrors] = useState({email:false,body:false,subject:false});
+  const [errors, setErrors] = useState({ email: false, body: false, subject: false });
   const [loading, setLoading] = useState(false);
 
   const handleClick = (item) => {
     // Append the clicked item in the format {{item}} to the subject
     setSubject((prevSubject) => `${prevSubject} {${item}}`);
-    setErrors((prev) => ({ ...prev, subject:false}));
+    setErrors((prev) => ({ ...prev, subject: false }));
 
   };
   const handleClickBody = (item) => {
     // Append the clicked item in the format {{item}} to the subject
     setBody((prevSubject) => `${prevSubject} {${item}}`);
-    setErrors((prev) => ({ ...prev, body:false }));
+    setErrors((prev) => ({ ...prev, body: false }));
   };
- 
+
   const filterArray = (array, excludeKeywords) => {
     // Ensure the array exists and is an array
     if (!Array.isArray(array)) return [];
@@ -71,25 +71,25 @@ const ShareEmails = () => {
     if (!body) {
       newErrors.body = true;
     }
-    setErrors(newErrors); 
+    setErrors(newErrors);
 
     if (!newErrors.email && !newErrors.subject && !newErrors.body) {
       return true;
     }
 
-    return false; 
+    return false;
   };
   const sendSampleEmail = async () => {
-      try {
-        if(validateForm()){
+    try {
+      if (validateForm()) {
         setLoading(true);
-        const payload={
-          email_id:selectedEmail?.id,
-          subject:subject,
-          body:body,
+        const payload = {
+          email_id: selectedEmail?.id,
+          subject: subject,
+          body: body,
 
         }
-        const response = await postData(`api/share/sample/${id}`,payload,"share_dev");
+        const response = await postData(`api/share/sample/${id}`, payload, "share_dev");
 
         if (response.code != 200) {
           setLoading(false);
@@ -107,17 +107,17 @@ const ShareEmails = () => {
           })
         }
       }
-      } catch (error) {
-        setLoading(false);
-        console.log('error.message', error.message)
-        toast({
-          type: "error",
-          title: "Uh oh! Something went wrong.",
-          description: error?.message,
-        })
-  
-      }
+    } catch (error) {
+      setLoading(false);
+      console.log('error.message', error.message)
+      toast({
+        type: "error",
+        title: "Uh oh! Something went wrong.",
+        description: error?.message,
+      })
+
     }
+  }
   return (
     <>
       {emailData?.length > 0 ? (
@@ -150,7 +150,7 @@ const ShareEmails = () => {
                   </Link>
                 </label>
                 <select
-                  className={`w-full p-2 ${!errors?.email?'mb-[20px] border border-gray-300 ':"border border-red-500"} rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500`}
+                  className={`w-full p-2 ${!errors?.email ? 'mb-[20px] border border-gray-300 ' : "border border-red-500"} rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500`}
                   value={selectedEmail?.email}
                   onChange={(e) => {
                     const selectedOption = emailData.find((ele) => ele.email === e.target.value);
@@ -159,8 +159,8 @@ const ShareEmails = () => {
                   }}
                 >
                   <option value="">Select an email</option>
-                  {emailData?.map((ele) => (
-                    <option id={ele?.id} value={ele?.email}>
+                  {emailData?.map((ele, index) => (
+                    <option id={ele?.id} value={ele?.email} key={index}>
                       {ele?.email}
                     </option>
                   ))}
@@ -218,7 +218,7 @@ const ShareEmails = () => {
                   id="subject"
                   type="text"
                   placeholder="Hey {{First Name}}..."
-                  className={`w-full p-2 ${!errors?.subject?'border border-gray-300 ':"border border-red-500"} rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500`}
+                  className={`w-full p-2 ${!errors?.subject ? 'border border-gray-300 ' : "border border-red-500"} rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500`}
                   value={subject}
                   onChange={(e) => {
                     setSubject(e.target.value);
@@ -260,15 +260,15 @@ const ShareEmails = () => {
                   {filterArray(array, ["status", "thumbnail", "gif"])?.map((item, i) => (
                     <div key={i}
                       className="py-2 px-6 text-blue-500 bg-white   font-medium border border-blue-500  rounded-2xl cursor-pointer"
-                      onClick={() => handleClickBody(item==='Video'?'Video*':item)}
-                    >{item==='Video'?'Video*':item}</div>
+                      onClick={() => handleClickBody(item === 'Video' ? 'Video*' : item)}
+                    >{item === 'Video' ? 'Video*' : item}</div>
                   ))}
                 </div>
                 <textarea
                   id='body'
                   placeholder="Hey {{First Name}}..."
                   rows="7"
-                  className={`w-full p-2 ${!errors?.body?'border border-gray-300 ':"border border-red-500"} rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500`}
+                  className={`w-full p-2 ${!errors?.body ? 'border border-gray-300 ' : "border border-red-500"} rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500`}
                   value={body}
                   onChange={(e) => {
                     setBody(e.target.value);
@@ -279,7 +279,7 @@ const ShareEmails = () => {
                 {errors.body && <p className="text-red-500">The body should contain the <code>{"{{Video*}}"}</code> and <code>{"{variable 1}"}</code></p>}
               </div>
             </div>
-          </div>     
+          </div>
         </div>
       ) : (
         <div className="w-full ">
