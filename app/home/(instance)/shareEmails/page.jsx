@@ -31,7 +31,7 @@ const ShareEmails = () => {
 
   const array = arrayParam ? JSON.parse(arrayParam) : [];
   const userArray = userArrayParam ? JSON.parse(userArrayParam) : [];
-  const [errors, setErrors] = useState({ email: false, body: false, subject: false,column:false });
+  const [errors, setErrors] = useState({ email: false, body: false, subject: false, column: false });
   const [loading, setLoading] = useState(false);
 
   const handleClick = (item) => {
@@ -59,22 +59,22 @@ const ShareEmails = () => {
 
   const validateForm = (send = null) => {
     let newErrors = { ...errors };
-  
+
     // Validate required fields
     newErrors.email = !selectedEmail?.email;
     newErrors.subject = !subject;
     newErrors.body = !body;
-  
+
     if (send === "recipient") {
       newErrors.column = !column;
     }
-  
+
     // Update state with errors
     setErrors(newErrors);
-  
+
     // Check if there are no errors
     const hasErrors = Object.values(newErrors).some((error) => error);
-  
+
     return !hasErrors;
   };
   const sendSampleEmail = async () => {
@@ -122,7 +122,7 @@ const ShareEmails = () => {
         setLoading(true);
         const payload = {
           email_id: selectedEmail?.id,
-          to:column,
+          to: column,
           subject: subject,
           body: body,
 
@@ -227,7 +227,8 @@ const ShareEmails = () => {
                 <select
                   className={`w-full p-2 ${!errors?.column ? 'mb-[20px] border border-gray-300 ' : "border border-red-500"} rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500`}
                   value={column}
-                  onChange={(e) => {setColumn(e.target.value)
+                  onChange={(e) => {
+                    setColumn(e.target.value)
                     setErrors((prev) => ({ ...prev, column: e.target.value ? false : true }));
                   }}
                 >
@@ -247,7 +248,7 @@ const ShareEmails = () => {
                   Click to add column header:
                 </label>
                 <div className="my-3 flex gap-2 flex-wrap">
-                  {filterArray(array, ["url", "Video", "thumbnail", "gif", "status"])?.map((item, i) => (
+                  {filterArray(array, ["Video"])?.map((item, i) => (
                     <div key={i}
                       className="py-2 px-6 text-blue-500 bg-white   font-medium border border-blue-500  rounded-2xl cursor-pointer"
                       onClick={() => handleClick(item)}
@@ -271,15 +272,15 @@ const ShareEmails = () => {
               <div className="flex flex-col gap-2 mt-5">
                 <Button
                   className="w-full text-blue-500 bg-white hover:text-white hover:bg-blue-500 font-medium border border-blue-500 rounded-2xl"
-                  onClick={()=>sendEmailToRecipients()}
+                  onClick={() => sendEmailToRecipients()}
                 >
-                  🚀 Send to {userArray?.length} recipients 
+                  🚀 Send to {userArray?.length} recipients
                 </Button>
                 <Button
                   className="w-full text-blue-500 bg-white hover:text-white hover:bg-blue-500 font-medium border border-blue-500  rounded-2xl"
                   onClick={() => sendSampleEmail()}
                 >
-                  Send me a sample email 
+                  Send me a sample email
                 </Button>
               </div>
             </div>
@@ -291,7 +292,7 @@ const ShareEmails = () => {
                   {"Body (must include {{video}}) variable)"}
                 </h1>
                 <div className="my-3 flex gap-2 flex-wrap">
-                  {filterArray(array, ["status", "thumbnail", "gif"])?.map((item, i) => (
+                  {filterArray(array)?.map((item, i) => (
                     <div key={i}
                       className="py-2 px-6 text-blue-500 bg-white   font-medium border border-blue-500  rounded-2xl cursor-pointer"
                       onClick={() => handleClickBody(item === 'Video' ? 'Video*' : item)}

@@ -252,19 +252,11 @@ const Generate_video = () => {
   useEffect(() => {
     if (csvData && csvData?.headers) {
       setCsvData((preData) => {
-        if (
-          !preData?.headers.includes("Video") ||
-          !preData?.headers.includes("location") ||
-          !preData?.headers.includes("email") ||
-          !preData?.headers.includes("thumbnail")
-        ) {
-          return {
-            ...preData,
-            headers: [...preData.headers, "Video","location","email", "thumbnail", "gif", "status"],
-          };
-        } else {
-          return preData;
-        }
+
+        return {
+          ...preData,
+          headers: [...preData.headers, "Video"],
+        };
       });
     }
   }, []);
