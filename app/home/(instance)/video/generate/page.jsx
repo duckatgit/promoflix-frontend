@@ -254,11 +254,13 @@ const Generate_video = () => {
       setCsvData((preData) => {
         if (
           !preData?.headers.includes("Video") ||
+          !preData?.headers.includes("location") ||
+          !preData?.headers.includes("email") ||
           !preData?.headers.includes("thumbnail")
         ) {
           return {
             ...preData,
-            headers: [...preData.headers, "Video", "thumbnail", "gif", "status"],
+            headers: [...preData.headers, "Video","location","email", "thumbnail", "gif", "status"],
           };
         } else {
           return preData;

@@ -31,7 +31,7 @@ const ShareEmails = () => {
 
   const array = arrayParam ? JSON.parse(arrayParam) : [];
   const userArray = userArrayParam ? JSON.parse(userArrayParam) : [];
-  const [errors, setErrors] = useState({ email: false, body: false, subject: false });
+  const [errors, setErrors] = useState({ email: false, body: false, subject: false,column:false });
   const [loading, setLoading] = useState(false);
 
   const handleClick = (item) => {
@@ -57,27 +57,25 @@ const ShareEmails = () => {
     );
   };
 
-  const validateForm = () => {
+  const validateForm = (send = null) => {
     let newErrors = { ...errors };
-
-    if (!selectedEmail?.email) {
-      newErrors.email = true;
+  
+    // Validate required fields
+    newErrors.email = !selectedEmail?.email;
+    newErrors.subject = !subject;
+    newErrors.body = !body;
+  
+    if (send === "recipient") {
+      newErrors.column = !column;
     }
-
-    if (!subject) {
-      newErrors.subject = true;
-    }
-
-    if (!body) {
-      newErrors.body = true;
-    }
+  
+    // Update state with errors
     setErrors(newErrors);
-
-    if (!newErrors.email && !newErrors.subject && !newErrors.body) {
-      return true;
-    }
-
-    return false;
+  
+    // Check if there are no errors
+    const hasErrors = Object.values(newErrors).some((error) => error);
+  
+    return !hasErrors;
   };
   const sendSampleEmail = async () => {
     try {
@@ -117,6 +115,56 @@ const ShareEmails = () => {
       })
 
     }
+    finally{
+      setSelectedEmail('')
+      setBody('')
+      setSubject('')
+    }
+  }
+  const sendEmailToRecipients = async () => {
+    try {
+      if (validateForm('recipient')) {
+        setLoading(true);
+        const payload = {
+          email_id: selectedEmail?.id,
+          to:column,
+          subject: subject,
+          body: body,
+
+        }
+        const response = await postData(`api/share/${id}`, payload, "share_dev");
+
+        if (response.code != 200) {
+          setLoading(false);
+          toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: data.result,
+          })
+        }
+        else {
+          setLoading(false);
+          toast({
+            type: "success",
+            description: "Email send to recipients successfully.",
+          })
+        }
+      }
+    } catch (error) {
+      setLoading(false);
+      console.log('error.message', error.message)
+      toast({
+        type: "error",
+        title: "Uh oh! Something went wrong.",
+        description: error?.message,
+      })
+    }
+    finally{
+      setSelectedEmail('')
+      setBody('')
+      setSubject('')
+      setColumn('')
+    }
   }
   return (
     <>
@@ -131,7 +179,7 @@ const ShareEmails = () => {
               Back
             </Button>
           </div>
-          <div className="flex gap-4 w-full bg-white p-4 shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px]">
+          <div className={`relative flex gap-4 w-full bg-white p-4 shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px] ${loading ? "pointer-events-none opacity-50" : ""}`}>
             {/* left section */}
             <div className="w-[50%] my-[5px] bg-white ">
               {/* Email to List */}
@@ -188,9 +236,11 @@ const ShareEmails = () => {
                 </select> */}
 
                 <select
-                  className="w-full p-2 mb-[20px] border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className={`w-full p-2 ${!errors?.column ? 'mb-[20px] border border-gray-300 ' : "border border-red-500"} rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500`}
                   value={column}
-                  onChange={(e) => setColumn(e.target.value)}
+                  onChange={(e) => {setColumn(e.target.value)
+                    setErrors((prev) => ({ ...prev, column: e.target.value ? false : true }));
+                  }}
                 >
                   <option value="">Select a column</option>
                   {filterArray(array, ["url", "Video", "thumbnail", "gif", "status"])?.map((ele) => (
@@ -199,6 +249,7 @@ const ShareEmails = () => {
                     </option>
                   ))}
                 </select>
+                {errors.column && <p className="text-red-500 mb-5">Please select column</p>}
               </div>
               {/* Subject */}
               <div>
@@ -207,7 +258,7 @@ const ShareEmails = () => {
                   Click to add column header:
                 </label>
                 <div className="my-3 flex gap-2 flex-wrap">
-                  {filterArray(array, ["url", "Video", "thumbnail", "gif", "status"])?.map((item, i) => (
+                  {filterArray(array, ["url", "Video", "thumbnail", "gif", "status","location","email"])?.map((item, i) => (
                     <div key={i}
                       className="py-2 px-6 text-blue-500 bg-white   font-medium border border-blue-500  rounded-2xl cursor-pointer"
                       onClick={() => handleClick(item)}
@@ -231,21 +282,15 @@ const ShareEmails = () => {
               <div className="flex flex-col gap-2 mt-5">
                 <Button
                   className="w-full text-blue-500 bg-white hover:text-white hover:bg-blue-500 font-medium border border-blue-500 rounded-2xl"
-                  onClick={""}
+                  onClick={()=>sendEmailToRecipients()}
                 >
-                  🚀 Send to {userArray?.length} recipients
+                  🚀 Send to {userArray?.length} recipients 
                 </Button>
                 <Button
                   className="w-full text-blue-500 bg-white hover:text-white hover:bg-blue-500 font-medium border border-blue-500  rounded-2xl"
                   onClick={() => sendSampleEmail()}
                 >
-                  {loading ? (
-                    <>
-                      Send me a sample email <LoadingSpinner className="ml-2 text-black" />
-                    </>
-                  ) : (
-                    "Send me a sample email"
-                  )}
+                  Send me a sample email 
                 </Button>
               </div>
             </div>
@@ -257,7 +302,7 @@ const ShareEmails = () => {
                   {"Body (must include {{video}}) variable)"}
                 </h1>
                 <div className="my-3 flex gap-2 flex-wrap">
-                  {filterArray(array, ["status", "thumbnail", "gif"])?.map((item, i) => (
+                  {filterArray(array, ["status", "thumbnail", "gif","location","email"])?.map((item, i) => (
                     <div key={i}
                       className="py-2 px-6 text-blue-500 bg-white   font-medium border border-blue-500  rounded-2xl cursor-pointer"
                       onClick={() => handleClickBody(item === 'Video' ? 'Video*' : item)}
@@ -279,6 +324,15 @@ const ShareEmails = () => {
                 {errors.body && <p className="text-red-500">The body should contain the <code>{"{{Video*}}"}</code> and <code>{"{variable 1}"}</code></p>}
               </div>
             </div>
+            {loading && (
+              <Image
+                src="/assets/tube-spinner.svg"
+                alt="Logo"
+                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                width={50}
+                height={50}
+              />
+            )}
           </div>
         </div>
       ) : (
