@@ -115,11 +115,6 @@ const ShareEmails = () => {
       })
 
     }
-    finally{
-      setSelectedEmail('')
-      setBody('')
-      setSubject('')
-    }
   }
   const sendEmailToRecipients = async () => {
     try {
@@ -158,12 +153,6 @@ const ShareEmails = () => {
         title: "Uh oh! Something went wrong.",
         description: error?.message,
       })
-    }
-    finally{
-      setSelectedEmail('')
-      setBody('')
-      setSubject('')
-      setColumn('')
     }
   }
   return (
