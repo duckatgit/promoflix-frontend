@@ -258,7 +258,7 @@ const ShareEmails = () => {
                   Click to add column header:
                 </label>
                 <div className="my-3 flex gap-2 flex-wrap">
-                  {filterArray(array, ["url", "Video", "thumbnail", "gif", "status","location","email"])?.map((item, i) => (
+                  {filterArray(array, ["url", "Video", "thumbnail", "gif", "status"])?.map((item, i) => (
                     <div key={i}
                       className="py-2 px-6 text-blue-500 bg-white   font-medium border border-blue-500  rounded-2xl cursor-pointer"
                       onClick={() => handleClick(item)}
@@ -302,7 +302,7 @@ const ShareEmails = () => {
                   {"Body (must include {{video}}) variable)"}
                 </h1>
                 <div className="my-3 flex gap-2 flex-wrap">
-                  {filterArray(array, ["status", "thumbnail", "gif","location","email"])?.map((item, i) => (
+                  {filterArray(array, ["status", "thumbnail", "gif"])?.map((item, i) => (
                     <div key={i}
                       className="py-2 px-6 text-blue-500 bg-white   font-medium border border-blue-500  rounded-2xl cursor-pointer"
                       onClick={() => handleClickBody(item === 'Video' ? 'Video*' : item)}
