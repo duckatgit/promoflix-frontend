@@ -15,6 +15,17 @@ import { fetchData, postData } from "@/utils/api";
 import { FaShareAlt } from "react-icons/fa";
 import { IoMdRefresh } from "react-icons/io";
 import Link from "next/link";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const hirelloSocket = process.env.NEXT_PUBLIC_VIDEO_HIRELLO_SOCKET;
 
@@ -170,8 +181,14 @@ const Generate_video = () => {
       console.log(error);
     }
   };
+
+  const [openDialog, setOpenDialog] = useState(false)
+
+
+
   const regenerateAllVideoById = async (id) => {
     try {
+      setOpenDialog(false)
       setShowLoader(true);
       const result = await postData(`api/v1/regenerate/${id}`, {}, "hirello");
       console.log(result, "regenerate");
@@ -218,25 +235,25 @@ const Generate_video = () => {
   // Update CSV data when video array changes
   const updateCsvData = useCallback(() => {
     if (!videoArray || !csvData) return;
-  
+
     console.log(videoArray, csvData, 'array');
-  
+
     setCsvData((preCsvData) => {
       if (!preCsvData) return preCsvData;
-  
+
       const newCsvRecords = preCsvData.records.map((data, recordIndex) => {
         const video = videoArray[recordIndex];
-  
+
         if (video && video.status === "succeeded" && !data.includes(video.video_url)) {
           return [...data, video.video_url];
         }
         return data;
       });
-  
+
       return { ...preCsvData, records: newCsvRecords };
     });
   }, [videoArray, csvData]);
-  
+
 
   useEffect(() => {
     updateCsvData();
@@ -246,7 +263,7 @@ const Generate_video = () => {
   useEffect(() => {
     setCsvData((preData) => {
       if (!preData || !preData.headers) return preData;
-  
+
       // Check if "Video" is already in headers
       if (!preData.headers.includes("Video")) {
         return {
@@ -256,7 +273,7 @@ const Generate_video = () => {
       }
       return preData;
     });
-  }, []); 
+  }, []);
 
   useEffect(() => {
     filterHeaders();
@@ -367,7 +384,8 @@ const Generate_video = () => {
                 <Button
                   className="py-2 px-3 cursor-pointer rounded-[8px] text-base"
                   onClick={() => {
-                    regenerateAllVideoById(id);
+                    setOpenDialog(true);
+                    // regenerateAllVideoById(id);
                   }}
                 >
                   <IoMdRefresh size={25} />
@@ -440,6 +458,30 @@ const Generate_video = () => {
           )}
         </div>
       </div>
+      {/* TODO: alert dialog */}
+      <AlertDialog open={openDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure that you want to regenerate video? This will consume another video quota.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              onClick={() => {
+                setOpenDialog(false)
+              }}
+            >Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                regenerateAllVideoById(id)
+              }} >
+              Yes
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
