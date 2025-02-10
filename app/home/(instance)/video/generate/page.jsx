@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { CSVLink } from "react-csv";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAtom } from "jotai";
@@ -216,33 +216,27 @@ const Generate_video = () => {
   }, [shareButton]);
 
   // Update CSV data when video array changes
-  const updateCsvData = () => {
-    if (videoArray && csvData) {
-      videoArray.forEach((video, videoIndex) => {
-        setCsvData((preCsvData) => {
-          const newCsvRecords = preCsvData?.records.map((data, recordIndex) => {
-            if (
-              videoIndex === recordIndex &&
-              video.status === "succeeded" &&
-              !data.includes(video.video_url)
-            ) {
-              let newCsvRecData = [...data];
-              return [
-                ...newCsvRecData,
-                video.video_url,
-                video.thumbnail,
-                video.gif,
-                video.status,
-              ];
-            } else {
-              return data;
-            }
-          });
-          return { ...preCsvData, records: newCsvRecords };
-        });
+  const updateCsvData = useCallback(() => {
+    if (!videoArray || !csvData) return;
+  
+    console.log(videoArray, csvData, 'array');
+  
+    setCsvData((preCsvData) => {
+      if (!preCsvData) return preCsvData;
+  
+      const newCsvRecords = preCsvData.records.map((data, recordIndex) => {
+        const video = videoArray[recordIndex];
+  
+        if (video && video.status === "succeeded" && !data.includes(video.video_url)) {
+          return [...data, video.video_url];
+        }
+        return data;
       });
-    }
-  };
+  
+      return { ...preCsvData, records: newCsvRecords };
+    });
+  }, [videoArray, csvData]);
+  
 
   useEffect(() => {
     updateCsvData();
@@ -250,16 +244,19 @@ const Generate_video = () => {
 
   // Initialize CSV headers if not already set
   useEffect(() => {
-    if (csvData && csvData?.headers) {
-      setCsvData((preData) => {
-
+    setCsvData((preData) => {
+      if (!preData || !preData.headers) return preData;
+  
+      // Check if "Video" is already in headers
+      if (!preData.headers.includes("Video")) {
         return {
           ...preData,
           headers: [...preData.headers, "Video"],
         };
-      });
-    }
-  }, []);
+      }
+      return preData;
+    });
+  }, []); 
 
   useEffect(() => {
     filterHeaders();
