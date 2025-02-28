@@ -59,7 +59,7 @@ const Sidebar = () => {
 
   const fetchBillingHistory = async () => {
     try {
-      const baseUrl = "https://promoflix-frontend-seven.vercel.app";
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
 
       const response = await fetchData("api/plan/customer_portal", {
         return_url: baseUrl,
