@@ -289,14 +289,14 @@ const ShareEmails = () => {
               {/* Body */}
               <div>
                 <h1 className="font-semibold leading-6 mb-[2px]">
-                  {"Body (must include {{video}}) variable)"}
+                  {"Body"}
                 </h1>
                 <div className="my-3 flex gap-2 flex-wrap">
-                  {filterArray(array)?.map((item, i) => (
+                  {filterArray(array, ["Video"])?.map((item, i) => (
                     <div key={i}
                       className="py-2 px-6 text-blue-500 bg-white   font-medium border border-blue-500  rounded-2xl cursor-pointer"
-                      onClick={() => handleClickBody(item === 'Video' ? 'Video*' : item)}
-                    >{item === 'Video' ? 'Video*' : item}</div>
+                      onClick={() => handleClickBody(item)}
+                    >{item}</div>
                   ))}
                 </div>
                 <textarea
