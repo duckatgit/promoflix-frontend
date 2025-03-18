@@ -49,7 +49,6 @@ const FormDesign = ({ type }) => {
                 <video
                     ref={videoRef}
                     loop={false}
-                    muted
                     onClick={handleVideoEnd}
                     style={{
                         width: "100%",

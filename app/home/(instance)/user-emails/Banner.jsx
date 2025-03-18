@@ -38,7 +38,10 @@ const StickyBanner = ({ path }) => {
               >
                 click here
               </a>
-              {" "} to check the steps.
+              {" "} to check the steps, or you can check out the video tutorial {" "}<a
+                href="https://www.youtube.com/watch?v=HFX5rXS_MpY" target="_blank"
+                className="inline font-medium text-blue-600 underline dark:text-blue-500 underline-offset-2 decoration-600 dark:decoration-500 decoration-solid hover:no-underline"
+              >here</a>
             </span>
           ) : (
             <span>

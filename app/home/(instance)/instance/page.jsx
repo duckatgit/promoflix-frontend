@@ -564,80 +564,77 @@ const InstancePage = () => {
 
       <div>
         <div className="flex gap-5 h-full">
-          <div
-            style={{ height: "fit-content" }}
-            className="  shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px] bg-white min-w-[300px]"
-          >
-            <div className="flex text-start p-2 border border-b-1">
-              <h1 className="text-lg font-semibold text-gray-700">
-                Create New Project
-              </h1>
+
+          <div className="flex flex-col gap-5">
+            <div
+              style={{ height: "fit-content" }}
+              className="  shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px] bg-white min-w-[300px]"
+            >
+              <div className="flex text-start p-2 border border-b-1">
+                <h1 className="text-lg font-semibold text-gray-700">
+                  Create New Project
+                </h1>
+              </div>
+
+              <div className="flex flex-col p-4 gap-3">
+                <div
+                  className={`relative  cursor-pointer border-2 border-dashed border-gray-300 rounded-[10px] px-[16px] py-[20px] text-center `}
+                  onClick={() => {
+                    fileInputRef.current.click();
+                  }}
+                >
+                  {showLoader && (
+                    <div className="absolute top-0 left-0 flex justify-center items-center w-full h-full bg-[#62666917]">
+                      <Image
+                        src="/assets/tube-spinner.svg"
+                        alt="Logo"
+                        width={50}
+                        height={50}
+                      />
+                    </div>
+                  )}
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    id="file-upload"
+                    className="w-28 absolute right-[20px] top-[48px]"
+                    style={{ display: "none" }}
+                    accept="video/*" // Restrict file type to video
+                  />
+                  <div className="flex flex-col items-center justify-center space-y-2">
+                    <div className="text-orange-500 text-4xl">
+                      <img src="/assets/bx_image-add.png" alt="upload icon" />
+                    </div>
+                    {/* Upload Instructions */}
+                    <p className="text-sm font-medium text-gray-700">
+                      Upload <span className="text-orange-500">Original</span> Video, or{" "}
+                      <span
+                        className="text-orange-500 cursor-pointer"
+                      // className={`${
+                      //   id
+                      //     ? "text-orange-500 cursor-pointer"
+                      //     : "text-gray-500 cursor-no-drop"
+                      // }`}
+                      >
+                        Browse
+                      </span>
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Maximum File size is 100 mb
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="flex flex-col p-4 gap-3">
-              {/* Video Title Input */}
-              {/* <div>
-                <Input
-                  id="video-title"
-                  placeholder="Video Title"
-                  value={instance}
-                  className="w-full  border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-orange-500"
-                  onChange={(e) => handleChange(e)}
-                  onBlur={(e) => handleBlur(e)}
-                />
-              </div> */}
-              {/* Upload Section */}
-              {/* // ${id ? "cursor-pointer" : "cursor-no-drop" */}
-              <div
-                className={`relative  cursor-pointer border-2 border-dashed border-gray-300 rounded-[10px] px-[16px] py-[20px] text-center `}
-                onClick={() => {
-                  // if (id) {
-                  fileInputRef.current.click(); // Only trigger the click if `id` is present
-                  // }
-                }}
-              // title={!id ? "First create an instance, then upload video." : ""}
-              >
-                {showLoader && (
-                  <div className="absolute top-0 left-0 flex justify-center items-center w-full h-full bg-[#62666917]">
-                    <Image
-                      src="/assets/tube-spinner.svg"
-                      alt="Logo"
-                      width={50}
-                      height={50}
-                    />
-                  </div>
-                )}
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  id="file-upload"
-                  className="w-28 absolute right-[20px] top-[48px]"
-                  style={{ display: "none" }}
-                  accept="video/*" // Restrict file type to video
-                />
-                <div className="flex flex-col items-center justify-center space-y-2">
-                  <div className="text-orange-500 text-4xl">
-                    <img src="/assets/bx_image-add.png" alt="upload icon" />
-                  </div>
-                  {/* Upload Instructions */}
-                  <p className="text-sm font-medium text-gray-700">
-                    Upload <span className="text-orange-500">Original</span> Video, or{" "}
-                    <span
-                      className="text-orange-500 cursor-pointer"
-                    // className={`${
-                    //   id
-                    //     ? "text-orange-500 cursor-pointer"
-                    //     : "text-gray-500 cursor-no-drop"
-                    // }`}
-                    >
-                      Browse
-                    </span>
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    Maximum File size is 100 mb
-                  </p>
-                </div>
+            <div
+              style={{ height: "fit-content" }}
+              className="  shadow-[0px_6px_16px_0px_#0000000F] rounded-[10px] bg-white min-w-[300px]"
+            >
+
+              <div className="flex flex-col p-4 gap-3">
+                <iframe width="260" height="245" src="https://www.youtube.com/embed/3qFixuLZ_8s?si=mB1B5LVnXnbNYxWP" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
               </div>
             </div>
           </div>
@@ -680,7 +677,7 @@ const InstancePage = () => {
             {/* <Pagination totalItems={100} setLimit ={setLimit} setpage= {setPage} /> */}
             {tolat && limit ? (
               <Pagination totalItems={tolat} setPage={setPage} limit={limit} />
-            ):null}
+            ) : null}
           </div>
         </div>
       </div>

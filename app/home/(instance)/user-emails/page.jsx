@@ -49,10 +49,10 @@ const UserEmails = () => {
     name: "",
     email: "",
     password: "",
-    delay:"",
+    delay: "",
   });
 
-  const array=[{0:'Very Fast: 5 ~ 10 mins'},{1:'Fast: 10 ~ 20 mins'},{2:'Normal: 30 ~ 60 mins'},{3:'Slow: 60 ~ 180 mins'}]
+  const array = [{ 0: 'Very Fast: 5 ~ 10 mins' }, { 1: 'Fast: 10 ~ 20 mins' }, { 2: 'Normal: 30 ~ 60 mins' }, { 3: 'Slow: 60 ~ 180 mins' }]
 
   const findKeyFromValue = (valueToFind) => {
     const key = array.find((obj) =>
@@ -62,7 +62,7 @@ const UserEmails = () => {
     const resultKey = key ? Object.keys(key)[0] : null;
     return Number(resultKey);
   }
-  
+
   const findValueFromKey = (keyToFind) => {
     const value = array.find((obj) => obj.hasOwnProperty(keyToFind))?.[keyToFind];
     return value
@@ -88,37 +88,37 @@ const UserEmails = () => {
   const handleSave = async () => {
     try {
       if (validateForm()) {
-      setLoading(true);
-      const endpoint = editData ? `api/email` : `api/email`;
-      const method = editData ? putData : postData;
-      const payload = {
-        name: form.name,
-        email: form.email,
-        password: form.password,
-        delay: findKeyFromValue(form.delay),
-        ...(editData && { id: editData.id }), // Include ID for editing
-      };
+        setLoading(true);
+        const endpoint = editData ? `api/email` : `api/email`;
+        const method = editData ? putData : postData;
+        const payload = {
+          name: form.name,
+          email: form.email,
+          password: form.password,
+          delay: findKeyFromValue(form.delay),
+          ...(editData && { id: editData.id }), // Include ID for editing
+        };
 
-      const response = await method(endpoint, payload, "share_dev");
-      if (response.code !== 200) {
-        toast({
-          type: "error",
-          title: "Uh oh! Something went wrong.",
-          description: response.result,
-        });
-      } else {
-        toast({
-          type: "success",
-          description: editData
-            ? "Email edited successfully."
-            : "Email added successfully.",
-        });
-        setIsOpen(false);
-        setForm({ name: "", email: "", password: "", delay:"" });
-        setEditData(null);
-        setEmailData(response.result); // Update the list
+        const response = await method(endpoint, payload, "share_dev");
+        if (response.code !== 200) {
+          toast({
+            type: "error",
+            title: "Uh oh! Something went wrong.",
+            description: response.result,
+          });
+        } else {
+          toast({
+            type: "success",
+            description: editData
+              ? "Email edited successfully."
+              : "Email added successfully.",
+          });
+          setIsOpen(false);
+          setForm({ name: "", email: "", password: "", delay: "" });
+          setEditData(null);
+          setEmailData(response.result); // Update the list
+        }
       }
-    }
     } catch (error) {
       console.error("Error:", error.message);
       toast({
@@ -204,7 +204,7 @@ const UserEmails = () => {
       setForm({ name: data.name, email: data.email, password: data.password, delay: findValueFromKey(data.delay) });
     } else {
       setEditData(null);
-      setForm({ name: "", email: "", password: "" ,delay:''});
+      setForm({ name: "", email: "", password: "", delay: '' });
     }
     setIsOpen(true);
   };
@@ -245,7 +245,7 @@ const UserEmails = () => {
   };
   return (
     <div className="w-full">
-      <StickyBanner path={'user-emails'}/>
+      <StickyBanner path={'user-emails'} />
       <div className="text-end">
         <Button
           className="text-right text-white mb-5 cursor-pointer"
@@ -269,8 +269,9 @@ const UserEmails = () => {
         <>
           {emailData?.length > 0 ? (
             <div className="flex content-baseline gap-2 " >
+              
               {emailData?.map((ele, index) => (
-                <div  className="max-w-sm min-w-[311px] mb-4 bg-white border border-slate-200 rounded-lg p-4" key={index}>
+                <div className="max-w-sm min-w-[311px] mb-4 bg-white border border-slate-200 rounded-lg p-4" key={index}>
                   <div className="flex justify-between items-center flex-wrap ">
                     <div className=" w-full text-end">
                       <button
@@ -306,7 +307,7 @@ const UserEmails = () => {
                             <th className="px-4 py-2 text-black font-semibold">
                               Email
                             </th>
-                            <td className="px-4 py-2" style={{wordBreak:"break-word"}}>: {ele?.email}</td>
+                            <td className="px-4 py-2" style={{ wordBreak: "break-word" }}>: {ele?.email}</td>
                           </tr>
                           <tr>
                             <th className="px-4 py-2 text-black font-semibold">
@@ -328,7 +329,10 @@ const UserEmails = () => {
               ))}
             </div>
           ) : (
-            <p>Not data found..</p>
+            <>
+              
+              <p>Not data found..</p>
+            </>
           )}
         </>
       )}
@@ -350,22 +354,22 @@ const UserEmails = () => {
                     value={form.name}
                     onChange={handleInputChange}
                     className={errors.name ? "border-red-500" : ""}
-                    />
-                    {errors.name && <p className="text-red-500">{errors.name}</p>}
+                  />
+                  {errors.name && <p className="text-red-500">{errors.name}</p>}
                 </div>
                 <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="email"  className="mb-2">Email</Label>
+                  <Label htmlFor="email" className="mb-2">Email</Label>
                   <Input
                     id="email"
                     placeholder="Enter your email"
                     value={form.email}
                     onChange={handleInputChange}
                     className={errors.email ? "border-red-500" : ""}
-                    />
-                    {errors.email && <p className="text-red-500">{errors.email}</p>}
+                  />
+                  {errors.email && <p className="text-red-500">{errors.email}</p>}
                 </div>
                 <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="password" className="mb-2">Password</Label>
+                  <Label htmlFor="password" className="mb-2">App Password</Label>
                   <Input
                     id="password"
                     type="password"
@@ -373,10 +377,10 @@ const UserEmails = () => {
                     value={form.password}
                     onChange={handleInputChange}
                     className={errors.password ? "border-red-500" : ""}
-                    />
-                    {errors.password && (
-                      <p className="text-red-500">{errors.password}</p>
-                    )}
+                  />
+                  {errors.password && (
+                    <p className="text-red-500">{errors.password}</p>
+                  )}
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="delay" className="mb-2">Delay</Label>
@@ -384,9 +388,8 @@ const UserEmails = () => {
                     id="delay"
                     value={form.delay}
                     onChange={handleInputChange}
-                    className={`px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-black ${
-                      errors.delay ? "border-red-500" : ""
-                    }`}
+                    className={`px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-black ${errors.delay ? "border-red-500" : ""
+                      }`}
                     aria-labelledby="delay"
                   >
                     {!form.delay && (
